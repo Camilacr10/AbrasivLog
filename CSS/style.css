@@ -63,3 +63,62 @@
 .footer-custom a:hover {
     text-decoration: underline;
 }
+
+.card {
+    border-radius: 16px;
+    transition: 0.3s ease-in-out;
+    background-color: #fff;
+    border: none;
+}
+
+.card:hover {
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+}
+
+.card h5 {
+    font-weight: 600;
+    color: #444;
+}
+
+.table {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.card h4 {
+    font-weight: 700;
+}
+
+.card h6 {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 4px;
+}
+
+.chart-container {
+    position: relative;
+    height: 260px;
+    margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+    .row > div {
+        margin-bottom: 20px;
+    }
+}
+.encabezado-pdf {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .encabezado-pdf img {
+    max-width: 100px;
+    margin-bottom: 10px;
+  }
+  .encabezado-pdf h4 {
+    margin: 0;
+    font-weight: bold;
+  }
+  .encabezado-pdf small {
+    font-style: italic;
+    color: #555;
+  }
