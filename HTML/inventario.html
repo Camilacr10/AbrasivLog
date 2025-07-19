@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Inventario de Productos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap y estilos -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/CSS/style.css">
+
+    <!-- Styles especificos del Inventario -->
+    <style>
+        body {
+            background-color: #fff;
+            font-family: 'Roboto', sans-serif;
+            color: #000;
+        }
+
+        h1 {
+            font-family: 'Arial', sans-serif;
+            font-size: 28pt;
+            color: #675541;
+        }
+
+        .btn-custom {
+            background-color: #FEBF00;
+            color: #000;
+        }
+
+        .btn-custom:hover {
+            background-color: #e0aa00;
+        }
+
+        .table thead {
+            background-color: #675541;
+            color: white;
+        }
+
+        .product-image {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        tr.amarillo td {
+            background-color: #FEBF00 !important;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- Menú  -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <img src="/IMG/logo.png" alt="Logo" class="logo" />
+            </a>
+            <div class="collapse navbar-collapse" id="menuPrincipal">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="#">Clientes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Empleados</a></li>
+                    <li class="nav-item"><a class="nav-link" href="inventario.html">Inventario</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Entregas</a></li>
+                    <li class="nav-item"><a class="nav-link" href="Proveedores.html">Proveedores</a></li>
+                    <li class="nav-item"><a class="nav-link" href="dashboardReportes.html">Reportes</a></li>
+                    <li class="nav-item">
+                        <a href="#" class="btn btn-login ms-3">
+                            <i class="fas fa-user"></i> Iniciar Sesión
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenedor del Inventario -->
+    <div class="container mt-4 mb-5">
+        <h1>Inventario de Productos</h1>
+
+        <!-- Botón para abrir el modal que permite agregar un nuevo producto -->
+        <div class="text-end">
+            <button class="btn btn-custom my-3" data-bs-toggle="modal" data-bs-target="#modalAgregar">Agregar
+                Producto</button>
+        </div>
+
+        <!-- Campo de texto para buscar productos por nombre o código -->
+        <input type="text" id="buscar" class="form-control mb-3" placeholder="Buscar producto...">
+
+        <!-- Tabla donde se van a listar los productos que se agreguen -->
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Imagen</th>
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th>Categoría</th>
+                    <th>Detalle</th>
+                    <th>Cantidad</th>
+                    <th>Precio Unitario</th>
+                    <th>IVA (%)</th>
+                    <th>IVA (₡)</th>
+                    <th>Descuento (%)</th>
+                    <th>Descuento (₡)</th>
+                    <th>Precio Final</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <!-- El contenido se llena dinámicamente con JS -->
+            <tbody id="tablaProductos"></tbody>
+        </table>
+    </div>
+
+
+    <!--MODAL AGREGAR -->
+    <div class="modal fade" id="modalAgregar" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <!-- Formulario para registrar el nuevo producto -->
+                <form id="formAgregar">
+                    <!-- Encabezado del modal -->
+                    <div class="modal-header">
+                        <h5 class="modal-title">Agregar Producto</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <!-- Cuerpo del modal -->
+                    <div class="modal-body">
+                        <div class="row">
+                            <!-- Código del producto -->
+                            <div class="col-md-4 mb-3">
+                                <label>Código</label>
+                                <input type="text" class="form-control" id="codigo" required>
+                            </div>
+                            <!-- Nombre del producto -->
+                            <div class="col-md-4 mb-3">
+                                <label>Nombre</label>
+                                <input type="text" class="form-control" id="nombre" required>
+                            </div>
+                            <!-- Categoría -->
+                            <div class="col-md-4 mb-3">
+                                <label>Categoría</label>
+                                <input type="text" class="form-control" id="categoria" required>
+                            </div>
+                        </div>
+                        <!-- Detalle del producto -->
+                        <div class="mb-3">
+                            <label>Detalle</label>
+                            <input type="text" class="form-control" id="detalle">
+                        </div>
+                        <div class="row">
+                            <!-- Cantidad disponible en inventario -->
+                            <div class="col-md-4 mb-3">
+                                <label>Cantidad</label>
+                                <input type="number" class="form-control" id="cantidad" required>
+                            </div>
+                            <!-- Precio por unidad -->
+                            <div class="col-md-4 mb-3">
+                                <label>Precio Unitario</label>
+                                <input type="number" class="form-control" id="precio" required>
+                            </div>
+                            <!-- Porcentaje de IVA -->
+                            <div class="col-md-2 mb-3">
+                                <label>IVA (%)</label>
+                                <input type="number" class="form-control" id="iva" value="13">
+                            </div>
+                            <!-- Porcentaje de descuento -->
+                            <div class="col-md-2 mb-3">
+                                <label>Desc. (%)</label>
+                                <input type="number" class="form-control" id="descuento" value="0">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <!-- IVA en colones, se calcula automáticamente -->
+                            <div class="col-md-4">
+                                <label>IVA (₡)</label>
+                                <input type="number" class="form-control" id="ivaColones" readonly>
+                            </div>
+                            <!-- Descuento en colones, se calcula automáticamente -->
+                            <div class="col-md-4">
+                                <label>Descuento (₡)</label>
+                                <input type="number" class="form-control" id="descColones" readonly>
+                            </div>
+                            <!-- Precio final del producto después de aplicar IVA y descuento -->
+                            <div class="col-md-4">
+                                <label>Precio Final (₡)</label>
+                                <input type="number" class="form-control" id="precioFinal" readonly>
+                            </div>
+                        </div>
+                        <!-- Imagen del producto -->
+                        <div class="mb-3 mt-3">
+                            <label>Imagen</label>
+                            <input type="file" class="form-control" id="imagen" accept="image/*">
+                            <img id="previewImagen" class="mt-2" style="max-width: 100px; display: none;">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <!-- Botón de guardar -->
+                        <button class="btn btn-custom" type="submit">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para editar producto -->
+    <div class="modal fade" id="modalEditar" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <!-- Formulario para editar el producto -->
+                <form id="formEditar">
+
+                    <!-- Encabezado del modal -->
+                    <div class="modal-header">
+                        <h5 class="modal-title">Editar Producto</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <!-- Cuerpo del modal -->
+                    <div class="modal-body">
+                        <input type="hidden" id="indiceEditar">
+                        <div class="row">
+                            <!-- Código -->
+                            <div class="col-md-4 mb-3">
+                                <label>Código</label>
+                                <input type="text" class="form-control" id="editCodigo" required>
+                            </div>
+                            <!-- Nombre -->
+                            <div class="col-md-4 mb-3">
+                                <label>Nombre</label>
+                                <input type="text" class="form-control" id="editNombre" required>
+                            </div>
+                            <!-- Categoría -->
+                            <div class="col-md-4 mb-3">
+                                <label>Categoría</label>
+                                <input type="text" class="form-control" id="editCategoria" required>
+                            </div>
+                        </div>
+                        <!-- Detalle -->
+                        <div class="mb-3">
+                            <label>Detalle</label>
+                            <input type="text" class="form-control" id="editDetalle">
+                        </div>
+                        <!-- Cantidad -->
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label>Cantidad</label>
+                                <input type="number" class="form-control" id="editCantidad" required>
+                            </div>
+                            <!-- Precio por unidad -->
+                            <div class="col-md-4 mb-3">
+                                <label>Precio Unitario</label>
+                                <input type="number" class="form-control" id="editPrecio" required>
+                            </div>
+                            <!-- Porcentaje de IVA -->
+                            <div class="col-md-2 mb-3">
+                                <label>IVA (%)</label>
+                                <input type="number" class="form-control" id="editIva" value="13">
+                            </div>
+                            <!-- Porcentaje de descuento -->
+                            <div class="col-md-2 mb-3">
+                                <label>Desc. (%)</label>
+                                <input type="number" class="form-control" id="editDescuento" value="0">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <!-- IVA en colones, se calcula automáticamente -->
+                            <div class="col-md-4">
+                                <label>IVA (₡)</label>
+                                <input type="number" class="form-control" id="editIvaColones" readonly>
+                            </div>
+                            <!-- Descuento en colones, se calcula automáticamente -->
+                            <div class="col-md-4">
+                                <label>Descuento (₡)</label>
+                                <input type="number" class="form-control" id="editDescColones" readonly>
+                            </div>
+                            <!-- Precio final del producto luego de aplicar IVA y descuento -->
+                            <div class="col-md-4">
+                                <label>Precio Final (₡)</label>
+                                <input type="number" class="form-control" id="editPrecioFinal" readonly>
+                            </div>
+                        </div>
+                        <!-- Imagen del producto -->
+                        <div class="mb-3 mt-3">
+                            <label>Imagen</label>
+                            <input type="file" class="form-control" id="editImagen" accept="image/*">
+                            <img id="editPreviewImagen" class="mt-2" style="max-width: 100px; display: none;">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <!-- Botón para actualizar el producto -->
+                        <button class="btn btn-custom" type="submit">Actualizar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer-custom mt-auto py-4">
+        <div class="container text-center">
+            <p class="mb-1 fw-bold">Abrasivos Industriales S.A.</p>
+            <p class="mb-0 small">© 2025 Todos los derechos reservados</p>
+        </div>
+    </footer>
+
+    <!-- SCRIPTS FUNCIONALES -->
+    <script>
+        const productos = []; // Array para almacenar los productos
+
+        // Calcula el IVA, Descuento y Precio Final
+        function calcularTodo(precio, iva, descuento) {
+            const ivaColones = precio * iva / 100;
+            const descColones = precio * descuento / 100;
+            const final = precio + ivaColones - descColones;
+            return { ivaColones, descColones, final };
+        }
+
+
+        // Renderiza la tabla con los productos
+        function renderTabla() {
+            const filtro = document.getElementById("buscar").value.toLowerCase(); // Obtiene el texto de filtro Buscar
+            const cuerpo = document.getElementById("tablaProductos"); // ObtIene el cuerpo de la tabla Productos
+            cuerpo.innerHTML = ""; // Limpia el cuerpo de la tabla
+
+
+            // Recorre el array de productos y agrega las filas a la tabla
+            productos.forEach((p, i) => {
+                // Verifica si el producto cumple con el filtro, si no, no lo agrega
+                if (p.nombre.toLowerCase().includes(filtro) || p.codigo.toLowerCase().includes(filtro)) {
+                    const tr = document.createElement("tr");
+
+                    // Marca el producto con fondo amarillo si la cantidad es menor o igual a 5
+                    if (Number(p.cantidad) <= 5) {
+                        tr.classList.add("amarillo");
+                    }
+
+                    // Genera cada celda con los datos del producto
+                    tr.innerHTML = `
+                <td><img src="${p.imagen}" class="product-image"/></td>
+                <td>${p.codigo}</td>
+                <td>${p.nombre}</td>
+                <td>${p.categoria}</td>
+                <td>${p.detalle}</td>
+                <td>${p.cantidad}</td>
+                <td>₡${p.precio}</td>
+                <td>${p.iva}%</td>
+                <td>₡${p.ivaColones.toFixed(2)}</td>
+                <td>${p.descuento}%</td>
+                <td>₡${p.descuentoColones.toFixed(2)}</td>
+                <td>₡${p.precioFinal.toFixed(2)}</td>
+                <td>
+                    <button class="btn btn-sm btn-primary" onclick="editar(${i})">Editar</button>
+                    <button class="btn btn-sm btn-danger" onclick="eliminar(${i})">Eliminar</button>
+                </td>
+            `;
+
+                    cuerpo.appendChild(tr); // Agrega la fila a la tabla
+                }
+            });
+        }
+
+        // Abre el modal de editar y carga los datos del producto seleccionado
+        function editar(i) {
+            const p = productos[i];
+            document.getElementById("indiceEditar").value = i;
+            document.getElementById("editCodigo").value = p.codigo;
+            document.getElementById("editNombre").value = p.nombre;
+            document.getElementById("editCategoria").value = p.categoria;
+            document.getElementById("editDetalle").value = p.detalle;
+            document.getElementById("editCantidad").value = p.cantidad;
+            document.getElementById("editPrecio").value = p.precio;
+            document.getElementById("editIva").value = p.iva;
+            document.getElementById("editDescuento").value = p.descuento;
+
+            // Recalcular IVA, descuento y precio final
+            const calculo = calcularTodo(p.precio, p.iva, p.descuento);
+            document.getElementById("editIvaColones").value = calculo.ivaColones.toFixed(2);
+            document.getElementById("editDescColones").value = calculo.descColones.toFixed(2);
+            document.getElementById("editPrecioFinal").value = calculo.final.toFixed(2);
+
+            // Muestra la imagen actual del producto
+            document.getElementById("editPreviewImagen").src = p.imagen;
+            document.getElementById("editPreviewImagen").style.display = "block";
+
+            new bootstrap.Modal(document.getElementById("modalEditar")).show(); // Abre el modal
+        }
+
+        // Actualiza los cálculos mientras se edita el producto
+        ["editPrecio", "editIva", "editDescuento"].forEach(id => {
+            document.getElementById(id).addEventListener("input", () => {
+                const precio = parseFloat(document.getElementById("editPrecio").value) || 0;
+                const iva = parseFloat(document.getElementById("editIva").value) || 0;
+                const descuento = parseFloat(document.getElementById("editDescuento").value) || 0;
+                const { ivaColones, descColones, final } = calcularTodo(precio, iva, descuento);
+                document.getElementById("editIvaColones").value = ivaColones.toFixed(2);
+                document.getElementById("editDescColones").value = descColones.toFixed(2);
+                document.getElementById("editPrecioFinal").value = final.toFixed(2);
+            });
+        });
+
+        //// Al guardar el producto editado
+        document.getElementById("formEditar").addEventListener("submit", e => {
+            e.preventDefault();
+            const i = parseInt(document.getElementById("indiceEditar").value);
+            const precio = parseFloat(document.getElementById("editPrecio").value);
+            const iva = parseFloat(document.getElementById("editIva").value);
+            const descuento = parseFloat(document.getElementById("editDescuento").value);
+            const valores = calcularTodo(precio, iva, descuento);
+            // Cargar una nueva imagen si se seleccionó una nueva
+            const imagenFile = document.getElementById("editImagen").files[0];
+            const nuevaImagen = imagenFile ? URL.createObjectURL(imagenFile) : productos[i].imagen;
+
+            // Reemplaza los datos anteriores con los nuevos
+            productos[i] = {
+                codigo: document.getElementById("editCodigo").value,
+                nombre: document.getElementById("editNombre").value,
+                categoria: document.getElementById("editCategoria").value,
+                detalle: document.getElementById("editDetalle").value,
+                cantidad: parseInt(document.getElementById("editCantidad").value),
+                precio: precio,
+                iva: iva,
+                descuento: descuento,
+                ivaColones: valores.ivaColones,
+                descuentoColones: valores.descColones,
+                precioFinal: valores.final,
+                imagen: nuevaImagen
+            };
+
+            // Cierra el modal y actualiza la tabla
+            bootstrap.Modal.getInstance(document.getElementById("modalEditar")).hide();
+            renderTabla();
+        });
+
+        // Elimina un producto
+        function eliminar(i) {
+            if (confirm("¿Eliminar este producto?")) {
+                productos.splice(i, 1);
+                renderTabla();
+            }
+        }
+
+        // Calcula los campos cuando se ingresan los datos al agregar
+        ["precio", "iva", "descuento"].forEach(id => {
+            document.getElementById(id).addEventListener("input", () => {
+                const precio = parseFloat(document.getElementById("precio").value) || 0;
+                const iva = parseFloat(document.getElementById("iva").value) || 0;
+                const descuento = parseFloat(document.getElementById("descuento").value) || 0;
+                const { ivaColones, descColones, final } = calcularTodo(precio, iva, descuento);
+                document.getElementById("ivaColones").value = ivaColones.toFixed(2);
+                document.getElementById("descColones").value = descColones.toFixed(2);
+                document.getElementById("precioFinal").value = final.toFixed(2);
+            });
+        });
+
+        // Vista previa de imagen al agregar producto
+        document.getElementById("imagen").addEventListener("change", e => {
+            const file = e.target.files[0];
+            if (file) {
+                const url = URL.createObjectURL(file);
+                const preview = document.getElementById("previewImagen");
+                preview.src = url;
+                preview.style.display = "block";
+            }
+        });
+
+        // Al guardar un nuevo producto
+        document.getElementById("formAgregar").addEventListener("submit", e => {
+            e.preventDefault();
+
+            // Obtener los valores correctamente
+            const precio = parseFloat(document.getElementById("precio").value);
+            const iva = parseFloat(document.getElementById("iva").value);
+            const descuento = parseFloat(document.getElementById("descuento").value);
+            const valores = calcularTodo(precio, iva, descuento);
+
+            // Cargar una nueva imagen si se seleccionó una
+            const imagenFile = document.getElementById("imagen").files[0];
+            const imagen = imagenFile ? URL.createObjectURL(imagenFile) : "";
+
+            // Agregar el nuevo producto
+            productos.push({
+                codigo: document.getElementById("codigo").value,
+                nombre: document.getElementById("nombre").value,
+                categoria: document.getElementById("categoria").value,
+                detalle: document.getElementById("detalle").value,
+                cantidad: parseInt(document.getElementById("cantidad").value),
+                precio: precio,
+                iva: iva,
+                descuento: descuento,
+                ivaColones: valores.ivaColones,
+                descuentoColones: valores.descColones,
+                precioFinal: valores.final,
+                imagen
+            });
+
+            // Limpia el formulario
+            e.target.reset();
+            document.getElementById("previewImagen").style.display = "none";
+            bootstrap.Modal.getInstance(document.getElementById("modalAgregar")).hide();
+            renderTabla();
+        });
+
+        // Buscador dinámico
+        document.getElementById("buscar").addEventListener("input", renderTabla);
+    </script>
+</body>
+
+</html>

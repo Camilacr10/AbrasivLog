@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestión de Proveedores</title>
+
+    <!-- Bootstrap y estilos -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="/CSS/style.css">
+
+    <!-- Styles especificos de Proveedores -->
+    <style>
+        body {
+            background-color: #fff;
+            font-family: 'Roboto', sans-serif;
+            color: #000;
+        }
+
+        h1 {
+            font-family: 'Arial', sans-serif;
+            font-size: 28pt;
+            color: #675541;
+        }
+
+        .btn-custom {
+            background-color: #FEBF00;
+            color: #000;
+        }
+
+        .btn-custom:hover {
+            background-color: #e0aa00;
+        }
+
+        .table thead {
+            background-color: #675541;
+            color: white;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- Menú  -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <img src="/IMG/logo.png" alt="Logo" class="logo" />
+            </a>
+            <div class="collapse navbar-collapse" id="menuPrincipal">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="#">Clientes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Empleados</a></li>
+                    <li class="nav-item"><a class="nav-link" href="inventario.html">Inventario</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Entregas</a></li>
+                    <li class="nav-item"><a class="nav-link" href="Proveedores.html">Proveedores</a></li>
+                    <li class="nav-item"><a class="nav-link" href="dashboardReportes.html">Reportes</a></li>
+                    <li class="nav-item">
+                        <a href="#" class="btn btn-login ms-3">
+                            <i class="fas fa-user"></i> Iniciar Sesión
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenedor de Proveedores -->
+    <div class="container mt-4 mb-5">
+        <h1>Listado de Proveedores</h1>
+
+        <!-- Botón para abrir el modal que permite agregar un nuevo proveedor -->
+        <div class="text-end">
+            <button class="btn btn-custom my-3" data-bs-toggle="modal" data-bs-target="#modalAgregarProveedor">Agregar
+                Proveedor</button>
+        </div>
+
+        <!-- Campo de texto para buscar proveedores -->
+        <input type="text" id="buscarProveedor" class="form-control mb-3" placeholder="Buscar proveedor...">
+
+
+        <!-- Tabla donde se van a listar los proveedores que se agreguen -->
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th>Cédula Jurídica</th>
+                    <th>Teléfono</th>
+                    <th>Correo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <!-- El contenido se llena dinámicamente con JS -->
+            <tbody id="tablaProveedores"></tbody>
+        </table>
+    </div>
+
+    <!-- MODAL AGREGAR PROVEEDOR -->
+    <div class="modal fade" id="modalAgregarProveedor" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Formulario para registrar el nuevo proveedor -->
+                <form id="formAgregarProveedor">
+                    <!-- Encabezado del modal -->
+                    <div class="modal-header">
+                        <h5 class="modal-title">Agregar Proveedor</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <!-- Cuerpo del modal -->
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <!-- Nombre del proveedor -->
+                            <label>Nombre</label>
+                            <input type="text" class="form-control" id="nombreProveedor" required>
+                        </div>
+                        <!-- Cédula Jurídica -->
+                        <div class="mb-3">
+                            <label>Cédula Jurídica</label>
+                            <input type="text" class="form-control" id="cedulaProveedor" required>
+                        </div>
+                        <!-- Teléfono -->
+                        <div class="mb-3">
+                            <label>Teléfono</label>
+                            <input type="text" class="form-control" id="telefonoProveedor" required>
+                        </div>
+                        <!-- Correo -->
+                        <div class="mb-3">
+                            <label>Correo</label>
+                            <input type="email" class="form-control" id="correoProveedor" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <!-- Botón de guardar -->
+                        <button class="btn btn-custom" type="submit">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para editar un proveedor -->
+    <div class="modal fade" id="modalEditarProveedor" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Formulario para editar el proveedor -->
+                <form id="formEditarProveedor">
+                    <!-- Encabezado del modal -->
+                    <div class="modal-header">
+                        <h5 class="modal-title">Editar Proveedor</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <!-- Cuerpo del modal -->
+                    <div class="modal-body">
+                        <input type="hidden" id="indiceProveedor">
+                        <div class="mb-3">
+                            <!-- Nombre del proveedor -->
+                            <label>Nombre</label>
+                            <input type="text" class="form-control" id="editNombreProveedor" required>
+                        </div>
+                        <!-- Cédula Jurídica -->
+                        <div class="mb-3">
+                            <label>Cédula Jurídica</label>
+                            <input type="text" class="form-control" id="editCedulaProveedor" required>
+                        </div>
+                        <!-- Teléfono -->
+                        <div class="mb-3">
+                            <label>Teléfono</label>
+                            <input type="text" class="form-control" id="editTelefonoProveedor" required>
+                        </div>
+                        <!-- Correo -->
+                        <div class="mb-3">
+                            <label>Correo</label>
+                            <input type="email" class="form-control" id="editCorreoProveedor" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <!-- Botón para actualizar el proveedor -->
+                        <button class="btn btn-custom" type="submit">Actualizar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para ver y agregar evaluaciones de desempeño de un proveedor -->
+    <div class="modal fade" id="modalEvaluaciones" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Encabezado del modal -->
+                <div class="modal-header">
+                    <h5 class="modal-title">Evaluaciones de Desempeño</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <!-- Cuerpo del modal -->
+                <div class="modal-body">
+                    <div id="evaluacionesContenido"></div>
+                    <hr>
+                    <h6 class="mt-3">Agregar nueva evaluación</h6>
+                    <div class="mb-2">
+                        <!-- Puntualidad -->
+                        <label>Puntualidad (1-5):</label>
+                        <input type="number" class="form-control" id="evaPuntualidad" min="1" max="5" required>
+                    </div>
+                    <!-- Atención -->
+                    <div class="mb-2">
+                        <label>Atención (1-5):</label>
+                        <input type="number" class="form-control" id="evaAtencion" min="1" max="5" required>
+                    </div>
+                    <!-- Disponibilidad -->
+                    <div class="mb-2">
+                        <label>Disponibilidad (1-5):</label>
+                        <input type="number" class="form-control" id="evaDisponibilidad" min="1" max="5" required>
+                    </div>
+                    <!-- Observaciones -->
+                    <div class="mb-2">
+                        <label>Observaciones:</label>
+                        <textarea class="form-control" id="evaObservacion" rows="2"></textarea>
+                    </div>
+                    <!-- Indice de la evaluación actual -->
+                    <input type="hidden" id="indiceEvaluacionActual">
+                    <!-- Botón para guardar la evaluación -->
+                    <button class="btn btn-custom mt-2" onclick="agregarEvaluacion()">Guardar Evaluación</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer-custom mt-auto py-4">
+        <div class="container text-center">
+            <p class="mb-1 fw-bold">Abrasivos Industriales S.A.</p>
+            <p class="mb-0 small">© 2025 Todos los derechos reservados</p>
+        </div>
+    </footer>
+
+    <!-- SCRIPTS FUNCIONALES -->
+    <script>
+
+        // Lista inicial con un proveedor de ejemplo
+        const proveedores = [{
+            codigo: 1,
+            nombre: "Industrias Abratec",
+            cedula: "3101123456",
+            telefono: "2222-1111",
+            correo: "contacto@abratec.com",
+            evaluaciones: []
+        }];
+
+        let contadorCodigo = 2; // Variable para generar códigos consecutivos para nuevos proveedores
+
+
+        // Función para renderizar la tabla de proveedores
+        function renderTablaProveedores() {
+            const cuerpo = document.getElementById("tablaProveedores"); // ObtIene el cuerpo de la tabla Proveedores
+            const filtro = document.getElementById("buscarProveedor").value.toLowerCase(); // Obtiene el texto de filtro Buscar
+            cuerpo.innerHTML = "";
+
+
+            // Recorre el array de proveedores y agrega las filas a la tabla
+            proveedores.forEach((prov, i) => {
+                if (prov.nombre.toLowerCase().includes(filtro)) {
+                    //Agrega la fila con los datos del proveedor y botones
+                    cuerpo.innerHTML += `
+          <tr>
+            <td>${prov.codigo}</td>
+            <td>${prov.nombre}</td>
+            <td>${prov.cedula}</td>
+            <td>${prov.telefono}</td>
+            <td>${prov.correo}</td>
+            <td>
+              <button class="btn btn-sm btn-primary" onclick="editarProveedor(${i})">Editar</button>
+              <button class="btn btn-sm btn-danger" onclick="eliminarProveedor(${i})">Eliminar</button>
+              <button class="btn btn-sm btn-info" onclick="verEvaluaciones(${i})">Ver Evaluaciones</button>
+            </td>
+          </tr>
+        `;
+                }
+            });
+        }
+
+        // Agregar un nuevo proveedor
+        document.getElementById("formAgregarProveedor").addEventListener("submit", e => {
+            e.preventDefault(); // Evita que se recargue la página
+
+            // Crea un nuevo objeto proveedor con los datos ingresados
+            const nuevoProveedor = {
+                codigo: contadorCodigo++,
+                nombre: nombreProveedor.value,
+                cedula: cedulaProveedor.value,
+                telefono: telefonoProveedor.value,
+                correo: correoProveedor.value,
+                evaluaciones: []
+            };
+            proveedores.push(nuevoProveedor); // Agrega el proveedor a la lista
+            e.target.reset(); // Limpia el formulario
+            bootstrap.Modal.getInstance(modalAgregarProveedor).hide();
+            renderTablaProveedores(); // Actualiza la tabla
+        });
+
+        // Carga los datos del proveedor seleccionado en el modal de edición
+        function editarProveedor(i) {
+            const prov = proveedores[i];
+            indiceProveedor.value = i;  // Guarda el índice en un campo oculto
+            editNombreProveedor.value = prov.nombre;
+            editCedulaProveedor.value = prov.cedula;
+            editTelefonoProveedor.value = prov.telefono;
+            editCorreoProveedor.value = prov.correo;
+            new bootstrap.Modal(modalEditarProveedor).show();  // Muestra el modal de edición
+        }
+
+        // Actualizar los datos del proveedor
+        document.getElementById("formEditarProveedor").addEventListener("submit", e => {
+            e.preventDefault();
+            const i = parseInt(indiceProveedor.value); // Obtiene el índice del proveedor seleccionado
+
+            // Actualiza los datos del proveedor
+            proveedores[i].nombre = editNombreProveedor.value;
+            proveedores[i].cedula = editCedulaProveedor.value;
+            proveedores[i].telefono = editTelefonoProveedor.value;
+            proveedores[i].correo = editCorreoProveedor.value;
+            bootstrap.Modal.getInstance(modalEditarProveedor).hide(); // Cierra el modal
+            renderTablaProveedores();  // Actualiza la tabla
+        });
+
+
+        // Eliminar un proveedor
+        function eliminarProveedor(i) {
+            if (confirm("¿Deseas eliminar este proveedor?")) {
+                proveedores.splice(i, 1); // Elimina el proveedor del array
+                renderTablaProveedores(); // Actualiza la tabla
+            }
+        }
+
+
+        // Ver las evaluaciones de un proveedor
+        function verEvaluaciones(i) {
+            const evaluaciones = proveedores[i].evaluaciones; // Obtiene las evaluaciones del proveedor
+            const contenedor = document.getElementById("evaluacionesContenido");
+            contenedor.innerHTML = ""; // Limpia el contenedor
+
+            // Si no hay evaluaciones, se muestra un mensaje
+            if (evaluaciones.length === 0) {
+                contenedor.innerHTML = "<p>No hay evaluaciones para este proveedor.</p>";
+            } else {
+                // Si hay evaluaciones, se muestran
+                evaluaciones.forEach((eva, idx) => {
+                    contenedor.innerHTML += `
+          <div class="border rounded p-2 mb-2">
+            <strong>Evaluación #${idx + 1} - ${eva.fecha}</strong>
+            <ul class="mb-1">
+              <li>Puntualidad: ${eva.puntualidad}/5</li>
+              <li>Atención: ${eva.atencion}/5</li>
+              <li>Disponibilidad: ${eva.disponibilidad}/5</li>
+            </ul>
+            <p><strong>Observación:</strong> ${eva.observacion}</p>
+          </div>
+        `;
+                });
+            }
+
+            // Carga los datos para nueva evaluación
+            indiceEvaluacionActual.value = i;
+            evaPuntualidad.value = "";
+            evaAtencion.value = "";
+            evaDisponibilidad.value = "";
+            evaObservacion.value = "";
+
+            new bootstrap.Modal(modalEvaluaciones).show(); // Muestra el modal
+        }
+
+        // Agrega una nueva evaluación al proveedor actual
+        function agregarEvaluacion() {
+            const index = parseInt(document.getElementById("indiceEvaluacionActual").value);
+            const puntualidad = parseInt(evaPuntualidad.value);
+            const atencion = parseInt(evaAtencion.value);
+            const disponibilidad = parseInt(evaDisponibilidad.value);
+            const observacion = evaObservacion.value.trim();
+
+            // Valida que los puntajes estén en el rango de 1 a 5
+            if ([puntualidad, atencion, disponibilidad].some(p => isNaN(p) || p < 1 || p > 5)) {
+                alert("Por favor, ingrese puntajes válidos (1 a 5).");
+                return;
+            }
+
+
+            // Crea el objeto de evaluación con la fecha actual
+            const nueva = {
+                fecha: new Date().toLocaleString(),
+                puntualidad,
+                atencion,
+                disponibilidad,
+                observacion
+            };
+
+            proveedores[index].evaluaciones.push(nueva); // Agrega la evaluación a la lista del proveedor
+
+            const contenedor = document.getElementById("evaluacionesContenido");
+            contenedor.innerHTML = "";
+
+            // Muestra las evaluaciones actualizadas
+            proveedores[index].evaluaciones.forEach((eva, idx) => {
+                contenedor.innerHTML += `
+        <div class="border rounded p-2 mb-2">
+          <strong>Evaluación #${idx + 1} - ${eva.fecha}</strong>
+          <ul class="mb-1">
+            <li>Puntualidad: ${eva.puntualidad}/5</li>
+            <li>Atención: ${eva.atencion}/5</li>
+            <li>Disponibilidad: ${eva.disponibilidad}/5</li>
+          </ul>
+          <p><strong>Observación:</strong> ${eva.observacion}</p>
+        </div>
+      `;
+            });
+
+            // Limpia el formulario de evaluación
+            evaPuntualidad.value = "";
+            evaAtencion.value = "";
+            evaDisponibilidad.value = "";
+            evaObservacion.value = "";
+        }
+
+        // Renderiza la tabla de proveedores
+        document.getElementById("buscarProveedor").addEventListener("input", renderTablaProveedores);
+        window.onload = renderTablaProveedores; // Renderiza la tabla al cargar la página
+    </script>
+
+</body>
+
+</html>
