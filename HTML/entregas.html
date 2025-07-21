@@ -118,7 +118,6 @@
                     <th>Fecha</th>
                     <th>Cantidad</th>
                     <th>Horario de entrega</th>
-                    <th>Dirección</th>
                     <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
@@ -244,6 +243,19 @@
         </div>
     </div>
 
+    <!-- Modal Detalles Entrega -->
+    <div class="modal fade" id="modalDetallesEntrega" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detalles de la Entrega</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center" id="detalleContenido"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="footer-custom mt-auto py-4">
         <div class="container text-center">
@@ -267,22 +279,6 @@
             fecha: document.getElementById("filtroFecha"),
             estado: document.getElementById("filtroEstado"),
         };
-
-        function direccionRandomParaCliente(cedula) {
-            const direcciones = [
-                "San José, Barrio Otoya, Calle 3",
-                "Alajuela, La Guácima, Residencial Las Palmeras",
-                "Heredia, Santo Domingo, Avenida Central",
-                "Cartago, Barrio Oriental, Calle 5",
-                "Guanacaste, Liberia, Zona Industrial",
-                "Puntarenas, Esparza, Barrio El Carmen",
-            ];
-            let hash = 0;
-            for (let i = 0; i < cedula.length; i++) {
-                hash += cedula.charCodeAt(i);
-            }
-            return direcciones[hash % direcciones.length];
-        }
 
         // Render tabla entregas
         function renderTablaEntregas() {
@@ -312,7 +308,6 @@
     <td>${e.fecha}</td>
     <td>${e.cantidad}</td>
     <td>${e.horario}</td>
-    <td>${e.direccion}</td>
     <td>${e.estado}</td>
     <td class="text-nowrap">
         <div class="d-flex gap-1 flex-wrap">
@@ -322,11 +317,13 @@
             <button class="btn btn-sm btn-success" onclick="abrirCambiarEstado(${i})">
                 Cambiar Estado
             </button>
+            <button class="btn btn-sm btn-warning" onclick="mostrarDetallesEntrega(${i})">
+                Ver detalles
+            </button>
         </div>
     </td>
 </tr>
 `;
-
                 });
         }
 
@@ -347,7 +344,6 @@
             }
 
             const numero = `DOC-${contadorDocumento++}`;
-            const direccion = direccionRandomParaCliente(cedula);
             const estado = "Pendiente";
 
             entregas.push({
@@ -358,7 +354,6 @@
                 fecha,
                 cantidad,
                 horario,
-                direccion,
                 estado,
             });
 
@@ -421,6 +416,44 @@
             setTimeout(() => mensaje2.classList.add("d-none"), 3000);
 
             renderTablaEntregas();
+        }
+
+        function mostrarDetallesEntrega(indice) {
+            const entrega = entregas[indice];
+            const modalBody = document.getElementById("detalleContenido");
+            const nombre = "Robert Downey Jr";
+            const direccion = "San José, Barrio Escalante, Costa Rica";
+
+            let imgSrc = "";
+            switch (entrega.estado) {
+                case "Pendiente":
+                    imgSrc = "../IMG/pendiente.png";
+                    break;
+                case "En camino":
+                    imgSrc = "../IMG/camion.gif";
+                    break;
+                case "Realizada":
+                    imgSrc = "../IMG/exitosa.png";
+                    break;
+                default:
+                    imgSrc = "";
+            }
+
+            modalBody.innerHTML = `
+                <h4>Entrega ${entrega.numero}</h4>
+                <p><strong>Cédula jurídica:</strong> ${entrega.cliente}</p>
+                <p><strong>Nombre Cliente:</strong> ${nombre}</p>
+                <p><strong>Producto:</strong> ${entrega.producto}</p>
+                <p><strong>Mensajero asignado:</strong> ${entrega.mensajero}</p>
+                <p><strong>Fecha:</strong> ${entrega.fecha}</p>
+                <p><strong>Cantidad:</strong> ${entrega.cantidad}</p>
+                <p><strong>Horario de entrega:</strong> ${entrega.horario}</p>
+                <p><strong>Dirección:</strong> ${direccion}</p>
+                <p><strong>Estado:</strong> ${entrega.estado}</p>
+                ${imgSrc ? `<img src="${imgSrc}" alt="Estado ${entrega.estado}" class="img-fluid" style="max-height: 200px;">` : ""}
+            `;
+
+            new bootstrap.Modal(document.getElementById("modalDetallesEntrega")).show();
         }
 
         // Filtros
