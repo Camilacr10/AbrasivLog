@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/CSS/style.css">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Gestión de Clientes - AbrasivLog</title>
+        <link rel="stylesheet" href="/CSS/style.css" />
+        <link rel="stylesheet" href="clientes.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+      </head>
+      <body class="d-flex flex-column min-vh-100">
+
+        <!-- Menú  -->
+        <nav class="navbar navbar-expand-lg navbar-custom">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center" href="index.html">
+                    <img src="/IMG/logo.png" alt="Logo" class="logo" />
+                </a>
+                <div class="collapse navbar-collapse" id="menuPrincipal">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+                        <li class="nav-item"><a class="nav-link" href="clientes.html">Clientes</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Empleados</a></li>
+                        <li class="nav-item"><a class="nav-link" href="inventario.html">Inventario</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Entregas</a></li>
+                        <li class="nav-item"><a class="nav-link" href="Proveedores.html">Proveedores</a></li>
+                        <li class="nav-item"><a class="nav-link" href="dashboardReportes.html">Reportes</a></li>
+                        <li class="nav-item">
+                            <a href="#" class="btn btn-login ms-3">
+                                <i class="fas fa-user"></i> Iniciar Sesión
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+      
+      <div class="container-clientes">
+        <h1>Gestión de Clientes</h1>
+      
+       
+        <form id="formRegistro" class="form-registro">
+          <input type="text" id="nuevoNombre" placeholder="Nombre completo" required>
+          <input type="text" id="nuevaCedula" placeholder="Cédula" required>
+          <input type="tel" id="nuevoTelefono" placeholder="Teléfono" required>
+          <input type="email" id="nuevoCorreo" placeholder="Correo electrónico" required>
+          <button type="button" onclick="registrarCliente()">Registrar Cliente</button>
+        </form>
+      
+      
+        <div class="busqueda-clientes">
+          <input type="text" id="buscarInput" placeholder="Buscar clientes..." onkeyup="filtrarClientes()">
+        </div>
+      
+       
+        <table class="tabla-clientes">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Cédula</th>
+              <th>Teléfono</th>
+              <th>Correo</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tablaClientes">
+          
+          </tbody>
+        </table>
+      </div>
+      
+      
+      <div id="modalCliente" class="modal">
+        <div class="modal-contenido">
+          <span class="cerrar" onclick="cerrarModal()">&times;</span>
+          <h2>Editar Cliente</h2>
+          <input type="text" id="modalNombre">
+          <input type="text" id="modalCedula" disabled>
+          <input type="tel" id="modalTelefono">
+          <input type="email" id="modalCorreo">
+          <button onclick="guardarCambios()">Guardar Cambios</button>
+        </div>
+      </div>
+      
+      
+      <div id="modalHistorial" class="modal">
+        <div class="modal-contenido">
+          <span class="cerrar" onclick="cerrarModalHistorial()">&times;</span>
+          <h2>Historial del Cliente</h2>
+          <p><strong>Últimos movimientos:</strong></p>
+          <ul>
+            <li>Pedido 00123 - Entregado el 15/06/2025</li>
+            <li>Pedido 00101 - Entregado el 22/05/2025</li>
+            <li>Modificación de contacto - 01/04/2025</li>
+          </ul>
+        </div>
+      </div>
+      
+      <script>
+        const clientes = [];
+      
+        function registrarCliente() {
+          const nombre = document.getElementById('nuevoNombre').value;
+          const cedula = document.getElementById('nuevaCedula').value;
+          const telefono = document.getElementById('nuevoTelefono').value;
+          const correo = document.getElementById('nuevoCorreo').value;
+      
+          clientes.push({ nombre, cedula, telefono, correo, estado: 'Activo' });
+          actualizarTabla();
+          document.getElementById('formRegistro').reset();
+        }
+      
+        function actualizarTabla() {
+          const tbody = document.getElementById('tablaClientes');
+          tbody.innerHTML = '';
+      
+          clientes.forEach((cliente, i) => {
+            const fila = document.createElement('tr');
+            fila.innerHTML = `
+        <td>${cliente.nombre}</td>
+        <td>${cliente.cedula}</td>
+        <td>${cliente.telefono}</td>
+        <td>${cliente.correo}</td>
+        <td>${cliente.estado}</td>
+        <td>
+          <button class="btn-ver" onclick="abrirModal(${i})">Editar</button>
+          <button class="btn-inactivar" onclick="inactivarCliente(${i})">Inactivar</button>
+          <button class="btn-historial" onclick="abrirHistorial()">Historial</button>
+          <button class="btn-eliminar" onclick="eliminarCliente(${i})">Eliminar</button>
+        </td>
+            `;
+            tbody.appendChild(fila);
+          });
+        }
+      
+        let clienteActual = -1;
+      
+        function abrirModal(index) {
+          clienteActual = index;
+          const c = clientes[index];
+          document.getElementById('modalNombre').value = c.nombre;
+          document.getElementById('modalCedula').value = c.cedula;
+          document.getElementById('modalTelefono').value = c.telefono;
+          document.getElementById('modalCorreo').value = c.correo;
+          document.getElementById('modalCliente').style.display = 'block';
+        }
+      
+        function guardarCambios() {
+          const c = clientes[clienteActual];
+          c.nombre = document.getElementById('modalNombre').value;
+          c.telefono = document.getElementById('modalTelefono').value;
+          c.correo = document.getElementById('modalCorreo').value;
+          actualizarTabla();
+          cerrarModal();
+        }
+      
+        function cerrarModal() {
+          document.getElementById('modalCliente').style.display = 'none';
+        }
+      
+        function filtrarClientes() {
+          const filtro = document.getElementById('buscarInput').value.toLowerCase();
+          const filas = document.querySelectorAll('#tablaClientes tr');
+          filas.forEach(fila => {
+            const texto = fila.textContent.toLowerCase();
+            fila.style.display = texto.includes(filtro) ? '' : 'none';
+          });
+        }
+      
+        function inactivarCliente(index) {
+        const cliente = clientes[index];
+        cliente.estado = (cliente.estado === 'Activo') ? 'Inactivo' : 'Activo';
+        actualizarTabla();
+      }
+      
+      
+        function abrirHistorial() {
+          document.getElementById('modalHistorial').style.display = 'block';
+        }
+      
+        function cerrarModalHistorial() {
+          document.getElementById('modalHistorial').style.display = 'none';
+        }
+      
+        window.onclick = function(event) {
+          if (event.target.classList.contains('modal')) {
+            cerrarModal();
+            cerrarModalHistorial();
+          }
+        }
+        function eliminarCliente(index) {
+        const confirmacion = confirm("¿Estás seguro que deseas eliminar este cliente?");
+        if (confirmacion) {
+          clientes.splice(index, 1); 
+          actualizarTabla();         
+        }
+      }
+      </script>
+          <footer class="footer-custom mt-auto py-4">
+            <div class="container text-center">
+                <p class="mb-1 fw-bold">Abrasivos Industriales S.A.</p>
+                <p class="mb-0 small">© 2025 Todos los derechos reservados</p>
+            </div>
+        </footer>
+</body>
+</html>

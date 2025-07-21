@@ -236,3 +236,266 @@
     padding: 30px;
 }
 
+.login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(to bottom, #faf7f2, #eee);
+    font-family: 'Roboto', sans-serif;
+}
+
+.login-box {
+    background-color: #fff;
+    border: 2px solid #675541;
+    border-radius: 16px;
+    padding: 40px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    text-align: center;
+}
+
+.login-box .logo {
+    width: 60px;
+    margin-bottom: 10px;
+}
+
+.login-box h1 {
+    font-size: 26px;
+    color: #675541;
+    margin-bottom: 8px;
+}
+
+.login-box h2 {
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 25px;
+}
+
+.input-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 6px;
+    color: #333;
+    font-weight: 600;
+}
+
+.input-group input,
+.input-group select {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #FEBF00;
+    color: #675541;
+    font-weight: bold;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #e0aa00;
+    color: white;
+}
+
+.container-clientes {
+    max-width: 1100px;
+    margin: 60px auto;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #675541;
+    margin-bottom: 20px;
+}
+
+.form-registro {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.form-registro input, .form-registro button {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.form-registro input {
+    flex: 1 1 200px;
+}
+
+.form-registro button {
+    background-color: #FEBF00;
+    color: #000;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.tabla-clientes {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabla-clientes th, .tabla-clientes td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.tabla-clientes th {
+    background-color: #f7f4ee;
+    font-weight: 600;
+}
+
+.btn-ver, .btn-inactivar, .btn-historial {
+    margin: 2px;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-ver {
+    background-color: #FEBF00;
+    color: #000;
+}
+
+.btn-inactivar {
+    background-color: #888;
+    color: #fff;
+}
+
+.btn-historial {
+    background-color: #675541;
+    color: #fff;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-contenido {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+}
+
+.modal-contenido input {
+    width: 100%;
+    margin: 8px 0;
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.modal-contenido button {
+    margin-top: 10px;
+    background-color: #FEBF00;
+    color: #000;
+    border: none;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.btn-eliminar {
+    background-color: #d9534f;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .btn-eliminar:hover {
+    background-color: #c9302c;
+  }
+  
+
+.cerrar {
+    float: right;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #aaa;
+}
+
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-contenido {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.modal-contenido h2 {
+    margin-top: 0;
+    color: #675541;
+}
+
+.modal-contenido p {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.cerrar {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.cerrar:hover {
+    color: #000;
+}
