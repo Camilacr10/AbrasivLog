@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registrar Empleado - AbrasivLog</title>
+  <link rel="stylesheet" href="/CSS/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="d-flex flex-column min-vh-100">
+  <div class="container-clientes">
+    <h1>Registro de Empleados</h1>
+
+
+    <form id="formRegistroEmpleado" class="form-registro">
+      <input type="text" id="nombreEmpleado" placeholder="Nombre completo" required>
+      <input type="text" id="puestoEmpleado" placeholder="Puesto" required>
+      <input type="email" id="correoEmpleado" placeholder="Correo electrónico" required>
+      <input type="password" id="contrasenaEmpleado" placeholder="Contraseña" required>
+      <select id="rolEmpleado" required>
+        <option value="">Seleccione Rol</option>
+        <option value="Empleado">Empleado</option>
+        <option value="Administrador">Administrador</option>
+      </select>
+      <button type="button" onclick="registrarEmpleado()">Registrar Empleado</button>
+    </form>
+
+    <input type="text" id="buscarEmpleado" placeholder="Buscar empleados..." onkeyup="filtrarEmpleados()">
+
+    <table class="tabla-clientes">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Puesto</th>
+          <th>Correo</th>
+          <th>Contraseña</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tablaEmpleados"></tbody>
+    </table>
+  </div>
+
+  <div id="modalHistorialEmpleado" class="modal">
+    <div class="modal-contenido">
+      <span class="cerrar" onclick="cerrarModalHistorial()">&times;</span>
+      <h2>Historial de Cambios</h2>
+      <ul id="listaHistorial"></ul>
+    </div>
+    
+  </div>
+
+  <a href="index.html" class="btn btn-login" style="display: inline-flex; align-items: center; gap: 8px;">
+  <i class="fas fa-arrow-left"></i> Regresar
+</a>
+
+  <script>
+    const empleados = [];
+    const historial = [];
+
+    function registrarEmpleado() {
+      const nombre = document.getElementById('nombreEmpleado').value;
+      const puesto = document.getElementById('puestoEmpleado').value;
+      const correo = document.getElementById('correoEmpleado').value;
+      const contrasena = document.getElementById('contrasenaEmpleado').value;
+      const rol = document.getElementById('rolEmpleado').value;
+
+      if (!nombre || !puesto || !correo || !contrasena || !rol) return alert("Complete todos los campos");
+
+      empleados.push({ nombre, puesto, correo, contrasena, rol, estado: 'Activo' });
+      historial.push(`${nombre} registrado el ${new Date().toLocaleString()}`);
+      actualizarTablaEmpleados();
+      document.getElementById('formRegistroEmpleado').reset();
+    }
+
+    function actualizarTablaEmpleados() {
+      const tbody = document.getElementById('tablaEmpleados');
+      tbody.innerHTML = '';
+      empleados.forEach((emp, i) => {
+        const fila = document.createElement('tr');
+        fila.innerHTML = `
+          <td>${emp.nombre}</td>
+          <td>${emp.puesto}</td>
+          <td>${emp.correo}</td>
+          <td>${emp.contrasena}</td>
+          <td>${emp.rol}</td>
+          <td>${emp.estado}</td>
+          <td>
+            <button class="btn-ver" onclick="editarEmpleado(${i})">Editar</button>
+            <button class="btn-inactivar" onclick="inactivarEmpleado(${i})">${emp.estado === 'Activo' ? 'Desactivar' : 'Activar'}</button>
+            <button class="btn-historial" onclick="verHistorial(${i})">Historial</button>
+            <button class="btn-eliminar" onclick="eliminarEmpleado(${i})">Eliminar</button>
+          </td>
+        `;
+        tbody.appendChild(fila);
+      });
+    }
+
+    function editarEmpleado(index) {
+      const emp = empleados[index];
+      document.getElementById('nombreEmpleado').value = emp.nombre;
+      document.getElementById('puestoEmpleado').value = emp.puesto;
+      document.getElementById('correoEmpleado').value = emp.correo;
+      document.getElementById('contrasenaEmpleado').value = emp.contrasena;
+      document.getElementById('rolEmpleado').value = emp.rol;
+      empleados.splice(index, 1);
+      historial.push(`${emp.nombre} fue editado el ${new Date().toLocaleString()}`);
+      actualizarTablaEmpleados();
+    }
+
+    function inactivarEmpleado(index) {
+      const emp = empleados[index];
+      emp.estado = emp.estado === 'Activo' ? 'Inactivo' : 'Activo';
+      historial.push(`${emp.nombre} fue ${emp.estado === 'Activo' ? 'activado' : 'desactivado'} el ${new Date().toLocaleString()}`);
+      actualizarTablaEmpleados();
+    }
+
+    function eliminarEmpleado(index) {
+      const confirmacion = confirm("¿Desea eliminar este empleado?");
+      if (confirmacion) {
+        historial.push(`${empleados[index].nombre} fue eliminado el ${new Date().toLocaleString()}`);
+        empleados.splice(index, 1);
+        actualizarTablaEmpleados();
+      }
+    }
+
+    function verHistorial(index) {
+      const lista = document.getElementById('listaHistorial');
+      lista.innerHTML = '';
+      historial.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = item;
+        lista.appendChild(li);
+      });
+      document.getElementById('modalHistorialEmpleado').style.display = 'block';
+    }
+
+    function cerrarModalHistorial() {
+      document.getElementById('modalHistorialEmpleado').style.display = 'none';
+    }
+
+    function filtrarEmpleados() {
+      const filtro = document.getElementById('buscarEmpleado').value.toLowerCase();
+      const filas = document.querySelectorAll('#tablaEmpleados tr');
+      filas.forEach(fila => {
+        const texto = fila.textContent.toLowerCase();
+        fila.style.display = texto.includes(filtro) ? '' : 'none';
+      });
+    }
+
+    window.onclick = function(event) {
+      if (event.target.classList.contains('modal')) {
+        cerrarModalHistorial();
+      }
+    }
+  </script>
+</body>
+</html>

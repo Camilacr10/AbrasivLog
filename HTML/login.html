@@ -1,41 +1,46 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AbrasivLog - Iniciar Sesión</title>
-    <link rel="stylesheet" href="/CSS/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AbrasivLog - Iniciar Sesión</title>
+  <link rel="stylesheet" href="/CSS/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="login-page">
-        <div class="login-box">
-            <div class="logo-section">
-                <img src="/IMG/logo.png" alt="Logo Abrasivos" class="logo">
-                <h1>AbrasivLog</h1>
-            </div>
-            <h2>Iniciar Sesión</h2>
-            <form>
-                <div class="input-group">
-                    <label for="username"><i class="fas fa-user"></i> Usuario</label>
-                    <input type="text" id="username" placeholder="Ingrese su usuario" required>
-                </div>
-                <div class="input-group">
-                    <label for="password"><i class="fas fa-lock"></i> Contraseña</label>
-                    <input type="password" id="password" placeholder="Ingrese su contraseña" required>
-                </div>
-                <div class="input-group">
-                    <label for="role"><i class="fas fa-users-gear"></i> Rol</label>
-                    <select id="role" required>
-                        <option value="" disabled selected>Seleccione su rol</option>
-                        <option value="empleado">Empleado</option>
-                        <option value="administrador">Administrador</option>
-                    </select>
-                </div>
-                <button type="button"><i class="fas fa-sign-in-alt"></i> Ingresar</button>
-            </form>
+  <div class="login-page">
+    <div class="login-box">
+      <div class="logo-section">
+        <img src="/IMG/logo.png" alt="Logo Abrasivos" class="logo">
+        <h1>AbrasivLog</h1>
+      </div>
+      <h2>Iniciar Sesión</h2>
+      <form onsubmit="return false">
+        <div class="input-group">
+          <label for="username"><i class="fas fa-user"></i> Usuario</label>
+          <input type="text" id="username" placeholder="Ingrese su usuario" required>
         </div>
+        <div class="input-group">
+          <label for="password"><i class="fas fa-lock"></i> Contraseña</label>
+          <input type="password" id="password" placeholder="Ingrese su contraseña" required>
+        </div>
+        <button type="button" onclick="login()"><i class="fas fa-sign-in-alt"></i> Ingresar</button>
+      </form>
     </div>
+  </div>
+
+  <script>
+    function login() {
+      const user = document.getElementById('username').value;
+      const pass = document.getElementById('password').value;
+
+      if (user === 'acorrales@abrasivlog.com' && pass === 'abrasivLog1') {
+        localStorage.setItem('auth', 'true');
+        window.location.href = 'index.html';
+      } else {
+        alert('Usuario o contraseña incorrectos');
+      }
+    }
+  </script>
 </body>
 </html>
-
