@@ -378,14 +378,15 @@ h1 {
 
 
 .btn-historial {
-    background-color: #198754;
-    color: #fff;
+  background-color: #FEBF00;
+  color: #000;
+  border: none;
 }
 
-  .btn-historial:hover {
-    background-color: #157347;
-  }
-
+.btn-historial:hover {
+  background-color: #e0a800;
+  color: #000;
+}
 .modal {
     display: none;
     position: fixed;
