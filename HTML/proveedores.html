@@ -11,6 +11,9 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="../CSS/style.css">
+    <!-- Librerías externas para exportar PDF y Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <!-- Styles especificos de Proveedores -->
     <style>
@@ -51,7 +54,7 @@
 
 <body class="d-flex flex-column min-vh-100">
 
-        <!-- Menú  -->
+    <!-- Menú  -->
     <nav class="navbar navbar-expand-lg navbar-custom">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="index.html">
@@ -66,12 +69,15 @@
                     <li class="nav-item"><a class="nav-link" href="proveedores.html">Proveedores</a></li>
                     <li class="nav-item"><a class="nav-link" href="dashboardReportes.html">Reportes</a></li>
                     <li class="nav-item">
-                    <li class="nav-item"><a class="nav-link" href="registro.html">  <i class="fas fa-user"></i> Gestionar Credenciales</a></li>        
-                    <li class="nav-item"><a class="nav-link" href="login.html">  <i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
+                    <li class="nav-item"><a class="nav-link" href="registro.html"> <i class="fas fa-user"></i> Gestionar
+                            Credenciales</a></li>
+                    <li class="nav-item"><a class="nav-link" href="login.html"> <i class="fas fa-sign-out-alt"></i>
+                            Cerrar
+                            Sesión</a></li>
                     </li>
                 </ul>
             </div>
-            </div>
+        </div>
         </div>
     </nav>
 
@@ -81,7 +87,8 @@
 
         <!-- Botón para abrir el modal que permite agregar un nuevo proveedor -->
         <div class="text-end">
-            <button class="btn btn-custom my-3" data-bs-toggle="modal" data-bs-target="#modalAgregarProveedor">Registrar Proveedor</button>
+            <button class="btn btn-custom my-3" data-bs-toggle="modal" data-bs-target="#modalAgregarProveedor">Registrar
+                Proveedor</button>
         </div>
 
         <!-- Campo de texto para buscar proveedores -->
@@ -203,7 +210,32 @@
                 </div>
                 <!-- Cuerpo del modal -->
                 <div class="modal-body">
+                    <!-- Botones para exportar evaluaciones -->
+                    <div class="d-flex gap-2 mb-3">
+                        <button class="btn btn-outline-success btn-sm" onclick="exportarEvaluacionesPDF()">Exportar
+                            PDF</button>
+                        <button class="btn btn-outline-primary btn-sm" onclick="exportarEvaluacionesExcel()">Exportar
+                            Excel</button>
+                    </div>
+
+                    <!-- Filtros para búsqueda de evaluaciones -->
+                    <div class="mb-2">
+                        <label>Filtrar por fecha (YYYY-MM-DD):</label>
+                        <input type="date" class="form-control" id="filtroFechaEva">
+                    </div>
+                    <div class="mb-2">
+                        <label>Filtrar por calificación mínima:</label>
+                        <input type="number" class="form-control" id="filtroCalificacionMin" min="1" max="5"
+                            placeholder="Ej: 3">
+                    </div>
+                    <button class="btn btn-outline-secondary btn-sm mb-3" onclick="filtrarEvaluaciones()">Buscar
+                        Evaluaciones</button>
+
+                    <!-- Contenedor de evaluaciones existentes -->
                     <div id="evaluacionesContenido"></div>
+                    <hr>
+                    <!-- Formulario para agregar evaluación -->
+                    <div id="formEvaluacion"></div>
                     <hr>
                     <h6 class="mt-3">Agregar nueva evaluación</h6>
                     <div class="mb-2">
@@ -231,6 +263,7 @@
                     <!-- Botón para guardar la evaluación -->
                     <button class="btn btn-custom mt-2" onclick="agregarEvaluacion()">Guardar Evaluación</button>
                 </div>
+
             </div>
         </div>
     </div>
@@ -361,13 +394,13 @@
               <li>Puntualidad: ${eva.puntualidad}/5</li>
               <li>Atención: ${eva.atencion}/5</li>
               <li>Disponibilidad: ${eva.disponibilidad}/5</li>
+              <li><strong>Evaluación Final:</strong> ${((eva.puntualidad + eva.atencion + eva.disponibilidad) / 3).toFixed(1)} / 5</li>
             </ul>
             <p><strong>Observación:</strong> ${eva.observacion}</p>
           </div>
         `;
                 });
             }
-
             // Carga los datos para nueva evaluación
             indiceEvaluacionActual.value = i;
             evaPuntualidad.value = "";
@@ -378,24 +411,143 @@
             new bootstrap.Modal(modalEvaluaciones).show(); // Muestra el modal
         }
 
-        // Agrega una nueva evaluación al proveedor actual
-        function agregarEvaluacion() {
-            const index = parseInt(document.getElementById("indiceEvaluacionActual").value);
-            const puntualidad = parseInt(evaPuntualidad.value);
-            const atencion = parseInt(evaAtencion.value);
-            const disponibilidad = parseInt(evaDisponibilidad.value);
-            const observacion = evaObservacion.value.trim();
+        // Busca evaluaciones por fecha, nota exacta (puede tener decimales) o ambas a la vez
+        function filtrarEvaluaciones() {
+            const index = parseInt(document.getElementById("indiceEvaluacionActual").value); // Obtiene el índice del proveedor seleccionado
+            const evaluaciones = proveedores[index].evaluaciones; // Extrae el listado de evaluaciones de ese proveedor
+            const contenedor = document.getElementById("evaluacionesContenido"); // Donde se van a mostrar los resultados
 
-            // Valida que los puntajes estén en el rango de 1 a 5
-            if ([puntualidad, atencion, disponibilidad].some(p => isNaN(p) || p < 1 || p > 5)) {
-                alert("Por favor, ingrese puntajes válidos (1 a 5).");
+            const filtroFecha = document.getElementById("filtroFechaEva").value.trim(); // Fecha buscada por el usuario (input tipo date)
+            const filtroNotaRaw = document.getElementById("filtroCalificacionMin").value.trim(); // Nota ingresada como texto
+            let filtroCalificacionMin = parseFloat(filtroNotaRaw); // Convierte a número decimal para permitir valores como 4.5, 3.7, etc.
+
+            // Validación: Si la nota no es un número entre 1 y 5, se ignora (no se aplica ese filtro)
+            if (isNaN(filtroCalificacionMin) || filtroCalificacionMin < 1 || filtroCalificacionMin > 5) {
+                filtroCalificacionMin = null;
+            }
+
+            contenedor.innerHTML = ""; // Limpia el contenido previo
+
+            // Aplica los filtros seleccionados para encontrar coincidencias
+            const filtradas = evaluaciones.filter(eva => {
+                const fechaNormalizada = new Date(eva.fecha).toISOString().split("T")[0]; // Convierte la fecha a formato YYYY-MM-DD
+                const cumpleFecha = filtroFecha ? fechaNormalizada === filtroFecha : true; // Si se ingresó fecha, compara con la evaluación
+
+                const promedio = ((eva.puntualidad + eva.atencion + eva.disponibilidad) / 3).toFixed(1); // Calcula el promedio (1 decimal)
+
+                // Nota importante: .toFixed(1) devuelve un string, por eso usamos parseFloat nuevamente al comparar
+                const cumpleNota = filtroCalificacionMin !== null ? parseFloat(promedio) === filtroCalificacionMin : true;
+
+                return cumpleFecha && cumpleNota; // Solo se muestra si cumple ambos filtros (si están activos)
+            });
+
+            // Si no se encontró nada con esos filtros, se avisa al usuario
+            if (filtradas.length === 0) {
+                contenedor.innerHTML = "<p>No hay evaluaciones que coincidan con la búsqueda.</p>";
+            } else {
+                // Si hay coincidencias, las mostramos manteniendo su posición real en el historial
+                filtradas.forEach(eva => {
+                    const idxReal = evaluaciones.indexOf(eva); // Busca la posición original de la evaluación en la lista
+
+                    contenedor.innerHTML += `
+        <div class="border rounded p-2 mb-2">
+          <strong>Evaluación #${idxReal + 1} - ${eva.fecha}</strong>
+          <ul class="mb-1">
+            <li>Puntualidad: ${eva.puntualidad}/5</li>
+            <li>Atención: ${eva.atencion}/5</li>
+            <li>Disponibilidad: ${eva.disponibilidad}/5</li>
+            <li><strong>Evaluación Final:</strong> ${((eva.puntualidad + eva.atencion + eva.disponibilidad) / 3).toFixed(1)} / 5</li>
+          </ul>
+          <p><strong>Observación:</strong> ${eva.observacion}</p>
+        </div>
+      `;
+                });
+            }
+        }
+
+        // Exporta el historial de evaluaciones en formato PDF usando jsPDF
+        function exportarEvaluacionesPDF() {
+            const index = parseInt(document.getElementById("indiceEvaluacionActual").value); // Índice del proveedor actual
+            const evaluaciones = proveedores[index].evaluaciones; // Lista de evaluaciones del proveedor
+
+            if (evaluaciones.length === 1) {
+                alert("No hay evaluaciones para exportar."); // Alerta si no hay evaluaciones
                 return;
             }
 
+            const doc = new jspdf.jsPDF(); // Crea el documento PDF
+            doc.setFontSize(14);
+            doc.text(`Evaluaciones - ${proveedores[index].nombre}`, 10, 10); // Título con nombre del proveedor
 
-            // Crea el objeto de evaluación con la fecha actual
+            let y = 20; // Posición vertical inicial
+            evaluaciones.forEach((eva, i) => {
+                doc.setFontSize(12);
+                doc.text(`Evaluación #${i + 1} - ${eva.fecha}`, 10, y); // Número y fecha
+                y += 6;
+
+                const promedio = ((eva.puntualidad + eva.atencion + eva.disponibilidad) / 3).toFixed(1); // Promedio final
+                doc.text(`Puntualidad: ${eva.puntualidad} / Atención: ${eva.atencion} / Disponibilidad: ${eva.disponibilidad} / Promedio: ${promedio}`, 10, y); // Detalles
+                y += 6;
+
+                doc.text(`Observación: ${eva.observacion}`, 10, y); // Observaciones
+                y += 10; // Espacio entre evaluaciones
+            });
+
+            doc.save(`Evaluaciones_${proveedores[index].nombre}.pdf`); // Guarda el archivo con nombre personalizado
+        }
+
+        // Exporta el historial de evaluaciones en formato Excel usando SheetJS
+        function exportarEvaluacionesExcel() {
+            const index = parseInt(document.getElementById("indiceEvaluacionActual").value); // Índice del proveedor actual
+            const evaluaciones = proveedores[index].evaluaciones; // Lista de evaluaciones del proveedor
+
+            if (evaluaciones.length === 0) {
+                alert("No hay evaluaciones para exportar."); // Mensaje si no hay datos
+                return;
+            }
+
+            // Crea el array con los datos formateados para el Excel
+            const data = evaluaciones.map((eva, i) => {
+                const promedio = ((eva.puntualidad + eva.atencion + eva.disponibilidad) / 3).toFixed(1); // Promedio final con un decimal
+                return {
+                    Evaluación: i + 1,
+                    Fecha: eva.fecha,
+                    Puntualidad: eva.puntualidad,
+                    Atención: eva.atencion,
+                    Disponibilidad: eva.disponibilidad,
+                    "Promedio Final": promedio,
+                    Observación: eva.observacion
+                };
+            });
+
+            // Genera el archivo Excel y lo descarga
+            const ws = XLSX.utils.json_to_sheet(data); // Convierte los datos a hoja Excel
+            const wb = XLSX.utils.book_new(); // Crea libro nuevo
+            XLSX.utils.book_append_sheet(wb, ws, "Evaluaciones"); // Agrega la hoja
+            XLSX.writeFile(wb, `Evaluaciones_${proveedores[index].nombre}.xlsx`); // Descarga con nombre del proveedor
+        }
+
+        // Agrega una nueva evaluación al proveedor actual
+        function agregarEvaluacion() {
+            const index = parseInt(document.getElementById("indiceEvaluacionActual").value); // Índice del proveedor actual
+            const puntualidad = parseInt(evaPuntualidad.value); // Obtiene la nota de puntualidad
+            const atencion = parseInt(evaAtencion.value); // Obtiene la nota de atención
+            const disponibilidad = parseInt(evaDisponibilidad.value); // Obtiene la nota de disponibilidad
+            const observacion = evaObservacion.value.trim(); // Obtiene la observación
+
+            // Validación: Verifica que todos los campos obligatorios estén llenos y entre 1 y 5
+            if (
+                isNaN(puntualidad) || puntualidad < 1 || puntualidad > 5 ||
+                isNaN(atencion) || atencion < 1 || atencion > 5 ||
+                isNaN(disponibilidad) || disponibilidad < 1 || disponibilidad > 5
+            ) {
+                alert("Por favor, complete todos los campos con valores entre 1 y 5."); // Muestra error si hay datos inválidos
+                return; // Detiene la función si hay errores
+            }
+
+            // Crea el objeto de evaluación con la fecha actual y datos ingresados
             const nueva = {
-                fecha: new Date().toLocaleString(),
+                fecha: new Date().toISOString().split("T")[0],
                 puntualidad,
                 atencion,
                 disponibilidad,
@@ -405,24 +557,25 @@
             proveedores[index].evaluaciones.push(nueva); // Agrega la evaluación a la lista del proveedor
 
             const contenedor = document.getElementById("evaluacionesContenido");
-            contenedor.innerHTML = "";
+            contenedor.innerHTML = ""; // Limpia el contenedor antes de mostrar todo
 
-            // Muestra las evaluaciones actualizadas
+            // Recorre y muestra todas las evaluaciones actualizadas del proveedor
             proveedores[index].evaluaciones.forEach((eva, idx) => {
                 contenedor.innerHTML += `
-        <div class="border rounded p-2 mb-2">
-          <strong>Evaluación #${idx + 1} - ${eva.fecha}</strong>
-          <ul class="mb-1">
-            <li>Puntualidad: ${eva.puntualidad}/5</li>
-            <li>Atención: ${eva.atencion}/5</li>
-            <li>Disponibilidad: ${eva.disponibilidad}/5</li>
-          </ul>
-          <p><strong>Observación:</strong> ${eva.observacion}</p>
-        </div>
-      `;
+      <div class="border rounded p-2 mb-2">
+        <strong>Evaluación #${idx + 1} - ${eva.fecha}</strong>
+        <ul class="mb-1">
+          <li>Puntualidad: ${eva.puntualidad}/5</li>
+          <li>Atención: ${eva.atencion}/5</li>
+          <li>Disponibilidad: ${eva.disponibilidad}/5</li>
+          <li><strong>Evaluación Final:</strong> ${((eva.puntualidad + eva.atencion + eva.disponibilidad) / 3).toFixed(1)} / 5</li>
+        </ul>
+        <p><strong>Observación:</strong> ${eva.observacion}</p>
+      </div>
+    `;
             });
 
-            // Limpia el formulario de evaluación
+            // Limpia el formulario para ingresar una nueva evaluación
             evaPuntualidad.value = "";
             evaAtencion.value = "";
             evaDisponibilidad.value = "";
