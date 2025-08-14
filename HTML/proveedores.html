@@ -49,6 +49,25 @@
             margin: 0;
             padding: 0;
         }
+
+        /* Ajuste tamaño sliders evaluación */
+        .range-sm {
+            width: 200px;
+            /* Ancho fijo*/
+            display: inline-block;
+        }
+
+        .range-value-box {
+            width: 35px;
+            /* Ancho fijo del recuadro del número */
+            text-align: center;
+            /* Centrar el valor */
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 2px 0;
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
     </style>
 </head>
 
@@ -238,28 +257,54 @@
                     <div id="formEvaluacion"></div>
                     <hr>
                     <h6 class="mt-3">Agregar nueva evaluación</h6>
+
+                    <!-- Marcadores de 1 a 5 para el slider -->
+                    <datalist id="ticks-1-5">
+                        <option value="1"></option>
+                        <option value="2"></option>
+                        <option value="3"></option>
+                        <option value="4"></option>
+                        <option value="5"></option>
+                    </datalist>
+
                     <div class="mb-2">
                         <!-- Puntualidad -->
-                        <label>Puntualidad (1-5):</label>
-                        <input type="number" class="form-control" id="evaPuntualidad" min="1" max="5" required>
+                        <label class="form-label">Puntualidad (1-5):</label>
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="range" class="form-range range-sm" id="evaPuntualidad" min="1" max="5" step="1"
+                                list="ticks-1-5" required>
+                            <div class="range-value-box" id="lblPuntualidad">3</div>
+                        </div>
                     </div>
+
                     <!-- Atención -->
                     <div class="mb-2">
-                        <label>Atención (1-5):</label>
-                        <input type="number" class="form-control" id="evaAtencion" min="1" max="5" required>
+                        <label class="form-label">Atención (1-5):</label>
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="range" class="form-range range-sm" id="evaAtencion" min="1" max="5" step="1"
+                                list="ticks-1-5" required>
+                            <div class="range-value-box" id="lblAtencion">3</div>
+                        </div>
                     </div>
+
                     <!-- Disponibilidad -->
                     <div class="mb-2">
-                        <label>Disponibilidad (1-5):</label>
-                        <input type="number" class="form-control" id="evaDisponibilidad" min="1" max="5" required>
+                        <label class="form-label">Disponibilidad (1-5):</label>
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="range" class="form-range range-sm" id="evaDisponibilidad" min="1" max="5"
+                                step="1" list="ticks-1-5" required>
+                            <div class="range-value-box" id="lblDisponibilidad">3</div>
+                        </div>
                     </div>
                     <!-- Observaciones -->
                     <div class="mb-2">
                         <label>Observaciones:</label>
                         <textarea class="form-control" id="evaObservacion" rows="2"></textarea>
                     </div>
-                    <!-- Indice de la evaluación actual -->
+
+                    <!-- Índice de la evaluación actual -->
                     <input type="hidden" id="indiceEvaluacionActual">
+
                     <!-- Botón para guardar la evaluación -->
                     <button class="btn btn-custom mt-2" onclick="agregarEvaluacion()">Guardar Evaluación</button>
                 </div>
@@ -403,10 +448,16 @@
             }
             // Carga los datos para nueva evaluación
             indiceEvaluacionActual.value = i;
-            evaPuntualidad.value = "";
-            evaAtencion.value = "";
-            evaDisponibilidad.value = "";
-            evaObservacion.value = "";
+
+            // Valores por defecto y actualización de badges
+            evaPuntualidad.value = 3;
+            evaAtencion.value = 3;
+            evaDisponibilidad.value = 3;
+            evaObservacion.value = '';
+
+            actualizarBadge('evaPuntualidad', 'lblPuntualidad');
+            actualizarBadge('evaAtencion', 'lblAtencion');
+            actualizarBadge('evaDisponibilidad', 'lblDisponibilidad');
 
             new bootstrap.Modal(modalEvaluaciones).show(); // Muestra el modal
         }
@@ -464,6 +515,28 @@
                 });
             }
         }
+
+        // Helpers sliders evaluación
+        // Actualiza el numerito (badge) junto al slider
+        function actualizarBadge(idInput, idBox) {
+            const v = parseInt(document.getElementById(idInput).value, 10);
+            document.getElementById(idBox).textContent = isNaN(v) ? '' : v;
+        }
+
+        // Configura listeners para mostrar el valor en vivo
+        ['evaPuntualidad', 'evaAtencion', 'evaDisponibilidad'].forEach((id) => {
+            document.addEventListener('input', (e) => {
+                if (e.target && e.target.id === id) {
+                    const boxId = (
+                        id === 'evaPuntualidad' ? 'lblPuntualidad' :
+                            id === 'evaAtencion' ? 'lblAtencion' :
+                                'lblDisponibilidad'
+                    );
+                    actualizarBadge(id, boxId);
+                }
+            });
+        });
+
 
         // Exporta el historial de evaluaciones en formato PDF usando jsPDF
         function exportarEvaluacionesPDF() {
@@ -575,11 +648,11 @@
     `;
             });
 
-            // Limpia el formulario para ingresar una nueva evaluación
-            evaPuntualidad.value = "";
-            evaAtencion.value = "";
-            evaDisponibilidad.value = "";
-            evaObservacion.value = "";
+            // Limpia el formulario para ingresar una nueva evaluación (reseteo a 3)
+            evaPuntualidad.value = 3; actualizarBadge('evaPuntualidad', 'lblPuntualidad');
+            evaAtencion.value = 3; actualizarBadge('evaAtencion', 'lblAtencion');
+            evaDisponibilidad.value = 3; actualizarBadge('evaDisponibilidad', 'lblDisponibilidad');
+            evaObservacion.value = '';
         }
 
         // Renderiza la tabla de proveedores
