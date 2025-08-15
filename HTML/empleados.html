@@ -61,9 +61,11 @@
                     <li class="nav-item"><a class="nav-link" href="proveedores.html">Proveedores</a></li>
                     <li class="nav-item"><a class="nav-link" href="dashboardReportes.html">Reportes</a></li>
                     <li class="nav-item">
-                    <li class="nav-item"><a class="nav-link" href="registro.html">  <i class="fas fa-user"></i> Gestionar Credenciales</a></li>        
-                    <li class="nav-item"><a class="nav-link" href="login.html">  <i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
-                        </a>
+                    <li class="nav-item"><a class="nav-link" href="registro.html"> <i class="fas fa-user"></i> Gestionar
+                            Credenciales</a></li>
+                    <li class="nav-item"><a class="nav-link" href="login.html"> <i class="fas fa-sign-out-alt"></i>
+                            Cerrar Sesión</a></li>
+                    </a>
                     </li>
                 </ul>
             </div>
@@ -220,7 +222,7 @@
                     tabla.innerHTML += `
                     <tr>
                         <td>${emp.nombre}</td>
-                        <td>${emp.fechaIngreso}</td>
+                        <td>${formatoFecha(emp.fechaIngreso)}</td>
                         <td>${emp.puesto}</td>
                         <td>${emp.vacaciones}</td>
                         <td>${emp.rol}</td>
@@ -302,6 +304,12 @@
 
         buscar.addEventListener("input", renderTablaEmpleados);
         window.onload = renderTablaEmpleados;
+
+        function formatoFecha(fecha) {
+            if (!fecha) return "";
+            const [anio, mes, dia] = fecha.split("-");
+            return `${dia}/${mes}/${anio}`;
+        }
 
     </script>
 </body>

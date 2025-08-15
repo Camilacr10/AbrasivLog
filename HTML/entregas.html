@@ -304,7 +304,7 @@
     <td>${e.cliente}</td>
     <td>${e.producto}</td>
     <td>${e.mensajero}</td>
-    <td>${e.fecha}</td>
+    <td>${formatoFecha(e.fecha)}</td>
     <td>${e.cantidad}</td>
     <td>${e.horario}</td>
     <td>${e.estado}</td>
@@ -453,6 +453,12 @@
             `;
 
             new bootstrap.Modal(document.getElementById("modalDetallesEntrega")).show();
+        }
+
+         function formatoFecha(fecha) {
+            if (!fecha) return "";
+            const [anio, mes, dia] = fecha.split("-");
+            return `${dia}/${mes}/${anio}`;
         }
 
         // Filtros
