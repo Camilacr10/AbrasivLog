@@ -1,0 +1,92 @@
+<!-- /HTML/producto.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Detalle del Producto</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="../CSS/style.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="/HTML/index.html#producto">
+        <img src="../IMG/logo.png" alt="Logo" class="logo" />
+      </a>
+      <div class="collapse navbar-collapse" id="menuPrincipal">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+          <li class="nav-item"><a class="nav-link" href="clientes.html">Clientes</a></li>
+          <li class="nav-item"><a class="nav-link" href="empleados.html">Empleados</a></li>
+          <li class="nav-item"><a class="nav-link" href="inventario.html">Inventario</a></li>
+          <li class="nav-item"><a class="nav-link" href="entregas.html">Entregas</a></li>
+          <li class="nav-item"><a class="nav-link" href="proveedores.html">Proveedores</a></li>
+          <li class="nav-item"><a class="nav-link" href="dashboardReportes.html">Reportes</a></li>
+          <li class="nav-item"><a class="nav-link" href="registro.html"><i class="fas fa-user"></i> Gestionar Credenciales</a></li>
+          <li class="nav-item"><a class="nav-link" href="login.html"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container my-5">
+    <div class="card-producto">
+      <div class="row align-items-center">
+
+        <!-- Volver + Navegación -->
+        <div class="d-flex justify-content-between align-items-center">
+          <a id="volver-link" href="/HTML/index.html#producto"
+             class="ms-3 mt-4 d-inline-flex align-items-center text-decoration-none fw-semibold"
+             style="color:#675541;font-size:1.1rem;">
+            <i class="fas fa-arrow-left me-2"></i> Volver
+          </a>
+
+          <div class="d-flex align-items-center gap-2 me-3 mt-4">
+              <a id="btn-prev" class="btn btn-outline-secondary btn-sm" href="#" aria-label="Anterior">« Anterior</a>
+  <a id="btn-next" class="btn btn-outline-secondary btn-sm" href="#" aria-label="Siguiente">Siguiente »</a>
+
+          </div>
+        </div>
+
+        <div id="estado-carga" class="mt-3 ms-3 small text-muted">Cargando producto…</div>
+        <div id="estado-error" class="mt-3 ms-3 small text-danger" style="display:none;"></div>
+
+        <div class="col-md-6 text-center">
+          <img id="prod-img" src="../IMG/placeholder.png" alt="Imagen del producto"
+               class="img-fluid mb-4" style="max-width:80%;"
+               onerror="this.src='../IMG/placeholder.png'">
+        </div>
+
+        <div class="col-md-6">
+          <h3 id="prod-nombre" class="fw-bold">Producto</h3>
+          <p class="text-muted mb-1"><strong>Código:</strong> <span id="prod-codigo">—</span></p>
+          <p class="text-muted mb-1"><strong>Categoría:</strong> <span id="prod-categoria">—</span></p>
+          <p class="text-muted mb-3"><strong>Cantidad disponible:</strong> <span id="prod-existencia">0</span> unidades</p>
+
+          <h4 id="prod-precio-final" class="text-danger fw-bold">$0.00</h4>
+          <p><strong>Detalle:</strong> <span id="prod-detalle">—</span></p>
+
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item bg-transparent border-0 ps-0"><strong>Precio Unitario:</strong> <span id="precio-unitario">$0.00</span></li>
+            <li class="list-group-item bg-transparent border-0 ps-0"><strong>Descuento:</strong> <span id="precio-descuento">$0.00</span></li>
+            <li class="list-group-item bg-transparent border-0 ps-0"><strong>IVA:</strong> <span id="precio-iva-monto">$0.00</span></li>
+            <li class="list-group-item bg-transparent border-0 ps-0"><strong>Porcentaje IVA:</strong> <span id="precio-iva-pct">0%</span></li>
+            <li class="list-group-item bg-transparent border-0 ps-0"><strong>Precio Final:</strong> <span id="precio-final">$0.00</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer-custom mt-auto py-4">
+    <div class="container text-center">
+      <p class="mb-1 fw-bold">Abrasivos Industriales S.A.</p>
+      <p class="mb-0 small">© 2025 Todos los derechos reservados</p>
+    </div>
+  </footer>
+
+  <script src="/JS/producto.js"></script>
+</body>
+</html>
