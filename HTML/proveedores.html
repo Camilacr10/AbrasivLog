@@ -11,6 +11,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="../CSS/style.css">
+    <!-- Llama a las funciones de JS -->
+    <script src="../js/adminProveedores.js"></script>
     <!-- Librerías externas para exportar PDF y Excel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -70,19 +72,22 @@
         }
 
         /* Color de la bolita de sliders evaluación*/
-        
+
         .range-sm::-webkit-slider-thumb {
-            background-color: #FEBF00; /* Mismo color que btn-custom */
+            background-color: #FEBF00;
+            /* Mismo color que btn-custom */
             border: none;
         }
 
         .range-sm::-moz-range-thumb {
-            background-color: #FEBF00; /* Firefox */
+            background-color: #FEBF00;
+            /* Firefox */
             border: none;
         }
 
         .range-sm::-ms-thumb {
-            background-color: #FEBF00; /* Edge */
+            background-color: #FEBF00;
+            /* Edge */
             border: none;
         }
     </style>
@@ -128,7 +133,7 @@
         </div>
 
         <!-- Campo de texto para buscar proveedores -->
-        <input type="text" id="buscarProveedor" class="form-control mb-3" placeholder="Buscar proveedor...">
+        <input type="text" id="buscarProveedor" class="form-control mb-3" placeholder="Buscar proveedor por nombre o cedula juridica...">
 
 
         <!-- Tabla donde se van a listar los proveedores que se agreguen -->
@@ -140,6 +145,7 @@
                     <th>Cédula Jurídica</th>
                     <th>Teléfono</th>
                     <th>Correo</th>
+                    <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -152,38 +158,32 @@
     <div class="modal fade" id="modalAgregarProveedor" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
-                <!-- Formulario para registrar el nuevo proveedor -->
                 <form id="formAgregarProveedor">
-                    <!-- Encabezado del modal -->
                     <div class="modal-header">
                         <h5 class="modal-title">Agregar Proveedor</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <!-- Cuerpo del modal -->
                     <div class="modal-body">
-                        <div class="mb-3">
-                            <!-- Nombre del proveedor -->
-                            <label>Nombre</label>
+                        <div class="mb-3"><label>Nombre</label>
                             <input type="text" class="form-control" id="nombreProveedor" required>
                         </div>
-                        <!-- Cédula Jurídica -->
-                        <div class="mb-3">
-                            <label>Cédula Jurídica</label>
+                        <div class="mb-3"><label>Cédula Jurídica</label>
                             <input type="text" class="form-control" id="cedulaProveedor" required>
                         </div>
-                        <!-- Teléfono -->
-                        <div class="mb-3">
-                            <label>Teléfono</label>
+                        <div class="mb-3"><label>Teléfono</label>
                             <input type="text" class="form-control" id="telefonoProveedor" required>
                         </div>
-                        <!-- Correo -->
-                        <div class="mb-3">
-                            <label>Correo</label>
+                        <div class="mb-3"><label>Correo</label>
                             <input type="email" class="form-control" id="correoProveedor" required>
+                        </div>
+                        <div class="mb-3"><label>Estado</label>
+                            <select class="form-select" id="estadoProveedor" required>
+                                <option value="1">Activo</option>
+                                <option value="0">Inactivo</option>
+                            </select>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <!-- Botón de guardar -->
                         <button class="btn btn-custom" type="submit">Guardar</button>
                     </div>
                 </form>
@@ -191,49 +191,43 @@
         </div>
     </div>
 
-    <!-- Modal para editar un proveedor -->
+    <!-- MODAL EDITAR PROVEEDOR -->
     <div class="modal fade" id="modalEditarProveedor" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
-                <!-- Formulario para editar el proveedor -->
                 <form id="formEditarProveedor">
-                    <!-- Encabezado del modal -->
                     <div class="modal-header">
                         <h5 class="modal-title">Editar Proveedor</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <!-- Cuerpo del modal -->
                     <div class="modal-body">
-                        <input type="hidden" id="indiceProveedor">
-                        <div class="mb-3">
-                            <!-- Nombre del proveedor -->
-                            <label>Nombre</label>
+                        <div class="mb-3"><label>Nombre</label>
                             <input type="text" class="form-control" id="editNombreProveedor" required>
                         </div>
-                        <!-- Cédula Jurídica -->
-                        <div class="mb-3">
-                            <label>Cédula Jurídica</label>
+                        <div class="mb-3"><label>Cadula Jurídica</label>
                             <input type="text" class="form-control" id="editCedulaProveedor" required>
                         </div>
-                        <!-- Teléfono -->
-                        <div class="mb-3">
-                            <label>Teléfono</label>
+                        <div class="mb-3"><label>Teléfono</label>
                             <input type="text" class="form-control" id="editTelefonoProveedor" required>
                         </div>
-                        <!-- Correo -->
-                        <div class="mb-3">
-                            <label>Correo</label>
+                        <div class="mb-3"><label>Correo</label>
                             <input type="email" class="form-control" id="editCorreoProveedor" required>
+                        </div>
+                        <div class="mb-3"><label>Estado</label>
+                            <select class="form-select" id="editEstadoProveedor" required>
+                                <option value="1">Activo</option>
+                                <option value="0">Inactivo</option>
+                            </select>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <!-- Botón para actualizar el proveedor -->
                         <button class="btn btn-custom" type="submit">Actualizar</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+
 
     <!-- Modal para ver y agregar evaluaciones de desempeño de un proveedor -->
     <div class="modal fade" id="modalEvaluaciones" tabindex="-1">
@@ -337,346 +331,6 @@
             <p class="mb-0 small">© 2025 Todos los derechos reservados</p>
         </div>
     </footer>
-
-    <!-- SCRIPTS FUNCIONALES -->
-    <script>
-
-        // Lista inicial con un proveedor de ejemplo
-        const proveedores = [{
-            codigo: 1,
-            nombre: "Industrias Abratec",
-            cedula: "3101123456",
-            telefono: "2222-1111",
-            correo: "contacto@abratec.com",
-            evaluaciones: []
-        }];
-
-        let contadorCodigo = 2; // Variable para generar códigos consecutivos para nuevos proveedores
-
-
-        // Función para renderizar la tabla de proveedores
-        function renderTablaProveedores() {
-            const cuerpo = document.getElementById("tablaProveedores"); // ObtIene el cuerpo de la tabla Proveedores
-            const filtro = document.getElementById("buscarProveedor").value.toLowerCase(); // Obtiene el texto de filtro Buscar
-            cuerpo.innerHTML = "";
-
-
-            // Recorre el array de proveedores y agrega las filas a la tabla
-            proveedores.forEach((prov, i) => {
-                if (prov.nombre.toLowerCase().includes(filtro)) {
-                    //Agrega la fila con los datos del proveedor y botones
-                    cuerpo.innerHTML += `
-          <tr>
-            <td>${prov.codigo}</td>
-            <td>${prov.nombre}</td>
-            <td>${prov.cedula}</td>
-            <td>${prov.telefono}</td>
-            <td>${prov.correo}</td>
-            <td>
-              <button class="btn btn-sm btn-primary" onclick="editarProveedor(${i})">Editar</button>
-              <button class="btn btn-sm btn-danger" onclick="eliminarProveedor(${i})">Eliminar</button>
-              <button class="btn btn-sm btn-warning" onclick="verEvaluaciones(${i})">Ver Evaluaciones</button>
-            </td>
-          </tr>
-        `;
-                }
-            });
-        }
-
-        // Agregar un nuevo proveedor
-        document.getElementById("formAgregarProveedor").addEventListener("submit", e => {
-            e.preventDefault(); // Evita que se recargue la página
-
-            // Crea un nuevo objeto proveedor con los datos ingresados
-            const nuevoProveedor = {
-                codigo: contadorCodigo++,
-                nombre: nombreProveedor.value,
-                cedula: cedulaProveedor.value,
-                telefono: telefonoProveedor.value,
-                correo: correoProveedor.value,
-                evaluaciones: []
-            };
-            proveedores.push(nuevoProveedor); // Agrega el proveedor a la lista
-            e.target.reset(); // Limpia el formulario
-            bootstrap.Modal.getInstance(modalAgregarProveedor).hide();
-            renderTablaProveedores(); // Actualiza la tabla
-        });
-
-        // Carga los datos del proveedor seleccionado en el modal de edición
-        function editarProveedor(i) {
-            const prov = proveedores[i];
-            indiceProveedor.value = i;  // Guarda el índice en un campo oculto
-            editNombreProveedor.value = prov.nombre;
-            editCedulaProveedor.value = prov.cedula;
-            editTelefonoProveedor.value = prov.telefono;
-            editCorreoProveedor.value = prov.correo;
-            new bootstrap.Modal(modalEditarProveedor).show();  // Muestra el modal de edición
-        }
-
-        // Actualizar los datos del proveedor
-        document.getElementById("formEditarProveedor").addEventListener("submit", e => {
-            e.preventDefault();
-            const i = parseInt(indiceProveedor.value); // Obtiene el índice del proveedor seleccionado
-
-            // Actualiza los datos del proveedor
-            proveedores[i].nombre = editNombreProveedor.value;
-            proveedores[i].cedula = editCedulaProveedor.value;
-            proveedores[i].telefono = editTelefonoProveedor.value;
-            proveedores[i].correo = editCorreoProveedor.value;
-            bootstrap.Modal.getInstance(modalEditarProveedor).hide(); // Cierra el modal
-            renderTablaProveedores();  // Actualiza la tabla
-        });
-
-
-        // Eliminar un proveedor
-        function eliminarProveedor(i) {
-            if (confirm("¿Deseas eliminar este proveedor?")) {
-                proveedores.splice(i, 1); // Elimina el proveedor del array
-                renderTablaProveedores(); // Actualiza la tabla
-            }
-        }
-
-
-        // Ver las evaluaciones de un proveedor
-        function verEvaluaciones(i) {
-            const evaluaciones = proveedores[i].evaluaciones; // Obtiene las evaluaciones del proveedor
-            const contenedor = document.getElementById("evaluacionesContenido");
-            contenedor.innerHTML = ""; // Limpia el contenedor
-
-            // Si no hay evaluaciones, se muestra un mensaje
-            if (evaluaciones.length === 0) {
-                contenedor.innerHTML = "<p>No hay evaluaciones para este proveedor.</p>";
-            } else {
-                // Si hay evaluaciones, se muestran
-                evaluaciones.forEach((eva, idx) => {
-                    contenedor.innerHTML += `
-          <div class="border rounded p-2 mb-2">
-            <strong>Evaluación #${idx + 1} - ${eva.fecha}</strong>
-            <ul class="mb-1">
-              <li>Puntualidad: ${eva.puntualidad}/5</li>
-              <li>Atención: ${eva.atencion}/5</li>
-              <li>Disponibilidad: ${eva.disponibilidad}/5</li>
-              <li><strong>Evaluación Final:</strong> ${((eva.puntualidad + eva.atencion + eva.disponibilidad) / 3).toFixed(1)} / 5</li>
-            </ul>
-            <p><strong>Observación:</strong> ${eva.observacion}</p>
-          </div>
-        `;
-                });
-            }
-            // Carga los datos para nueva evaluación
-            indiceEvaluacionActual.value = i;
-
-            // Valores por defecto y actualización de badges
-            evaPuntualidad.value = 3;
-            evaAtencion.value = 3;
-            evaDisponibilidad.value = 3;
-            evaObservacion.value = '';
-
-            actualizarBadge('evaPuntualidad', 'lblPuntualidad');
-            actualizarBadge('evaAtencion', 'lblAtencion');
-            actualizarBadge('evaDisponibilidad', 'lblDisponibilidad');
-
-            new bootstrap.Modal(modalEvaluaciones).show(); // Muestra el modal
-        }
-
-        // Busca evaluaciones por fecha, nota exacta (puede tener decimales) o ambas a la vez
-        function filtrarEvaluaciones() {
-            const index = parseInt(document.getElementById("indiceEvaluacionActual").value); // Obtiene el índice del proveedor seleccionado
-            const evaluaciones = proveedores[index].evaluaciones; // Extrae el listado de evaluaciones de ese proveedor
-            const contenedor = document.getElementById("evaluacionesContenido"); // Donde se van a mostrar los resultados
-
-            const filtroFecha = document.getElementById("filtroFechaEva").value.trim(); // Fecha buscada por el usuario (input tipo date)
-            const filtroNotaRaw = document.getElementById("filtroCalificacionMin").value.trim(); // Nota ingresada como texto
-            let filtroCalificacionMin = parseFloat(filtroNotaRaw); // Convierte a número decimal para permitir valores como 4.5, 3.7, etc.
-
-            // Validación: Si la nota no es un número entre 1 y 5, se ignora (no se aplica ese filtro)
-            if (isNaN(filtroCalificacionMin) || filtroCalificacionMin < 1 || filtroCalificacionMin > 5) {
-                filtroCalificacionMin = null;
-            }
-
-            contenedor.innerHTML = ""; // Limpia el contenido previo
-
-            // Aplica los filtros seleccionados para encontrar coincidencias
-            const filtradas = evaluaciones.filter(eva => {
-                const fechaNormalizada = new Date(eva.fecha).toISOString().split("T")[0]; // Convierte la fecha a formato YYYY-MM-DD
-                const cumpleFecha = filtroFecha ? fechaNormalizada === filtroFecha : true; // Si se ingresó fecha, compara con la evaluación
-
-                const promedio = ((eva.puntualidad + eva.atencion + eva.disponibilidad) / 3).toFixed(1); // Calcula el promedio (1 decimal)
-
-                // Nota importante: .toFixed(1) devuelve un string, por eso usamos parseFloat nuevamente al comparar
-                const cumpleNota = filtroCalificacionMin !== null ? parseFloat(promedio) === filtroCalificacionMin : true;
-
-                return cumpleFecha && cumpleNota; // Solo se muestra si cumple ambos filtros (si están activos)
-            });
-
-            // Si no se encontró nada con esos filtros, se avisa al usuario
-            if (filtradas.length === 0) {
-                contenedor.innerHTML = "<p>No hay evaluaciones que coincidan con la búsqueda.</p>";
-            } else {
-                // Si hay coincidencias, las mostramos manteniendo su posición real en el historial
-                filtradas.forEach(eva => {
-                    const idxReal = evaluaciones.indexOf(eva); // Busca la posición original de la evaluación en la lista
-
-                    contenedor.innerHTML += `
-        <div class="border rounded p-2 mb-2">
-          <strong>Evaluación #${idxReal + 1} - ${eva.fecha}</strong>
-          <ul class="mb-1">
-            <li>Puntualidad: ${eva.puntualidad}/5</li>
-            <li>Atención: ${eva.atencion}/5</li>
-            <li>Disponibilidad: ${eva.disponibilidad}/5</li>
-            <li><strong>Evaluación Final:</strong> ${((eva.puntualidad + eva.atencion + eva.disponibilidad) / 3).toFixed(1)} / 5</li>
-          </ul>
-          <p><strong>Observación:</strong> ${eva.observacion}</p>
-        </div>
-      `;
-                });
-            }
-        }
-
-        // Helpers sliders evaluación
-        // Actualiza el numerito (badge) junto al slider
-        function actualizarBadge(idInput, idBox) {
-            const v = parseInt(document.getElementById(idInput).value, 10);
-            document.getElementById(idBox).textContent = isNaN(v) ? '' : v;
-        }
-
-        // Configura listeners para mostrar el valor en vivo
-        ['evaPuntualidad', 'evaAtencion', 'evaDisponibilidad'].forEach((id) => {
-            document.addEventListener('input', (e) => {
-                if (e.target && e.target.id === id) {
-                    const boxId = (
-                        id === 'evaPuntualidad' ? 'lblPuntualidad' :
-                            id === 'evaAtencion' ? 'lblAtencion' :
-                                'lblDisponibilidad'
-                    );
-                    actualizarBadge(id, boxId);
-                }
-            });
-        });
-
-
-        // Exporta el historial de evaluaciones en formato PDF usando jsPDF
-        function exportarEvaluacionesPDF() {
-            const index = parseInt(document.getElementById("indiceEvaluacionActual").value); // Índice del proveedor actual
-            const evaluaciones = proveedores[index].evaluaciones; // Lista de evaluaciones del proveedor
-
-            if (evaluaciones.length === 1) {
-                alert("No hay evaluaciones para exportar."); // Alerta si no hay evaluaciones
-                return;
-            }
-
-            const doc = new jspdf.jsPDF(); // Crea el documento PDF
-            doc.setFontSize(14);
-            doc.text(`Evaluaciones - ${proveedores[index].nombre}`, 10, 10); // Título con nombre del proveedor
-
-            let y = 20; // Posición vertical inicial
-            evaluaciones.forEach((eva, i) => {
-                doc.setFontSize(12);
-                doc.text(`Evaluación #${i + 1} - ${eva.fecha}`, 10, y); // Número y fecha
-                y += 6;
-
-                const promedio = ((eva.puntualidad + eva.atencion + eva.disponibilidad) / 3).toFixed(1); // Promedio final
-                doc.text(`Puntualidad: ${eva.puntualidad} / Atención: ${eva.atencion} / Disponibilidad: ${eva.disponibilidad} / Promedio: ${promedio}`, 10, y); // Detalles
-                y += 6;
-
-                doc.text(`Observación: ${eva.observacion}`, 10, y); // Observaciones
-                y += 10; // Espacio entre evaluaciones
-            });
-
-            doc.save(`Evaluaciones_${proveedores[index].nombre}.pdf`); // Guarda el archivo con nombre personalizado
-        }
-
-        // Exporta el historial de evaluaciones en formato Excel usando SheetJS
-        function exportarEvaluacionesExcel() {
-            const index = parseInt(document.getElementById("indiceEvaluacionActual").value); // Índice del proveedor actual
-            const evaluaciones = proveedores[index].evaluaciones; // Lista de evaluaciones del proveedor
-
-            if (evaluaciones.length === 0) {
-                alert("No hay evaluaciones para exportar."); // Mensaje si no hay datos
-                return;
-            }
-
-            // Crea el array con los datos formateados para el Excel
-            const data = evaluaciones.map((eva, i) => {
-                const promedio = ((eva.puntualidad + eva.atencion + eva.disponibilidad) / 3).toFixed(1); // Promedio final con un decimal
-                return {
-                    Evaluación: i + 1,
-                    Fecha: eva.fecha,
-                    Puntualidad: eva.puntualidad,
-                    Atención: eva.atencion,
-                    Disponibilidad: eva.disponibilidad,
-                    "Promedio Final": promedio,
-                    Observación: eva.observacion
-                };
-            });
-
-            // Genera el archivo Excel y lo descarga
-            const ws = XLSX.utils.json_to_sheet(data); // Convierte los datos a hoja Excel
-            const wb = XLSX.utils.book_new(); // Crea libro nuevo
-            XLSX.utils.book_append_sheet(wb, ws, "Evaluaciones"); // Agrega la hoja
-            XLSX.writeFile(wb, `Evaluaciones_${proveedores[index].nombre}.xlsx`); // Descarga con nombre del proveedor
-        }
-
-        // Agrega una nueva evaluación al proveedor actual
-        function agregarEvaluacion() {
-            const index = parseInt(document.getElementById("indiceEvaluacionActual").value); // Índice del proveedor actual
-            const puntualidad = parseInt(evaPuntualidad.value); // Obtiene la nota de puntualidad
-            const atencion = parseInt(evaAtencion.value); // Obtiene la nota de atención
-            const disponibilidad = parseInt(evaDisponibilidad.value); // Obtiene la nota de disponibilidad
-            const observacion = evaObservacion.value.trim(); // Obtiene la observación
-
-            // Validación: Verifica que todos los campos obligatorios estén llenos y entre 1 y 5
-            if (
-                isNaN(puntualidad) || puntualidad < 1 || puntualidad > 5 ||
-                isNaN(atencion) || atencion < 1 || atencion > 5 ||
-                isNaN(disponibilidad) || disponibilidad < 1 || disponibilidad > 5
-            ) {
-                alert("Por favor, complete todos los campos con valores entre 1 y 5."); // Muestra error si hay datos inválidos
-                return; // Detiene la función si hay errores
-            }
-
-            // Crea el objeto de evaluación con la fecha actual y datos ingresados
-            const nueva = {
-                fecha: new Date().toISOString().split("T")[0],
-                puntualidad,
-                atencion,
-                disponibilidad,
-                observacion
-            };
-
-            proveedores[index].evaluaciones.push(nueva); // Agrega la evaluación a la lista del proveedor
-
-            const contenedor = document.getElementById("evaluacionesContenido");
-            contenedor.innerHTML = ""; // Limpia el contenedor antes de mostrar todo
-
-            // Recorre y muestra todas las evaluaciones actualizadas del proveedor
-            proveedores[index].evaluaciones.forEach((eva, idx) => {
-                contenedor.innerHTML += `
-      <div class="border rounded p-2 mb-2">
-        <strong>Evaluación #${idx + 1} - ${eva.fecha}</strong>
-        <ul class="mb-1">
-          <li>Puntualidad: ${eva.puntualidad}/5</li>
-          <li>Atención: ${eva.atencion}/5</li>
-          <li>Disponibilidad: ${eva.disponibilidad}/5</li>
-          <li><strong>Evaluación Final:</strong> ${((eva.puntualidad + eva.atencion + eva.disponibilidad) / 3).toFixed(1)} / 5</li>
-        </ul>
-        <p><strong>Observación:</strong> ${eva.observacion}</p>
-      </div>
-    `;
-            });
-
-            // Limpia el formulario para ingresar una nueva evaluación (reseteo a 3)
-            evaPuntualidad.value = 3; actualizarBadge('evaPuntualidad', 'lblPuntualidad');
-            evaAtencion.value = 3; actualizarBadge('evaAtencion', 'lblAtencion');
-            evaDisponibilidad.value = 3; actualizarBadge('evaDisponibilidad', 'lblDisponibilidad');
-            evaObservacion.value = '';
-        }
-
-        // Renderiza la tabla de proveedores
-        document.getElementById("buscarProveedor").addEventListener("input", renderTablaProveedores);
-        window.onload = renderTablaProveedores; // Renderiza la tabla al cargar la página
-    </script>
-
 </body>
 
 </html>

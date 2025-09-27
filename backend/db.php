@@ -2,12 +2,12 @@
 require "message_log.php"; // Para los mensajes de error
 
 //INFO DB DIANA
-//$server = 'DIANAR\\MSSQLSERVER01'; //Servidor de base de datos
-//$db     = 'DianaAbrasivlog'; //Nombre de la base de datos
+$server = 'DIANAR\\MSSQLSERVER01'; //Servidor de base de datos
+$db     = 'DianaAbrasivlog'; //Nombre de la base de datos
 
 //INFO DB Camila
-$server = 'DESKTOP-7KHMCN1';
-$db     = 'Abrasivlog';
+//$server = 'DESKTOP-7KHMCN1';
+//$db     = 'Abrasivlog';
 
 //Es una cadena de conexión con el servidor de base de datos, nombre de base de datos, con Encrypt=Yes para cifrar la comunicación y
 //TrustServerCertificate=Yes para que conecte localmente con el usuario de windows
