@@ -188,25 +188,25 @@ switch ($method) {
         break;
 
     case 'DELETE':
-    $id_proveedor = $_GET['id_proveedor'] ?? ($input['id_proveedor'] ?? null); // Obtiene el ID del proveedor de la URL o del body
-    $input = getJsonInput(); // Obtiene el cuerpo de la solicitud (por si viene el id en JSON)
+        $id_proveedor = $_GET['id_proveedor'] ?? ($input['id_proveedor'] ?? null); // Obtiene el ID del proveedor de la URL o del body
+        $input = getJsonInput(); // Obtiene el cuerpo de la solicitud (por si viene el id en JSON)
 
-    if ($id_proveedor) {
-        // Llama a la función que actualiza el estado = 0 (Inactivo)
-        $result = eliminarProveedor($id_proveedor);
+        if ($id_proveedor) {
+            // Llama a la función que actualiza el estado = 0 (Inactivo)
+            $result = eliminarProveedor($id_proveedor);
 
-        if ($result) {
-            http_response_code(200); // Código de respuesta HTTP 200 (OK)
-            echo json_encode(["message" => "Proveedor inactivado exitosamente"]);
+            if ($result) {
+                http_response_code(200); // Código de respuesta HTTP 200 (OK)
+                echo json_encode(["message" => "Proveedor inactivado exitosamente"]);
+            } else {
+                http_response_code(500); // Código de respuesta HTTP 500 (Internal Server Error)
+                echo json_encode(["error" => "Error al inactivar el proveedor"]);
+            }
         } else {
-            http_response_code(500); // Código de respuesta HTTP 500 (Internal Server Error)
-            echo json_encode(["error" => "Error al inactivar el proveedor"]);
+            http_response_code(400); // Código de respuesta HTTP 400 (Bad Request)
+            echo json_encode(["error" => "Faltan datos"]);
         }
-    } else {
-        http_response_code(400); // Código de respuesta HTTP 400 (Bad Request)
-        echo json_encode(["error" => "Faltan datos"]);
-    }
-    break;
+        break;
 
     default:
         http_response_code(405);

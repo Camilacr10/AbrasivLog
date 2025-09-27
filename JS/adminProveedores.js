@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const proveedorList = document.getElementById('tablaProveedores');
     proveedorList.innerHTML = '';
 
-// Filtra los proveedores activos
+    // Filtra los proveedores activos
     const soloActivos = (lista || []).filter(p => Number(p.estado) === 1);
 
     // Recorre la lista de proveedores y agrega las filas a la tabla de proveedores activos
@@ -145,6 +145,26 @@ document.addEventListener('DOMContentLoaded', function () {
       console.error("Error al eliminar el proveedor");
     }
   }
+
+
+
+
+  // Función que limpia los campos  cedula, correo y validaciones del modal Agregar Proveedor
+  function limpiarModalAgregarProveedor() {
+    agreOriginalCedula = ''; // Limpia la cédula jurídica original
+    agreOriginalCorreo = ''; // Limpia el correo original
+    ['cedulaProveedor', 'correoProveedor'].forEach(id => {
+      const el = document.getElementById(id); // Obtiene el input
+      el.setCustomValidity(''); // Limpia la validación personalizada
+      el.classList.remove('is-invalid'); // Limpia la clase de error
+    });
+    document.getElementById('formAgregarProveedor').reset(); // Limpia el formulario
+  }
+
+  // Maneja la limpieza cuando se cierra el modal de Agregar Proveedor
+  document.getElementById('modalAgregarProveedor').addEventListener('hidden.bs.modal', () => {
+    limpiarModalAgregarProveedor(); // Llama la función de limpieza
+  });
 
 
 
@@ -270,7 +290,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const correo = document.getElementById('editCorreoProveedor').value;
     const estado = parseInt(document.getElementById('editEstadoProveedor').value, 10);
 
-  //Validaciones
+    //Validaciones
 
     // Toma los valoses de los inputs y los guarda en variables
     const cedulaElE = document.getElementById('editCedulaProveedor');
