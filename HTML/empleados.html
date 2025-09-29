@@ -96,7 +96,7 @@
                     <th>Fecha Ingreso</th>
                     <th>Puesto</th>
                     <th>Días de vacaciones</th>
-                    <th>Rol</th>
+                    <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -128,6 +128,14 @@
                         <div class="mb-3">
                             <label>Días de Vacaciones</label>
                             <input type="number" class="form-control" id="vacacionesEmpleado" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="estadoEmpleado" class="form-label">Estado</label>
+                            <select class="form-control" id="estadoEmpleado" required>
+                                <option value="">Seleccione un estado</option>
+                                <option value="1">Activo</option>
+                                <option value="0">Inactivo</option>
+                            </select>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -173,6 +181,30 @@
         </div>
     </div>
 
+    <!-- Modal Cambiar Estado -->
+    <div class="modal fade" id="modalCambiarEstado" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cambiar Estado</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="indiceEstadoEmpleado" />
+                    <label for="nuevoEstado" class="form-label">Seleccione nuevo estado</label>
+                    <select id="nuevoEstado" class="form-control">
+                        <option value="1">Activo</option>
+                        <option value="0">Inactivo</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-sm btn-warning" onclick="guardarNuevoEstado()">Guardar Estado</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--
     <div class="modal fade" id="modalAsignarRol" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -194,6 +226,7 @@
             </div>
         </div>
     </div>
+-->
 
     <!-- Footer -->
     <footer class="footer-custom mt-auto py-4">
@@ -204,104 +237,143 @@
     </footer>
 
     <script>
-        const empleados = [];
-        let codigoEmpleado = 1;
-
-        const tabla = document.getElementById("tablaEmpleados");
         const buscar = document.getElementById("buscarEmpleado");
-        const mensaje = document.getElementById("mensajeExito");
-        const mensaje2 = document.getElementById("mensajeExitoActualizacion");
+        const tabla = document.getElementById("tablaEmpleados");
+        const modalEditarEmpleado = document.getElementById('modalEditarEmpleado');
 
-        const renderTablaEmpleados = () => {
+        async function cargarEmpleados() {
+            const res = await fetch("../backend/Empleados.php?accion=listar");
+            const data = await res.json();
             tabla.innerHTML = "";
-            const filtro = buscar.value.toLowerCase();
-
-            empleados
-                .filter(emp => emp.nombre.toLowerCase().includes(filtro))
-                .forEach((emp, i) => {
-                    tabla.innerHTML += `
-                    <tr>
-                        <td>${emp.nombre}</td>
-                        <td>${formatoFecha(emp.fechaIngreso)}</td>
-                        <td>${emp.puesto}</td>
-                        <td>${emp.vacaciones}</td>
-                        <td>${emp.rol}</td>
-                        <td>
-                            <button class="btn btn-sm btn-primary" onclick="editarEmpleado(${i})">Editar</button>
-                            <button class="btn btn-sm btn-danger" onclick="eliminarEmpleado(${i})">Eliminar</button>
-                            <button class="btn btn-sm btn-success" onclick="asignarRol(${i})">Asignar Rol</button>
-                        </td>
-                    </tr>`;
-                });
-        };
-
-        document.getElementById("formAgregarEmpleado").addEventListener("submit", e => {
-            e.preventDefault();
-            empleados.push({
-                codigo: codigoEmpleado++,
-                nombre: nombreEmpleado.value,
-                fechaIngreso: fechaIngreso.value,
-                puesto: puestoEmpleado.value,
-                vacaciones: vacacionesEmpleado.value,
-                rol: "Empleado"
+            data.forEach(emp => {
+                const estadoTexto = emp.estado == "1" ? "Activo" : "Inactivo";
+                tabla.innerHTML += `
+        <tr>
+            <td>${emp.nombre_completo}</td>
+            <td>${formatoFecha(emp.fecha_ingreso)}</td>
+            <td>${emp.puesto}</td>
+            <td>${emp.dias_vacaciones}</td>
+            <td>${estadoTexto}</td>
+            <td>
+                <button class="btn btn-sm btn-primary" onclick="abrirEditar(${emp.id_empleado})">Editar</button>
+                <button class="btn btn-sm btn-warning" onclick="abrirModalCambiarEstado(${emp.id_empleado}, '${estadoTexto}')">Estado</button>
+            </td>
+        </tr>`;
             });
+        }
 
-            mensaje.classList.remove("d-none");
-            setTimeout(() => mensaje.classList.add("d-none"), 3000);
-            e.target.reset();
-            bootstrap.Modal.getInstance(modalAgregarEmpleado).hide();
-            renderTablaEmpleados();
-        });
+        window.onload = cargarEmpleados;
 
-        const editarEmpleado = i => {
-            const emp = empleados[i];
-            indiceEmpleado.value = i;
-            editNombreEmpleado.value = emp.nombre;
-            editFechaIngreso.value = emp.fechaIngreso;
-            editPuestoEmpleado.value = emp.puesto;
-            editVacacionesEmpleado.value = emp.vacaciones;
-            new bootstrap.Modal(modalEditarEmpleado).show();
-        };
-
-        document.getElementById("formEditarEmpleado").addEventListener("submit", e => {
+        document.getElementById("formAgregarEmpleado").addEventListener("submit", async e => {
             e.preventDefault();
-            const i = +indiceEmpleado.value;
-            empleados[i] = {
-                ...empleados[i],
-                nombre: editNombreEmpleado.value,
-                fechaIngreso: editFechaIngreso.value,
-                puesto: editPuestoEmpleado.value,
-                vacaciones: editVacacionesEmpleado.value
+
+            const data = {
+                nombre: nombreEmpleado.value,
+                fecha: fechaIngreso.value,
+                vacaciones: vacacionesEmpleado.value,
+                puesto: puestoEmpleado.value,
+                estado: estadoEmpleado.value
             };
 
-            mensaje2.classList.remove("d-none");
-            setTimeout(() => mensaje2.classList.add("d-none"), 3000);
-            e.target.reset();
-            bootstrap.Modal.getInstance(modalEditarEmpleado).hide();
-            renderTablaEmpleados();
+            const res = await fetch("../backend/Empleados.php?accion=agregar", {
+                method: "POST",
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+
+            if (result.success) {
+                alert("Empleado agregado con éxito");
+                e.target.reset();
+                bootstrap.Modal.getInstance(modalAgregarEmpleado).hide();
+                cargarEmpleados(); // Recarga tabla
+            } else {
+                alert("Error al guardar empleado");
+            }
         });
 
-        const eliminarEmpleado = i => {
-            if (confirm("¿Deseas eliminar este empleado?")) {
-                empleados.splice(i, 1);
-                renderTablaEmpleados();
+
+        async function abrirEditar(id) {
+            const res = await fetch("../backend/Empleados.php?accion=listar");
+            const empleados = await res.json();
+            const emp = empleados.find(e => e.id_empleado == id);
+            if (!emp) return;
+
+            indiceEmpleado.value = emp.id_empleado;
+            editNombreEmpleado.value = emp.nombre_completo;
+            editFechaIngreso.value = emp.fecha_ingreso;
+            editPuestoEmpleado.value = emp.puesto;
+            editVacacionesEmpleado.value = emp.dias_vacaciones;
+
+            new bootstrap.Modal(modalEditarEmpleado).show();
+        }
+
+        document.getElementById("formEditarEmpleado").addEventListener("submit", async e => {
+            e.preventDefault();
+            const data = {
+                id: indiceEmpleado.value,
+                nombre: editNombreEmpleado.value,
+                fecha: editFechaIngreso.value,
+                vacaciones: editVacacionesEmpleado.value,
+                puesto: editPuestoEmpleado.value
+            };
+            const res = await fetch("../backend/Empleados.php?accion=editar", {
+                method: "POST",
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+
+            if (result.success) {
+                alert("Empleado editado con éxito");
+                const modalInstance = bootstrap.Modal.getInstance(modalEditarEmpleado);
+                if (modalInstance) modalInstance.hide();
+                cargarEmpleados();
+            } else {
+                alert("Error al editar");
             }
-        };
+        });
 
-        const asignarRol = i => {
-            indiceRolEmpleado.value = i;
-            rolEmpleado.value = empleados[i].rol;
-            new bootstrap.Modal(modalAsignarRol).show();
-        };
+        function abrirModalCambiarEstado(id, estadoActual) {
+            document.getElementById('indiceEstadoEmpleado').value = id;
+            document.getElementById('nuevoEstado').value = estadoActual === 'Activo' ? 1 : 0;
+            const modal = new bootstrap.Modal(document.getElementById('modalCambiarEstado'));
+            modal.show();
+        }
 
-        const guardarRol = () => {
-            empleados[+indiceRolEmpleado.value].rol = rolEmpleado.value;
-            bootstrap.Modal.getInstance(modalAsignarRol).hide();
-            renderTablaEmpleados();
-            mensaje2.classList.remove("d-none");
-            setTimeout(() => mensaje2.classList.add("d-none"), 3000);
-        };
+        async function guardarNuevoEstado() {
+            const id = document.getElementById("indiceEstadoEmpleado").value;
+            const estado = document.getElementById("nuevoEstado").value;
 
+            const res = await fetch("../backend/Empleados.php?accion=cambiarEstado", {
+                method: "POST",
+                body: JSON.stringify({ id, estado })
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                alert("Estado actualizado");
+                cargarEmpleados();
+                bootstrap.Modal.getInstance(document.getElementById('modalCambiarEstado')).hide();
+            } else {
+                alert("Error al actualizar estado");
+            }
+        }
+
+        /*
+           const asignarRol = i => {
+               indiceRolEmpleado.value = i;
+               rolEmpleado.value = empleados[i].rol;
+               new bootstrap.Modal(modalAsignarRol).show();
+           };
+   
+           const guardarRol = () => {
+               empleados[+indiceRolEmpleado.value].rol = rolEmpleado.value;
+               bootstrap.Modal.getInstance(modalAsignarRol).hide();
+               renderTablaEmpleados();
+               mensaje2.classList.remove("d-none");
+               setTimeout(() => mensaje2.classList.add("d-none"), 3000);
+           };
+   
+           */
         buscar.addEventListener("input", renderTablaEmpleados);
         window.onload = renderTablaEmpleados;
 
