@@ -5,18 +5,33 @@ require_once "message_log.php";
 //  FUNCIONES 
 
 // Agregar empleado
-function agregarEmpleado($nombre, $fecha, $vacaciones, $puesto, $estado) {
+function agregarEmpleado($nombre, $fecha, $vacaciones, $puesto, $estado, $archivo) {
     global $pdo;
-    $sql = "INSERT INTO empleados (nombre_completo, fecha_ingreso, dias_vacaciones, puesto, estado)
-            VALUES (:nombre, :fecha, :vacaciones, :puesto, :estado)";
+
+    $rutaFinal = null;
+
+    if ($archivo && $archivo['error'] === UPLOAD_ERR_OK) {
+       $carpetaDestino = dirname(__DIR__) . "/Documentos_Empleados/";
+        $ext = pathinfo($archivo['name'], PATHINFO_EXTENSION);
+        $nombreArchivo = uniqid("emp_") . "." . $ext;
+
+        if (move_uploaded_file($archivo['tmp_name'], $carpetaDestino . $nombreArchivo)) {
+            $rutaFinal = "Documentos_Empleados/$nombreArchivo";
+        }
+    }
+
+    $sql = "INSERT INTO empleados (nombre_completo, fecha_ingreso, dias_vacaciones, puesto, estado, archivo)
+            VALUES (:nombre, :fecha, :vacaciones, :puesto, :estado, :archivo)";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
         ':nombre'=>$nombre,
         ':fecha'=>$fecha,
         ':vacaciones'=>$vacaciones,
         ':puesto'=>$puesto,
-        ':estado' => $estado
+        ':estado'=>$estado,
+        ':archivo'=>$rutaFinal
     ]);
+
     return $pdo->lastInsertId();
 }
 
@@ -28,20 +43,56 @@ function obtenerEmpleados() {
 }
 
 // Editar empleado
-function editarEmpleado($id, $nombre, $fecha, $vacaciones, $puesto) {
+function editarEmpleado($id, $nombre, $fecha, $vacaciones, $puesto, $archivo = null) {
     global $pdo;
-    $sql = "UPDATE empleados 
-            SET nombre_completo=:nombre, fecha_ingreso=:fecha, dias_vacaciones=:vacaciones, puesto=:puesto
-            WHERE id_empleado=:id";
+
+    $rutaFinal = null;
+
+    // Si se subió un archivo, se guarda
+    if ($archivo && $archivo['error'] === UPLOAD_ERR_OK) {
+        $carpetaDestino = dirname(__DIR__) . "/Documentos_Empleados/";
+        if (!is_dir($carpetaDestino)) mkdir($carpetaDestino, 0777, true);
+
+        $ext = pathinfo($archivo['name'], PATHINFO_EXTENSION);
+        $nombreArchivo = uniqid("emp_") . "." . $ext;
+
+        if (move_uploaded_file($archivo['tmp_name'], $carpetaDestino . $nombreArchivo)) {
+            $rutaFinal = "Documentos_Empleados/$nombreArchivo";
+        }
+    }
+
+    // Si hay archivo nuevo, se actualiza también
+    if ($rutaFinal) {
+        $sql = "UPDATE empleados 
+                   SET nombre_completo=:nombre, fecha_ingreso=:fecha, dias_vacaciones=:vacaciones, puesto=:puesto, archivo=:archivo
+                 WHERE id_empleado=:id";
+        $params = [
+            ':id'        => $id,
+            ':nombre'    => $nombre,
+            ':fecha'     => $fecha,
+            ':vacaciones'=> $vacaciones,
+            ':puesto'    => $puesto,
+            ':archivo'   => $rutaFinal
+        ];
+    } else {
+        // Si no se sube archivo, se actualizan solo los demás campos
+        $sql = "UPDATE empleados 
+                   SET nombre_completo=:nombre, fecha_ingreso=:fecha, dias_vacaciones=:vacaciones, puesto=:puesto
+                 WHERE id_empleado=:id";
+        $params = [
+            ':id'        => $id,
+            ':nombre'    => $nombre,
+            ':fecha'     => $fecha,
+            ':vacaciones'=> $vacaciones,
+            ':puesto'    => $puesto
+        ];
+    }
+
     $stmt = $pdo->prepare($sql);
-    return $stmt->execute([
-        ':id'=>$id,
-        ':nombre'=>$nombre,
-        ':fecha'=>$fecha,
-        ':vacaciones'=>$vacaciones,
-        ':puesto'=>$puesto
-    ]);
+    return $stmt->execute($params);
 }
+
+
 
 function cambiarEstadoEmpleado($id, $estado) {
     global $pdo;
@@ -69,22 +120,34 @@ header('Content-Type: application/json');
 $accion = $_GET['accion'] ?? '';
 
 switch($accion) {
-    case 'agregar':
-        $data = json_decode(file_get_contents('php://input'), true);
-        $id = agregarEmpleado($data['nombre'], $data['fecha'], $data['vacaciones'], $data['puesto'], $data['estado']);
-        echo json_encode(['success'=>$id>0, 'id'=>$id]);
-        break;
+  case 'agregar':
+    $id = agregarEmpleado(
+        $_POST['nombre'],
+        $_POST['fecha'],
+        $_POST['vacaciones'],
+        $_POST['puesto'],
+        $_POST['estado'],
+        $_FILES['archivo'] ?? null
+    );
+    echo json_encode(['success'=>$id>0, 'id'=>$id]);
+    break;
 
     case 'listar':
         $empleados = obtenerEmpleados();
         echo json_encode($empleados);
         break;
 
-    case 'editar':
-        $data = json_decode(file_get_contents('php://input'), true);
-        $ok = editarEmpleado($data['id'], $data['nombre'], $data['fecha'], $data['vacaciones'], $data['puesto']);
-        echo json_encode(['success'=>$ok]);
-        break;
+   case 'editar':
+    $ok = editarEmpleado(
+        $_POST['id'],
+        $_POST['nombre'],
+        $_POST['fecha'],
+        $_POST['vacaciones'],
+        $_POST['puesto'],
+        $_FILES['archivo'] ?? null
+    );
+    echo json_encode(['success'=>$ok]);
+    break;
 
   case 'cambiarEstado':
     $data = json_decode(file_get_contents('php://input'), true);
