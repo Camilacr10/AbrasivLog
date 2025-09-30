@@ -11,58 +11,57 @@
 </head>
 <body class="d-flex flex-column min-vh-100">
 
-    <!-- Menú  -->
-    <nav class="navbar navbar-expand-lg navbar-custom">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="index.html">
-                <img src="../IMG/logo.png" alt="Logo" class="logo" />
-            </a>
-            <div class="collapse navbar-collapse" id="menuPrincipal">
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
-                    <li class="nav-item"><a class="nav-link" href="clientes.html">Clientes</a></li>
-                    <li class="nav-item"><a class="nav-link" href="empleados.html">Empleados</a></li>
-                    <li class="nav-item"><a class="nav-link" href="inventario.html">Inventario</a></li>
-                    <li class="nav-item"><a class="nav-link" href="entregas.html">Entregas</a></li>
-                    <li class="nav-item"><a class="nav-link" href="proveedores.html">Proveedores</a></li>
-                    <li class="nav-item"><a class="nav-link" href="dashboardReportes.html">Reportes</a></li>
-                    <li class="nav-item">
-                    <li class="nav-item"><a class="nav-link" href="registro.html">  <i class="fas fa-user"></i> Gestionar Credenciales</a></li>        
-                    <li class="nav-item"><a class="nav-link" href="login.html">  <i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+  <!-- Menú  -->
+  <nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="index.html">
+        <img src="../IMG/logo.png" alt="Logo" class="logo" />
+      </a>
+      <div class="collapse navbar-collapse" id="menuPrincipal">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+          <li class="nav-item"><a class="nav-link" href="clientes.html">Clientes</a></li>
+          <li class="nav-item"><a class="nav-link" href="empleados.html">Empleados</a></li>
+          <li class="nav-item"><a class="nav-link" href="inventario.html">Inventario</a></li>
+          <li class="nav-item"><a class="nav-link" href="entregas.html">Entregas</a></li>
+          <li class="nav-item"><a class="nav-link" href="proveedores.html">Proveedores</a></li>
+          <li class="nav-item"><a class="nav-link" href="dashboardReportes.html">Reportes</a></li>
+          <li class="nav-item"><a class="nav-link" href="registro.html"><i class="fas fa-user"></i> Gestionar Credenciales</a></li>
+          <li class="nav-item"><a class="nav-link" href="login.html"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
-<div class="container pt-7 mt-7" style="padding-top: 10rem;">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="fw-bold">Lista de Clientes</h1>
-    <button class="btn btn-warning my-3" data-bs-toggle="modal" data-bs-target="#modalRegistroCliente">
-   Registrar Cliente
-    </button>
+  <div class="container pt-7 mt-7" style="padding-top: 10rem;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1 class="fw-bold">Lista de Clientes</h1>
+      <button class="btn btn-warning my-3" data-bs-toggle="modal" data-bs-target="#modalRegistroCliente">
+        Registrar Cliente
+      </button>
+    </div>
+
+    <div class="mb-3">
+      <input type="text" class="form-control" id="buscarInput" placeholder="Buscar cliente..." onkeyup="filtrarClientes()">
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover table-bordered text-center align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Nombre</th>
+            <th>Cédula</th>
+            <th>Teléfono</th>
+            <th>Correo</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tablaClientes">
+          <tr><td colspan="6">Cargando...</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
-
-  <div class="mb-3">
-    <input type="text" class="form-control" id="buscarInput" placeholder="Buscar cliente..." onkeyup="filtrarClientes()">
-  </div>
-
-  <div class="table-responsive">
-    <table class="table table-hover table-bordered text-center align-middle">
-      <thead class="table-light">
-        <tr>
-          <th>Nombre</th>
-          <th>Cédula</th>
-          <th>Teléfono</th>
-          <th>Correo</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody id="tablaClientes"></tbody>
-    </table>
-  </div>
-</div>
-
 
   <!-- Modal Registro Cliente -->
   <div class="modal fade" id="modalRegistroCliente" tabindex="-1" aria-labelledby="modalRegistroClienteLabel" aria-hidden="true">
@@ -84,12 +83,17 @@
             </div>
             <div class="mb-3">
               <label for="nuevoTelefono" class="form-label">Teléfono</label>
-              <input type="tel" class="form-control" id="nuevoTelefono" required>
+              <input type="tel" class="form-control" id="nuevoTelefono">
             </div>
             <div class="mb-3">
               <label for="nuevoCorreo" class="form-label">Correo Electrónico</label>
-              <input type="email" class="form-control" id="nuevoCorreo" required>
+              <input type="email" class="form-control" id="nuevoCorreo">
             </div>
+            <!-- Dirección:
+            <div class="mb-3">
+              <label for="nuevaDireccion" class="form-label">Dirección</label>
+              <textarea class="form-control" id="nuevaDireccion" rows="2"></textarea>
+            </div> -->
           </form>
         </div>
         <div class="modal-footer">
@@ -100,7 +104,7 @@
     </div>
   </div>
 
-  
+  <!-- Modal Editar Cliente -->
   <div class="modal fade" id="modalEditarCliente" tabindex="-1" aria-labelledby="modalEditarClienteLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -109,6 +113,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
         <div class="modal-body">
+          <input type="hidden" id="modalIdCliente">
           <div class="mb-3">
             <label for="modalNombre" class="form-label">Nombre</label>
             <input type="text" class="form-control" id="modalNombre">
@@ -134,7 +139,7 @@
     </div>
   </div>
 
-  <!-- Modal Historial -->
+  <!-- Modal Historial (Datos quemados) -->
   <div class="modal fade" id="modalHistorial" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -156,29 +161,39 @@
 
   <!-- Script -->
   <script>
-    const clientes = [
-      { nombre: "Carlos Rodríguez", cedula: "110560789", telefono: "8888-5555", correo: "carlosr@gmail.com", estado: "Activo" },
-      { nombre: "Lucía Fernández", cedula: "210430123", telefono: "8999-1234", correo: "luciaf@hotmail.com", estado: "Activo" }
-    ];
+ 
+    const API = "../backend/adminClientes.php";
 
-    let clienteActual = -1;
+    let clientes = [];      
+    let clienteActual = -1; 
 
-    function actualizarTabla() {
+    document.addEventListener('DOMContentLoaded', cargarClientes);
+
+    function renderTabla() {
       const tbody = document.getElementById('tablaClientes');
       tbody.innerHTML = '';
+
+      if (!clientes.length) {
+        tbody.innerHTML = "<tr><td colspan='6'>Sin registros</td></tr>";
+        return;
+      }
 
       clientes.forEach((cliente, i) => {
         const fila = document.createElement('tr');
         fila.innerHTML = `
           <td>${cliente.nombre}</td>
           <td>${cliente.cedula}</td>
-          <td>${cliente.telefono}</td>
-          <td>${cliente.correo}</td>
-          <td>${cliente.estado}</td>
+          <td>${cliente.telefono ?? ''}</td>
+          <td>${cliente.correo_electronico ?? ''}</td>
+          <td>
+            <span class="badge ${cliente.estado === 'ACTIVO' ? 'bg-success' : 'bg-secondary'}">
+              ${cliente.estado}
+            </span>
+          </td>
           <td>
             <button class="btn btn-primary btn-sm me-1" onclick="abrirModal(${i})">Editar</button>
-            <button class="btn btn-secondary btn-sm me-1" onclick="inactivarCliente(${i})">
-              ${cliente.estado === 'Activo' ? 'Inactivar' : 'Activar'}
+            <button class="btn btn-secondary btn-sm me-1" onclick="toggleEstado(${i})">
+              ${cliente.estado === 'ACTIVO' ? 'Inactivar' : 'Activar'}
             </button>
             <button class="btn btn-warning btn-sm text-white me-1" onclick="abrirHistorial()">Historial</button>
             <button class="btn btn-danger btn-sm" onclick="eliminarCliente(${i})">Eliminar</button>
@@ -186,35 +201,6 @@
         `;
         tbody.appendChild(fila);
       });
-    }
-
-    function registrarCliente() {
-      const nombre = document.getElementById('nuevoNombre').value;
-      const cedula = document.getElementById('nuevaCedula').value;
-      const telefono = document.getElementById('nuevoTelefono').value;
-      const correo = document.getElementById('nuevoCorreo').value;
-
-      clientes.push({ nombre, cedula, telefono, correo, estado: 'Activo' });
-      actualizarTabla();
-      document.getElementById('formRegistro').reset();
-    }
-
-    function abrirModal(index) {
-      clienteActual = index;
-      const c = clientes[index];
-      document.getElementById('modalNombre').value = c.nombre;
-      document.getElementById('modalCedula').value = c.cedula;
-      document.getElementById('modalTelefono').value = c.telefono;
-      document.getElementById('modalCorreo').value = c.correo;
-      new bootstrap.Modal(document.getElementById('modalEditarCliente')).show();
-    }
-
-    function guardarCambios() {
-      const c = clientes[clienteActual];
-      c.nombre = document.getElementById('modalNombre').value;
-      c.telefono = document.getElementById('modalTelefono').value;
-      c.correo = document.getElementById('modalCorreo').value;
-      actualizarTabla();
     }
 
     function filtrarClientes() {
@@ -226,24 +212,140 @@
       });
     }
 
-    function inactivarCliente(index) {
-      clientes[index].estado = clientes[index].estado === 'Activo' ? 'Inactivo' : 'Activo';
-      actualizarTabla();
-    }
-
     function abrirHistorial() {
       new bootstrap.Modal(document.getElementById('modalHistorial')).show();
     }
 
-    function eliminarCliente(index) {
-      if (confirm("¿Estás seguro que deseas eliminar este cliente?")) {
-        clientes.splice(index, 1);
-        actualizarTabla();
+    async function cargarClientes() {
+      const tbody = document.getElementById('tablaClientes');
+      tbody.innerHTML = "<tr><td colspan='6'>Cargando...</td></tr>";
+      try {
+        const resp = await fetch(API); 
+        const data = await resp.json();
+        if (!resp.ok || !data.ok) throw new Error(data.message || 'Error al cargar');
+        clientes = data.data || [];
+        renderTabla();
+      } catch (err) {
+        console.error(err);
+        tbody.innerHTML = "<tr><td colspan='6'>Error al cargar</td></tr>";
       }
     }
 
-  
-    actualizarTabla();
+    async function registrarCliente() {
+      const nombre = document.getElementById('nuevoNombre').value.trim();
+      const cedula = document.getElementById('nuevaCedula').value.trim();
+      const telefono = document.getElementById('nuevoTelefono').value.trim();
+      const correo = document.getElementById('nuevoCorreo').value.trim();
+      // const direccion = document.getElementById('nuevaDireccion')?.value.trim() || '';
+
+      if (!nombre || !cedula) { alert('Nombre y cédula son obligatorios'); return; }
+
+      try {
+        const resp = await fetch(API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nombre, cedula, telefono, correo })
+          // Si agregamos dirección: , direccion
+        });
+        const data = await resp.json();
+        if (!resp.ok || !data.ok) throw new Error(data.detail || data.message || 'Error al registrar');
+
+        document.getElementById('formRegistro').reset();
+        await cargarClientes();
+      } catch (err) {
+        console.error(err);
+        alert('❌ ' + err.message);
+      }
+    }
+
+    function abrirModal(index) {
+      clienteActual = index;
+      const c = clientes[index];
+      document.getElementById('modalIdCliente').value = c.id_cliente;
+      document.getElementById('modalNombre').value = c.nombre;
+      document.getElementById('modalCedula').value = c.cedula;
+      document.getElementById('modalTelefono').value = c.telefono ?? '';
+      document.getElementById('modalCorreo').value = c.correo_electronico ?? '';
+      new bootstrap.Modal(document.getElementById('modalEditarCliente')).show();
+    }
+
+    async function guardarCambios() {
+      if (clienteActual < 0) return;
+      const c = clientes[clienteActual];
+
+      const payload = {
+        id_cliente: c.id_cliente,
+        nombre: document.getElementById('modalNombre').value.trim(),
+        cedula: c.cedula, // no editable aquí
+        telefono: document.getElementById('modalTelefono').value.trim(),
+        correo: document.getElementById('modalCorreo').value.trim(),
+        estado: c.estado
+        // dirección si la tenemos que agregar al modal: direccion: document.getElementById('modalDireccion').value.trim()
+      };
+
+      try {
+        const resp = await fetch(API, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await resp.json();
+        if (!resp.ok || !data.ok) throw new Error(data.detail || data.message || 'Error al guardar');
+
+        await cargarClientes();
+      } catch (err) {
+        console.error(err);
+        alert('❌ ' + err.message);
+      }
+    }
+
+    async function toggleEstado(index) {
+      const c = clientes[index];
+      const nuevoEstado = c.estado === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO';
+
+      const payload = {
+        id_cliente: c.id_cliente,
+        nombre: c.nombre,
+        cedula: c.cedula,
+        telefono: c.telefono ?? '',
+        correo: c.correo_electronico ?? '',
+        estado: nuevoEstado
+      };
+
+      try {
+        const resp = await fetch(API, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await resp.json();
+        if (!resp.ok || !data.ok) throw new Error(data.detail || data.message || 'No se pudo cambiar el estado');
+
+        await cargarClientes();
+      } catch (err) {
+        console.error(err);
+        alert('❌ ' + err.message);
+      }
+    }
+
+    async function eliminarCliente(index) {
+      const c = clientes[index];
+      if (!confirm(`¿Inactivar al cliente "${c.nombre}"?`)) return;
+
+      try {
+        const resp = await fetch(`${API}?id_cliente=${encodeURIComponent(c.id_cliente)}`, {
+          method: 'DELETE'
+        });
+        const data = await resp.json();
+        if (!resp.ok || !data.ok) throw new Error(data.detail || data.message || 'No se pudo eliminar');
+
+        await cargarClientes();
+      } catch (err) {
+        console.error(err);
+        alert('❌ ' + err.message);
+      }
+    }
+
   </script>
 
   <footer class="footer-custom mt-auto py-4 bg-light text-center">
