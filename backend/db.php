@@ -10,8 +10,8 @@ require "message_log.php"; // Para los mensajes de error
 //$db     = 'Abrasivlog';
 
 //INFO DB Valeria 
-//$server = 'LAPTOP-VALERIA';
-//$db     = 'Abrasivlog';
+$server = 'LAPTOP-VALERIA';
+$db     = 'Abrasivlog';
 
 //INFO DB Jose
 //$server = 'DESKTOP-LUIKLRP';
