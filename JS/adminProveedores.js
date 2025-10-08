@@ -3,7 +3,12 @@ document.addEventListener('DOMContentLoaded', function () {
   let proveedores = []; // Arreglo para almacenar los proveedores
   let editOriginalCedula = ''; // Variable para almacenar la cedula juridica original en la edicion
   let editOriginalCorreo = ''; // Variable para almacenar el correo original en la edicion
+  let agreOriginalCedula = ''; // Variable para almacenar la cedula juridica original cuando se agrega un nuevo proveedor
+  let agreOriginalCorreo = ''; // Variable para almacenar el correo original cuando se agrega un nuevo proveedor
   const API_URL = '../backend/adminProveedores.php';
+
+
+  //Codigo para proveedores
 
 
 
@@ -28,16 +33,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+
   // Función para renderizar la tabla de proveedores
   function renderProveedores(lista) {
     const proveedorList = document.getElementById('tablaProveedores');
     proveedorList.innerHTML = '';
 
-    // Filtra los proveedores activos
-    const soloActivos = (lista || []).filter(p => Number(p.estado) === 1);
-
-    // Recorre la lista de proveedores y agrega las filas a la tabla de proveedores activos
-    soloActivos.forEach(function (proveedor) {
+    // Recorre la lista de proveedores
+    lista.forEach(function (proveedor) {
       const row = document.createElement('tr');
       row.innerHTML = `
                 <td>${proveedor.id_proveedor}</td>
@@ -45,11 +48,34 @@ document.addEventListener('DOMContentLoaded', function () {
                 <td>${proveedor.cedula_juridica}</td>
                 <td>${proveedor.telefono}</td>
                 <td>${proveedor.correo}</td>
-                <td>${Number(proveedor.estado) === 1 ? "Activo" : "Inactivo"}</td>
                 <td>
-                  <button class="btn btn-sm btn-primary edit-proveedor" data-id="${proveedor.id_proveedor}">Editar</button>
-                  <button class="btn btn-sm btn-danger delete-proveedor" data-id="${proveedor.id_proveedor}">Eliminar</button>
-                  <button class="btn btn-sm btn-warning ver-evaluaciones" data-id="${proveedor.id_proveedor}">Ver Evaluaciones</button>
+                <span class="badge ${proveedor.estado === 'Activo' ? 'bg-success' : 'bg-secondary'}"> ${proveedor.estado} </span>
+                </td>
+                <td>
+                  <div class="dropdown">
+                    <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      Acciones
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li>
+                        <button type="button" class="dropdown-item edit-proveedor" data-id="${proveedor.id_proveedor}">
+                          <i class="fa-solid fa-pen-to-square me-2"></i>Editar
+                        </button>
+                      </li>
+                      <li>
+                        <button type="button" class="dropdown-item ver-evaluaciones" data-id="${proveedor.id_proveedor}">
+                          <i class="fa-solid fa-star me-2"></i>Ver Evaluaciones
+                        </button>
+                      </li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li>
+                        <button type="button" class="dropdown-item text-danger inactivar-proveedor" data-id="${proveedor.id_proveedor}">
+                          <i class="fa-solid fa-user-slash me-2"></i>Inactivar
+                        </button>
+                      </li>
+                      </li>
+                    </ul>
+                  </div>
                 </td>
             `;
       proveedorList.appendChild(row);
@@ -58,8 +84,8 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.edit-proveedor').forEach(button =>
       button.addEventListener('click', handleEdit)
     );
-    document.querySelectorAll('.delete-proveedor').forEach(button =>
-      button.addEventListener('click', handleDeleteProveedor)
+    document.querySelectorAll('.inactivar-proveedor').forEach(button =>
+      button.addEventListener('click', handleInactivarProveedor)
     );
   }
 
@@ -115,7 +141,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('editCedulaProveedor').value = p.cedula_juridica ?? '';
     document.getElementById('editTelefonoProveedor').value = p.telefono ?? '';
     document.getElementById('editCorreoProveedor').value = p.correo ?? '';
-    document.getElementById('editEstadoProveedor').value = String(Number(p.estado) === 1 ? 1 : 0);
+    document.getElementById('editEstadoProveedor').value = p.estado ?? '';
 
     editOriginalCedula = p.cedula_juridica || ''; // Almacena la cedula juridica original
     editOriginalCorreo = p.correo || ''; // Almacena el correo original
@@ -130,8 +156,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-  // Función para manejar la "eliminación" de un proveedor
-  async function handleDeleteProveedor(event) {
+  // Función para manejar inactivar de un proveedor
+  async function handleInactivarProveedor(event) {
     const proveedorId = parseInt(event.target.dataset.id);
 
     const response = await fetch(`${API_URL}?id_proveedor=${proveedorId}`, {
@@ -142,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (response.ok) {
       loadProveedores();
     } else {
-      console.error("Error al eliminar el proveedor");
+      console.error("Error al inactivar el proveedor");
     }
   }
 
@@ -169,7 +195,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-  // Maneja la verificacion de los campos de cedula y correo antes de enviar el formulario para agregar un proveedor
+  //Maneja la verificacion de los campos de cedula y correo antes de enviar el formulario para agregar un proveedor
+  // Se ejecuta mientras el adminstrador o empleado escriben, el modal abierto
   ['cedulaProveedor', 'correoProveedor'].forEach(id => {
     const el = document.getElementById(id); // Obtiene el input
     el.addEventListener('input', () => { // Agrega un event listener al input
@@ -190,7 +217,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const cedula_juridica = document.getElementById('cedulaProveedor').value;
     const telefono = document.getElementById('telefonoProveedor').value;
     const correo = document.getElementById('correoProveedor').value;
-    const estado = parseInt(document.getElementById('estadoProveedor').value, 10);
 
     //Validaciones
 
@@ -221,7 +247,7 @@ document.addEventListener('DOMContentLoaded', function () {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ nombre, cedula_juridica, telefono, correo, estado })
+      body: JSON.stringify({ nombre, cedula_juridica, telefono, correo })
     });
 
     // Si la respuesta es exitosa:
@@ -288,7 +314,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const cedula_juridica = document.getElementById('editCedulaProveedor').value;
     const telefono = document.getElementById('editTelefonoProveedor').value;
     const correo = document.getElementById('editCorreoProveedor').value;
-    const estado = parseInt(document.getElementById('editEstadoProveedor').value, 10);
+    const estado = document.getElementById('editEstadoProveedor').value;
 
     //Validaciones
 

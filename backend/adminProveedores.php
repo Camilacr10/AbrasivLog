@@ -82,15 +82,15 @@ function obtenerTodosLosProveedores()
 
 
 
-//Función para "eliminar" un proveedor - Solo cambia el estado a Inactivo
+//Función para inactivar un proveedor - Solo cambia el estado a Inactivo
 
-function eliminarProveedor($id_proveedor)
+function inactivarProveedor($id_proveedor)
 {
     global $pdo;
     try {
         // Cambia el estado del proveedor a Inactivo (0) en lugar de eliminarlo
         $sql = "UPDATE proveedores 
-                   SET estado = 0 
+                   SET estado = 'Inactivo'
                  WHERE id_proveedor = :id_proveedor";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([':id_proveedor' => $id_proveedor]);
@@ -101,6 +101,7 @@ function eliminarProveedor($id_proveedor)
         return false;
     }
 }
+
 
 
 
@@ -127,7 +128,6 @@ switch ($method) {
             $input['cedula_juridica'],
             $input['telefono'],
             $input['correo'],
-            $input['estado'],
             $input['nombre']
         )
         ) {
@@ -135,7 +135,7 @@ switch ($method) {
                 $input['cedula_juridica'],
                 $input['telefono'],
                 $input['correo'],
-                $input['estado'],
+                $estado = 'Activo',
                 $input['nombre']
             );
 
@@ -193,7 +193,7 @@ switch ($method) {
 
         if ($id_proveedor) {
             // Llama a la función que actualiza el estado = 0 (Inactivo)
-            $result = eliminarProveedor($id_proveedor);
+            $result = inactivarProveedor($id_proveedor);
 
             if ($result) {
                 http_response_code(200); // Código de respuesta HTTP 200 (OK)
