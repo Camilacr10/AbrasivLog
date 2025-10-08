@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="../CSS/style.css">
     <!-- Llama a las funciones de JS -->
     <script src="../js/adminProveedores.js"></script>
+    <script src="../js/evaluacionProveedores.js"></script>
     <!-- Librerías externas para exportar PDF y Excel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -249,7 +250,7 @@
                     </div>
                     <div class="mb-2">
                         <label>Filtrar por calificación mínima:</label>
-                        <input type="number" class="form-control" id="filtroCalificacionMin" min="1" max="5"
+                        <input type="number" class="form-control" id="filtroCalificacion" min="1" max="5"
                             placeholder="Ej: 3">
                     </div>
                     <button class="btn btn-outline-secondary btn-sm mb-3" onclick="filtrarEvaluaciones()">Buscar
@@ -311,7 +312,8 @@
                     <input type="hidden" id="indiceEvaluacionActual">
 
                     <!-- Botón para guardar la evaluación -->
-                    <button class="btn btn-custom mt-2" onclick="agregarEvaluacion()">Guardar Evaluación</button>
+                    <button id="btnGuardarEvaluacion" class="btn btn-custom mt-2" type="button">Guardar
+                        Evaluación</button>
                 </div>
 
             </div>
