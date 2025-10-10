@@ -15,9 +15,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 credentials: 'include',
             });
             if (response.ok) {
-                evaluaciones = await response.json();
+                evaluaciones = await response.json(); // Obtiene las evaluaciones
                 numerarEvaluaciones();     // Asigna un número fijo a cada evaluación con la función numerarEvaluaciones
-                filtroBusquedaEvaluaciones(); // Aplica el filtro de busqueda por fecha y promedio
+                const deHoy = evaluaciones.filter(esEvaluacionDeHoy); // Filtra las evaluaciones de hoy
+                // Si hay evaluaciones de hoy, las muestra
+                if (deHoy.length > 0) {
+                    renderEvaluaciones(deHoy);
+                } else {
+                    const cont = document.getElementById('evaluacionesContenido');
+                    cont.innerHTML = '<p>No hay evaluaciones recientes de hoy.</p>';
+                }
             } else {
                 console.error("Error al cargar las evaluaciones");
             }
@@ -25,6 +32,59 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error(err);
         }
     }
+
+
+
+
+    // Función para renderizar el modal de historial
+    function renderEvaluacionesHistorial(lista) {
+        const cont = document.getElementById('historialContenido');
+        cont.innerHTML = '';
+
+        // Si no hay evaluaciones, muestra un mensaje
+        if (!lista || lista.length === 0) {
+            cont.innerHTML = '<p>No hay evaluaciones para este proveedor.</p>';
+            return;
+        }
+
+        // Recorre la lista y agrega tarjetas de evaluación
+        lista.forEach(function (eva) {
+            const prom = promedio1(eva); // Calcula el promedio con la función promedio1
+            const fechaTxt = formatearFechaDMY(fechaRaw(eva)); // Formatea la fecha con la función formatearFechaDMY
+            cont.innerHTML += `
+                                <div class="border rounded p-2 mb-2">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                    <strong>Evaluación #${eva.numero}</strong>
+                                    <small class="text-muted">Fecha: ${fechaTxt}</small>
+                                    </div>
+
+                                    <ul class="mb-1">
+                                    <li>Puntualidad: ${eva.puntualidad}/5</li>
+                                    <li>Atención: ${eva.atencion}/5</li>
+                                    <li>Disponibilidad: ${eva.disponibilidad}/5</li>
+                                    </ul>
+
+                                    <p class="mb-1"><strong>Promedio:</strong> ${prom}/5</p>
+                                    <p class="mb-0"><strong>Observación:</strong> ${eva.observacion ?? ''}</p>
+                                </div>
+                                `;
+        });
+    }
+
+
+
+
+    // Listener para abrir el modal de historial
+    document.addEventListener('click', (ev) => {
+        const btn = ev.target.closest('#btnVerHistorialEvaluaciones');
+        if (!btn) return; // Si no se hizo clic en el botón, no hace nada
+
+        // Renderiza todas las evaluaciones
+        renderEvaluacionesHistorial(evaluaciones);
+
+        // Abre el modal de historial
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('modalHistorialEvaluaciones')).show();
+    });
 
 
 
@@ -46,22 +106,22 @@ document.addEventListener('DOMContentLoaded', function () {
             const fechaTxt = formatearFechaDMY(fechaRaw(eva)); // Formatea la fecha con la función formatearFechaDMY
             //Tarjeta de evaluación
             cont.innerHTML += `
-        <div class="border rounded p-2 mb-2">
-          <div class="d-flex justify-content-between align-items-center">
-            <strong>Evaluación #${eva.numero}</strong>
-            <small class="text-muted">Fecha: ${fechaTxt}</small>
-          </div>
+                                <div class="border rounded p-2 mb-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <strong>Evaluación #${eva.numero}</strong>
+                                    <small class="text-muted">Fecha: ${fechaTxt}</small>
+                                </div>
 
-          <ul class="mb-1">
-            <li>Puntualidad: ${eva.puntualidad}/5</li>
-            <li>Atención: ${eva.atencion}/5</li>
-            <li>Disponibilidad: ${eva.disponibilidad}/5</li>
-          </ul>
+                                <ul class="mb-1">
+                                    <li>Puntualidad: ${eva.puntualidad}/5</li>
+                                    <li>Atención: ${eva.atencion}/5</li>
+                                    <li>Disponibilidad: ${eva.disponibilidad}/5</li>
+                                </ul>
 
-          <p class="mb-1"><strong>Promedio:</strong> ${prom}/5</p>
-          <p class="mb-0"><strong>Observación:</strong> ${eva.observacion ?? ''}</p>
-        </div>
-      `;
+                                <p class="mb-1"><strong>Promedio:</strong> ${prom}/5</p>
+                                <p class="mb-0"><strong>Observación:</strong> ${eva.observacion ?? ''}</p>
+                                </div>
+                            `;
         });
     }
 
@@ -135,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         // Muestra las evaluaciones filtradas
-        renderEvaluaciones(listaFiltrada);
+        renderEvaluacionesHistorial(listaFiltrada);
     }
 
 
@@ -148,6 +208,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const filtroFecha = document.getElementById('filtroFechaEva');
     if (filtroFecha) filtroFecha.addEventListener('input', filtroBusquedaEvaluaciones);
 
+
+
+
+    //Listener para buscar evaluaciones
+    const btnBuscarEvaluaciones = document.getElementById('btnBuscarEvaluaciones');
+    if (btnBuscarEvaluaciones) {
+        btnBuscarEvaluaciones.addEventListener('click', filtroBusquedaEvaluaciones);
+    }
 
 
 
@@ -196,6 +264,15 @@ document.addEventListener('DOMContentLoaded', function () {
         const atencion = parseInt(document.getElementById('evaAtencion').value, 10);
         const disponibilidad = parseInt(document.getElementById('evaDisponibilidad').value, 10);
         const observacion = (document.getElementById('evaObservacion').value || '').trim();
+
+        //Verifica si se escribió algo en la observación
+        const verificaObservacion = document.getElementById('evaObservacion');
+        if (!observacion) {
+            verificaObservacion.setCustomValidity('La observación es obligatoria.'); // Mensaje del navegador
+            verificaObservacion.reportValidity(); // Despliega el aviso
+            verificaObservacion.focus(); // Lleva el foco al campo
+            return; // No continúa si está vacío
+        }
 
 
         // Realiza la petición POST
@@ -269,59 +346,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-    // Función para obtener la lista de evaluaciones para exportar, puede ser toda o la filtrada
-    function listaParaExportar() {
-        //Inputs de los filtros de evaluaciones de promedio y fecha
-        const inputPromedio = document.getElementById('filtroCalificacion');
-        const inputFecha = document.getElementById('filtroFechaEva');
-
-        // Datos para sacar el promedio
-        const textoPromedio = (inputPromedio?.value || '').trim();
-        const hayTextoPromedio = textoPromedio !== '';
-        const esNumero = /^[0-9]+(\.[0-9]+)?$/.test(textoPromedio);
-        const numeroPromedio = esNumero ? parseFloat(textoPromedio) : NaN;
-        const esEntero = esNumero && !textoPromedio.includes('.');
-
-        // Datos para sacar la fecha
-        const fechaBuscada = (inputFecha?.value || '').trim();
-        const hayFecha = !!fechaBuscada;
-
-        // Filtro de evaluaciones por promedio y fecha
-        return evaluaciones.filter(eva => {
-            // Calcula el promedio de puntualidad, atencion y disponibilidad
-            const promedio = (Number(eva.puntualidad) + Number(eva.atencion) + Number(eva.disponibilidad)) / 3;
-            const promedio1Dec = Math.round(promedio * 10) / 10;
-
-            // variable para saber si coincide el promedio
-            let coincidePromedio = true;
-
-            //verifica si hay texto y si es numérico
-            if (hayTextoPromedio && esNumero) {
-                // Verifica si el promedio es entero
-                if (esEntero) {
-                    coincidePromedio = Math.floor(promedio) === numeroPromedio;
-                    // Verifica si el promedio es decimal
-                } else {
-                    const buscado1Dec = Math.round(numeroPromedio * 10) / 10;
-                    coincidePromedio = promedio1Dec === buscado1Dec;
-                }
-                // Verifica si el usuario escribió algo en el input
-            } else if (hayTextoPromedio && !esNumero) {
-                coincidePromedio = false; // si escriben texto no numérico, no coincide
-            }
-
-            // variable para saber si coincide la fecha
-            let coincideFecha = true;
-            // Verifica si el usuario escribió algo en el input
-            if (hayFecha) coincideFecha = fechaRaw(eva).startsWith(fechaBuscada);
-            // Retorna true si coincide el promedio y la fecha
-            return coincidePromedio && coincideFecha;
-        });
-    }
-
-
-
-
     // Reporte de evaluaciones para exportar a PDF (simple)
     window.exportarEvaluacionesPDF = function () {
         // Obtiene la clase jsPDF de la librería cargada en el HTML
@@ -344,7 +368,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // Toma la lista que se va a exportar (respeta los filtros activos)
-        const lista = listaParaExportar();
+        const lista = evaluaciones;
 
         // Si no hay datos, avisa en el PDF y lo guarda
         if (!lista.length) {
@@ -393,10 +417,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+    //Listener para exportar a PDF
+    const btnExportarPDF = document.getElementById('btnExportarPDF');
+    if (btnExportarPDF) {
+    btnExportarPDF.addEventListener('click', exportarEvaluacionesPDF);
+    }
+
+
+
+
     // Reporte de evaluaciones para exportar a Excel
     window.exportarEvaluacionesExcel = function () {
         // Toma la lista que se va a exportar (respeta los filtros activos)
-        const lista = listaParaExportar();
+        const lista = evaluaciones;
 
         // Si no hay datos, avisa y no genera el archivo
         if (!lista.length) {
@@ -425,6 +458,15 @@ document.addEventListener('DOMContentLoaded', function () {
         // Descarga el archivo Excel con un nombre fijo
         XLSX.writeFile(wb, 'evaluaciones.xlsx');
     };
+
+
+
+
+//Listener para exportar a Excel
+    const btnExportarExcel = document.getElementById('btnExportarExcel');
+    if (btnExportarExcel) {
+    btnExportarExcel.addEventListener('click', exportarEvaluacionesExcel);
+    }
 
 
 
@@ -481,4 +523,18 @@ document.addEventListener('DOMContentLoaded', function () {
         // Se asigna número fijo según orden actual
         evaluaciones.forEach((e, i) => { e.numero = i + 1; });
     }
+
+
+
+    // Función para saber si la evaluación es de hoy YYYY-MM-DD
+    function esEvaluacionDeHoy(e) {
+        const hoy = new Date(); // Obtiene la fecha de hoy
+        const yyyy = hoy.getFullYear(); // Obtiene el año
+        const mm = String(hoy.getMonth() + 1).padStart(2, '0'); // Obtiene el mes
+        const dd = String(hoy.getDate()).padStart(2, '0'); // Obtiene el día
+        const prefijoHoy = `${yyyy}-${mm}-${dd}`; // Prefijo para comparar la fecha
+
+        return fechaRaw(e).startsWith(prefijoHoy); // Si la fecha de la evaluación empieza con el prefijo de hoy, devuelve true
+    }
+
 });
