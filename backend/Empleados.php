@@ -5,7 +5,7 @@ require_once "message_log.php";
 //  FUNCIONES 
 
 // Agregar empleado
-function agregarEmpleado($nombre, $fecha, $vacaciones, $puesto, $estado, $archivo) {
+function agregarEmpleado($nombre, $fecha, $vacaciones, $puesto, $archivo) {
     global $pdo;
 
     $rutaFinal = null;
@@ -21,14 +21,13 @@ function agregarEmpleado($nombre, $fecha, $vacaciones, $puesto, $estado, $archiv
     }
 
     $sql = "INSERT INTO empleados (nombre_completo, fecha_ingreso, dias_vacaciones, puesto, estado, archivo)
-            VALUES (:nombre, :fecha, :vacaciones, :puesto, :estado, :archivo)";
+            VALUES (:nombre, :fecha, :vacaciones, :puesto, 1, :archivo)";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
         ':nombre'=>$nombre,
         ':fecha'=>$fecha,
         ':vacaciones'=>$vacaciones,
         ':puesto'=>$puesto,
-        ':estado'=>$estado,
         ':archivo'=>$rutaFinal
     ]);
 
@@ -43,7 +42,7 @@ function obtenerEmpleados() {
 }
 
 // Editar empleado
-function editarEmpleado($id, $nombre, $fecha, $vacaciones, $puesto, $archivo = null) {
+function editarEmpleado($id, $nombre, $fecha, $vacaciones, $puesto, $estado, $archivo = null) {
     global $pdo;
 
     $rutaFinal = null;
@@ -64,7 +63,7 @@ function editarEmpleado($id, $nombre, $fecha, $vacaciones, $puesto, $archivo = n
     // Si hay archivo nuevo, se actualiza también
     if ($rutaFinal) {
         $sql = "UPDATE empleados 
-                   SET nombre_completo=:nombre, fecha_ingreso=:fecha, dias_vacaciones=:vacaciones, puesto=:puesto, archivo=:archivo
+                   SET nombre_completo=:nombre, fecha_ingreso=:fecha, dias_vacaciones=:vacaciones, puesto=:puesto, estado=:estado, archivo=:archivo
                  WHERE id_empleado=:id";
         $params = [
             ':id'        => $id,
@@ -72,19 +71,21 @@ function editarEmpleado($id, $nombre, $fecha, $vacaciones, $puesto, $archivo = n
             ':fecha'     => $fecha,
             ':vacaciones'=> $vacaciones,
             ':puesto'    => $puesto,
+            ':estado'    => $estado,
             ':archivo'   => $rutaFinal
         ];
     } else {
         // Si no se sube archivo, se actualizan solo los demás campos
         $sql = "UPDATE empleados 
-                   SET nombre_completo=:nombre, fecha_ingreso=:fecha, dias_vacaciones=:vacaciones, puesto=:puesto
+                   SET nombre_completo=:nombre, fecha_ingreso=:fecha, dias_vacaciones=:vacaciones, puesto=:puesto, estado=:estado 
                  WHERE id_empleado=:id";
         $params = [
             ':id'        => $id,
             ':nombre'    => $nombre,
             ':fecha'     => $fecha,
             ':vacaciones'=> $vacaciones,
-            ':puesto'    => $puesto
+            ':puesto'    => $puesto,
+            ':estado'    => $estado
         ];
     }
 
@@ -126,7 +127,6 @@ switch($accion) {
         $_POST['fecha'],
         $_POST['vacaciones'],
         $_POST['puesto'],
-        $_POST['estado'],
         $_FILES['archivo'] ?? null
     );
     echo json_encode(['success'=>$id>0, 'id'=>$id]);
@@ -144,6 +144,7 @@ switch($accion) {
         $_POST['fecha'],
         $_POST['vacaciones'],
         $_POST['puesto'],
+        $_POST['estado'],
         $_FILES['archivo'] ?? null
     );
     echo json_encode(['success'=>$ok]);
@@ -151,7 +152,13 @@ switch($accion) {
 
   case 'cambiarEstado':
     $data = json_decode(file_get_contents('php://input'), true);
-    $ok = cambiarEstadoEmpleado($data['id'], $data['estado']);
+      if (!$data) {
+        $data = $_POST;
+    }
+
+    $id = $data['id'] ?? null;
+    $estado = $data['estado'] ?? 0;
+    $ok = cambiarEstadoEmpleado($id, $estado);
     echo json_encode(['success'=>$ok]);
     break;
 

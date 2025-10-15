@@ -122,21 +122,19 @@
                             <label>Fecha de Ingreso</label>
                             <input type="date" class="form-control" id="fechaIngreso" required>
                         </div>
-                        <div class="mb-3">
-                            <label>Puesto</label>
-                            <input type="text" class="form-control" id="puestoEmpleado" required>
+                       <div class="mb-3">
+                            <label for="puestoEmpleado" class="form-label">Puesto</label>
+                            <select class="form-control" id="puestoEmpleado" required>
+                                <option value="">Seleccione un puesto</option>
+                                <option>Vendedor</option>
+                                <option>Recepcionista</option>
+                                <option>Mensajero</option>
+                                <option>Administrador</option>
+                            </select>
                         </div>
                         <div class="mb-3">
                             <label>Días de Vacaciones</label>
                             <input type="number" class="form-control" id="vacacionesEmpleado" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="estadoEmpleado" class="form-label">Estado</label>
-                            <select class="form-control" id="estadoEmpleado" required>
-                                <option value="">Seleccione un estado</option>
-                                <option value="1">Activo</option>
-                                <option value="0">Inactivo</option>
-                            </select>
                         </div>
                         <div class="mb-3">
                             <label for="archivoEmpleado">Adjuntar curriculum</label>
@@ -145,54 +143,69 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-custom" type="submit">Guardar</button>
+                        <button type="submit" class="btn btn-warning" data-bs-dismiss="modal">Guardar</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="modalEditarEmpleado" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form id="formEditarEmpleado" enctype="multipart/form-data">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Editar Empleado</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+   <div class="modal fade" id="modalEditarEmpleado" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="formEditarEmpleado" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Empleado</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="indiceEmpleado">
+                    <div class="mb-3">
+                        <label>Nombre Completo</label>
+                        <input type="text" class="form-control" id="editNombreEmpleado" required>
                     </div>
-                    <div class="modal-body">
-                        <input type="hidden" id="indiceEmpleado">
-                        <div class="mb-3">
-                            <label>Nombre Completo</label>
-                            <input type="text" class="form-control" id="editNombreEmpleado" required>
-                        </div>
-                        <div class="mb-3">
-                            <label>Fecha de Ingreso</label>
-                            <input type="date" class="form-control" id="editFechaIngreso" required>
-                        </div>
-                        <div class="mb-3">
-                            <label>Puesto</label>
-                            <input type="text" class="form-control" id="editPuestoEmpleado" required>
-                        </div>
-                        <div class="mb-3">
-                            <label>Días de Vacaciones</label>
-                            <input type="number" class="form-control" id="editVacacionesEmpleado" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="archivoEmpleado">Adjuntar curriculum</label>
-                            <input type="file" id="editArchivoEmpleado" name="archivo" class="form-control"
-                                accept=".pdf,.doc,.docx,.jpg,.png">
-                        </div>
+                    <div class="mb-3">
+                        <label>Fecha de Ingreso</label>
+                        <input type="date" class="form-control" id="editFechaIngreso" required>
                     </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-custom" type="submit">Actualizar</button>
+                    <div class="mb-3">
+                        <label for="editPuestoEmpleado" class="form-label">Puesto</label>
+                        <select class="form-control" id="editPuestoEmpleado" required>
+                            <option value="">Seleccione un puesto</option>
+                            <option>Vendedor</option>
+                            <option>Recepcionista</option>
+                            <option>Mensajero</option>
+                            <option>Administrador</option>
+                        </select>
+                    </div> 
+                    <div class="mb-3">
+                        <label>Días de Vacaciones</label>
+                        <input type="number" class="form-control" id="editVacacionesEmpleado" required>
                     </div>
-                </form>
-            </div>
+                          <div class="mb-3">
+                            <label for="editEstadoEmpleado" class="form-label">Estado</label>
+                            <select class="form-control" id="editEstadoEmpleado" required>
+                                <option value="">Seleccione un estado</option>
+                                <option value="1">Activo</option>
+                                <option value="0">Inactivo</option>
+                            </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editArchivoEmpleado">Adjuntar curriculum</label>
+                        <input type="file" id="editArchivoEmpleado" name="archivo" class="form-control"
+                            accept=".pdf,.doc,.docx,.jpg,.png">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-warning" data-bs-dismiss="modal">Actualizar</button>
+                </div>
+            </form>
         </div>
     </div>
+</div>
 
-    <!-- Modal Cambiar Estado -->
+
+    <!-- Modal Cambiar Estado 
     <div class="modal fade" id="modalCambiarEstado" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -214,7 +227,7 @@
             </div>
         </div>
     </div>
-
+-->
     <!--
     <div class="modal fade" id="modalAsignarRol" tabindex="-1">
         <div class="modal-dialog">
@@ -247,171 +260,7 @@
         </div>
     </footer>
 
-    <script>
-        const buscar = document.getElementById("buscarEmpleado");
-        const tabla = document.getElementById("tablaEmpleados");
-        const modalEditarEmpleado = document.getElementById('modalEditarEmpleado');
-
-        async function cargarEmpleados() {
-            const res = await fetch("../backend/Empleados.php?accion=listar");
-            const data = await res.json();
-
-            tabla.innerHTML = "";
-            data.forEach(emp => {
-                const estadoTexto = emp.estado == "1" ? "Activo" : "Inactivo";
-                const archivoLink = emp.archivo
-                    ? `<a href="../${emp.archivo}" target="_blank">Ver archivo</a>`
-                    : 'Sin archivo';
-                tabla.innerHTML += `
-        <tr>
-            <td>${emp.nombre_completo}</td>
-            <td>${formatoFecha(emp.fecha_ingreso)}</td>
-            <td>${emp.puesto}</td>
-            <td>${emp.dias_vacaciones}</td>
-            <td>${archivoLink}</td>
-            <td>${estadoTexto}</td>
-            <td>
-                <button class="btn btn-sm btn-primary" onclick="abrirEditar(${emp.id_empleado})">Editar</button>
-                <button class="btn btn-sm btn-warning" onclick="abrirModalCambiarEstado(${emp.id_empleado}, '${estadoTexto}')">Estado</button>
-            </td>
-        </tr>`;
-            });
-        }
-
-        window.onload = cargarEmpleados;
-
-        document.getElementById("formAgregarEmpleado").addEventListener("submit", async e => {
-            e.preventDefault();
-
-            const formData = new FormData();
-            formData.append("nombre", nombreEmpleado.value);
-            formData.append("fecha", fechaIngreso.value);
-            formData.append("vacaciones", vacacionesEmpleado.value);
-            formData.append("puesto", puestoEmpleado.value);
-            formData.append("estado", estadoEmpleado.value);
-
-            // archivo
-            const archivo = document.getElementById("archivoEmpleado").files[0];
-            if (archivo) {
-                formData.append("archivo", archivo);
-            }
-
-            const res = await fetch("../backend/Empleados.php?accion=agregar", {
-                method: "POST",
-                body: formData
-            });
-
-            const result = await res.json();
-
-            if (result.success) {
-                alert("Empleado agregado con éxito");
-                e.target.reset();
-                bootstrap.Modal.getInstance(modalAgregarEmpleado).hide();
-                cargarEmpleados();
-            } else {
-                alert("Error al guardar empleado");
-            }
-        });
-
-
-        async function abrirEditar(id) {
-            const res = await fetch("../backend/Empleados.php?accion=listar");
-            const empleados = await res.json();
-            const emp = empleados.find(e => e.id_empleado == id);
-            if (!emp) return;
-
-            indiceEmpleado.value = emp.id_empleado;
-            editNombreEmpleado.value = emp.nombre_completo;
-            editFechaIngreso.value = emp.fecha_ingreso;
-            editPuestoEmpleado.value = emp.puesto;
-            editVacacionesEmpleado.value = emp.dias_vacaciones;
-            document.getElementById("editArchivoEmpleado").value = "";
-            new bootstrap.Modal(modalEditarEmpleado).show();
-        }
-
-        document.getElementById("formEditarEmpleado").addEventListener("submit", async e => {
-            e.preventDefault();
-
-            const formData = new FormData();
-            formData.append("id", indiceEmpleado.value);
-            formData.append("nombre", editNombreEmpleado.value);
-            formData.append("fecha", editFechaIngreso.value);
-            formData.append("vacaciones", editVacacionesEmpleado.value);
-            formData.append("puesto", editPuestoEmpleado.value);
-
-            const archivo = document.getElementById("editArchivoEmpleado").files[0];
-            if (archivo) {
-                formData.append("archivo", archivo);
-            }
-
-            const res = await fetch("../backend/Empleados.php?accion=editar", {
-                method: "POST",
-                body: formData
-            });
-            const result = await res.json();
-
-            if (result.success) {
-                alert("Empleado editado con éxito");
-                bootstrap.Modal.getInstance(modalEditarEmpleado).hide();
-                cargarEmpleados();
-            } else {
-                alert("Error al editar");
-            }
-        });
-
-
-        function abrirModalCambiarEstado(id, estadoActual) {
-            document.getElementById('indiceEstadoEmpleado').value = id;
-            document.getElementById('nuevoEstado').value = estadoActual === 'Activo' ? 1 : 0;
-            const modal = new bootstrap.Modal(document.getElementById('modalCambiarEstado'));
-            modal.show();
-        }
-
-        async function guardarNuevoEstado() {
-            const id = document.getElementById("indiceEstadoEmpleado").value;
-            const estado = document.getElementById("nuevoEstado").value;
-
-            const res = await fetch("../backend/Empleados.php?accion=cambiarEstado", {
-                method: "POST",
-                body: JSON.stringify({ id, estado })
-            });
-
-            const data = await res.json();
-            if (data.success) {
-                alert("Estado actualizado");
-                cargarEmpleados();
-                bootstrap.Modal.getInstance(document.getElementById('modalCambiarEstado')).hide();
-            } else {
-                alert("Error al actualizar estado");
-            }
-        }
-
-        /*
-           const asignarRol = i => {
-               indiceRolEmpleado.value = i;
-               rolEmpleado.value = empleados[i].rol;
-               new bootstrap.Modal(modalAsignarRol).show();
-           };
-   
-           const guardarRol = () => {
-               empleados[+indiceRolEmpleado.value].rol = rolEmpleado.value;
-               bootstrap.Modal.getInstance(modalAsignarRol).hide();
-               renderTablaEmpleados();
-               mensaje2.classList.remove("d-none");
-               setTimeout(() => mensaje2.classList.add("d-none"), 3000);
-           };
-   
-           */
-        buscar.addEventListener("input", renderTablaEmpleados);
-
-
-        function formatoFecha(fecha) {
-            if (!fecha) return "";
-            const [anio, mes, dia] = fecha.split("-");
-            return `${dia}/${mes}/${anio}`;
-        }
-
-    </script>
+  <script src="../JS/empleados.js"></script>
 </body>
 
 </html>
