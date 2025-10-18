@@ -56,13 +56,25 @@
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
                     <li class="nav-item"><a class="nav-link" href="clientes.html">Clientes</a></li>
                     <li class="nav-item"><a class="nav-link" href="empleados.html">Empleados</a></li>
-                    <li class="nav-item"><a class="nav-link" href="inventario.html">Inventario</a></li>
+                    <!-- Menú desplegable Inventario -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="inventarioDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Inventario
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="inventarioDropdown">
+                            <li><a class="dropdown-item" href="inventario.html">Inventario de Productos</a></li>
+                            <li><a class="dropdown-item" href="inventarioCategorias.html">Inventario de Categorías</a>
+                            </li>
+                        </ul>
                     <li class="nav-item"><a class="nav-link" href="entregas.html">Entregas</a></li>
                     <li class="nav-item"><a class="nav-link" href="proveedores.html">Proveedores</a></li>
                     <li class="nav-item"><a class="nav-link" href="dashboardReportes.html">Reportes</a></li>
                     <li class="nav-item">
-                    <li class="nav-item"><a class="nav-link" href="registro.html">  <i class="fas fa-user"></i> Gestionar Credenciales</a></li>     
-                    <li class="nav-item"><a class="nav-link" href="login.html">  <i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
+                    <li class="nav-item"><a class="nav-link" href="registro.html"> <i class="fas fa-user"></i> Gestionar
+                            Credenciales</a></li>
+                    <li class="nav-item"><a class="nav-link" href="login.html"> <i class="fas fa-sign-out-alt"></i>
+                            Cerrar Sesión</a></li>
                     </li>
                 </ul>
             </div>
@@ -455,7 +467,7 @@
             new bootstrap.Modal(document.getElementById("modalDetallesEntrega")).show();
         }
 
-         function formatoFecha(fecha) {
+        function formatoFecha(fecha) {
             if (!fecha) return "";
             const [anio, mes, dia] = fecha.split("-");
             return `${dia}/${mes}/${anio}`;

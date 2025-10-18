@@ -56,7 +56,17 @@
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
                     <li class="nav-item"><a class="nav-link" href="clientes.html">Clientes</a></li>
                     <li class="nav-item"><a class="nav-link" href="empleados.html">Empleados</a></li>
-                    <li class="nav-item"><a class="nav-link" href="inventario.html">Inventario</a></li>
+                    <!-- Menú desplegable Inventario -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="inventarioDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Inventario
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="inventarioDropdown">
+                            <li><a class="dropdown-item" href="inventario.html">Inventario de Productos</a></li>
+                            <li><a class="dropdown-item" href="inventarioCategorias.html">Inventario de Categorías</a>
+                            </li>
+                        </ul>
                     <li class="nav-item"><a class="nav-link" href="entregas.html">Entregas</a></li>
                     <li class="nav-item"><a class="nav-link" href="proveedores.html">Proveedores</a></li>
                     <li class="nav-item"><a class="nav-link" href="dashboardReportes.html">Reportes</a></li>
@@ -122,7 +132,7 @@
                             <label>Fecha de Ingreso</label>
                             <input type="date" class="form-control" id="fechaIngreso" required>
                         </div>
-                       <div class="mb-3">
+                        <div class="mb-3">
                             <label for="puestoEmpleado" class="form-label">Puesto</label>
                             <select class="form-control" id="puestoEmpleado" required>
                                 <option value="">Seleccione un puesto</option>
@@ -150,59 +160,59 @@
         </div>
     </div>
 
-   <div class="modal fade" id="modalEditarEmpleado" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form id="formEditarEmpleado" enctype="multipart/form-data">
-                <div class="modal-header">
-                    <h5 class="modal-title">Editar Empleado</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" id="indiceEmpleado">
-                    <div class="mb-3">
-                        <label>Nombre Completo</label>
-                        <input type="text" class="form-control" id="editNombreEmpleado" required>
+    <div class="modal fade" id="modalEditarEmpleado" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="formEditarEmpleado" enctype="multipart/form-data">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Editar Empleado</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <div class="mb-3">
-                        <label>Fecha de Ingreso</label>
-                        <input type="date" class="form-control" id="editFechaIngreso" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="editPuestoEmpleado" class="form-label">Puesto</label>
-                        <select class="form-control" id="editPuestoEmpleado" required>
-                            <option value="">Seleccione un puesto</option>
-                            <option>Vendedor</option>
-                            <option>Recepcionista</option>
-                            <option>Mensajero</option>
-                            <option>Administrador</option>
-                        </select>
-                    </div> 
-                    <div class="mb-3">
-                        <label>Días de Vacaciones</label>
-                        <input type="number" class="form-control" id="editVacacionesEmpleado" required>
-                    </div>
-                          <div class="mb-3">
+                    <div class="modal-body">
+                        <input type="hidden" id="indiceEmpleado">
+                        <div class="mb-3">
+                            <label>Nombre Completo</label>
+                            <input type="text" class="form-control" id="editNombreEmpleado" required>
+                        </div>
+                        <div class="mb-3">
+                            <label>Fecha de Ingreso</label>
+                            <input type="date" class="form-control" id="editFechaIngreso" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editPuestoEmpleado" class="form-label">Puesto</label>
+                            <select class="form-control" id="editPuestoEmpleado" required>
+                                <option value="">Seleccione un puesto</option>
+                                <option>Vendedor</option>
+                                <option>Recepcionista</option>
+                                <option>Mensajero</option>
+                                <option>Administrador</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label>Días de Vacaciones</label>
+                            <input type="number" class="form-control" id="editVacacionesEmpleado" required>
+                        </div>
+                        <div class="mb-3">
                             <label for="editEstadoEmpleado" class="form-label">Estado</label>
                             <select class="form-control" id="editEstadoEmpleado" required>
                                 <option value="">Seleccione un estado</option>
                                 <option value="1">Activo</option>
                                 <option value="0">Inactivo</option>
                             </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editArchivoEmpleado">Adjuntar curriculum</label>
+                            <input type="file" id="editArchivoEmpleado" name="archivo" class="form-control"
+                                accept=".pdf,.doc,.docx,.jpg,.png">
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="editArchivoEmpleado">Adjuntar curriculum</label>
-                        <input type="file" id="editArchivoEmpleado" name="archivo" class="form-control"
-                            accept=".pdf,.doc,.docx,.jpg,.png">
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-warning" data-bs-dismiss="modal">Actualizar</button>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-warning" data-bs-dismiss="modal">Actualizar</button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
 
     <!-- Modal Cambiar Estado 
@@ -260,7 +270,7 @@
         </div>
     </footer>
 
-  <script src="../JS/empleados.js"></script>
+    <script src="../JS/empleados.js"></script>
 </body>
 
 </html>

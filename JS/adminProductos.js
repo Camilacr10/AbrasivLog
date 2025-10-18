@@ -218,14 +218,30 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Función para manejar inactivar de un producto
     async function handleInactivarProducto(event) {
-        const productoId = parseInt(event.target.dataset.id);
+        const productoId = parseInt(event.currentTarget.dataset.id, 10);
 
+        // Busca el producto para obtener su nombre en el mensaje
+        const p = productos.find(x => Number(x.id_producto) === productoId);
+        if (!p) {
+            alert('Producto no encontrado');
+            return;
+        }
+
+
+        // Confirmación con nombre y advertencia
+        const ok1 = confirm(`¿Está seguro de inactivar el producto ${p.nombre}? Esta acción no se puede deshacer.`);
+        if (!ok1) return;
+
+        // Llamada al backend para inactivar
         const response = await fetch(`${API_URL}?id_producto=${productoId}`, {
             method: 'DELETE',
             credentials: 'include'
         });
 
         if (response.ok) {
+            // Mensaje solicitado
+            alert('Producto inactivado correctamente.');
+            // Refresca la lista para que aparezca como Inactivo y se bloqueen acciones
             loadProductos();
         } else {
             console.error("Error al inactivar el producto");
@@ -350,7 +366,7 @@ document.addEventListener('DOMContentLoaded', function () {
             loadProductos();
         } else {
             // Si falla, muestra un error en la consola
-            console.error('POST producto failed');
+            console.error('Error al crear el producto');
         }
     });
 
@@ -457,23 +473,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Si la actualización fue exitosa:
         if (res.ok) {
+
             // Cierra el modal de edición
-            bootstrap.Modal.getInstance(document.getElementById('modalEditar')).hide();
+            const modalEl = document.getElementById('modalEditar');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            modal.hide();
+
+            // Muestra el mensaje cuando el modal ya terminó de cerrarse (igual que en Agregar)
+            modalEl.addEventListener('hidden.bs.modal', () => {
+                alert(`Producto ${nombre} actualizado correctamente.`);
+            }, { once: true });
+
             // Limpia la variable global de edición
             edittingId = null;
+
             // Recarga la lista de productos
             loadProductos();
         } else {
             // Si falla, muestra un error en consola
             console.error('PUT producto failed');
         }
-    });
-
-    // Limpieza al cerrar el modal de editar
-    // Restaura la variable edittingId y resetea el formulario
-    document.getElementById('modalEditar').addEventListener('hidden.bs.modal', () => {
-        edittingId = null;
-        document.getElementById('formEditar').reset();
     });
 
 
