@@ -7,12 +7,12 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
   <style>
-    /* Fondo de la página */
+   
     body {
       margin: 0;
       padding: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-image: url('/IMG/index.png');
+      background-image: url('../IMG/index.png');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -110,11 +110,13 @@
 <body>
   <div class="login-box">
     <div class="logo-section">
-      <img src="/IMG/logo.png" alt="Logo Abrasivos" class="logo">
+      <img src="../IMG/logo.png" alt="Logo Abrasivos" class="logo">
       <h1>AbrasivLog</h1>
     </div>
     <h2>Iniciar Sesión</h2>
-    <form onsubmit="return false">
+
+  
+    <form id="loginForm">
       <div class="input-group">
         <label for="username"><i class="fas fa-user"></i> Usuario</label>
         <input type="text" id="username" placeholder="Ingrese su usuario" required>
@@ -123,22 +125,11 @@
         <label for="password"><i class="fas fa-lock"></i> Contraseña</label>
         <input type="password" id="password" placeholder="Ingrese su contraseña" required>
       </div>
-      <button type="button" onclick="login()"><i class="fas fa-sign-in-alt"></i> Ingresar</button>
+      <button type="submit"><i class="fas fa-sign-in-alt"></i> Ingresar</button>
     </form>
   </div>
 
-  <script>
-    function login() {
-      const user = document.getElementById('username').value;
-      const pass = document.getElementById('password').value;
 
-      if (user === 'acorrales@abrasivlog.com' && pass === 'abrasivLog1') {
-        localStorage.setItem('auth', 'true');
-        window.location.href = 'index.html';
-      } else {
-        alert('Usuario o contraseña incorrectos');
-      }
-    }
-  </script>
+   <script src="../JS/login.js"></script>
 </body>
 </html>

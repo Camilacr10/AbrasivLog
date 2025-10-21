@@ -1,10 +1,7 @@
-
 const API = "../backend/adminClientes.php";
-
 
 let clientes = [];
 let clienteActual = -1;
-
 
 document.addEventListener('DOMContentLoaded', cargarClientes);
 
@@ -26,31 +23,44 @@ function renderTabla() {
       <td>${cliente.telefono ?? ''}</td>
       <td>${cliente.correo_electronico ?? ''}</td>
       <td>${cliente.direccion ?? ''}</td>
-      <td>
-        <span class="badge ${cliente.estado === 'ACTIVO' ? 'bg-success' : 'bg-secondary'}">
-          ${cliente.estado}
-        </span>
-      </td>
-      <td>
-        <button class="btn btn-info btn-sm me-1 text-white" onclick="verDetalle(${i})">Ver</button>
-        <button class="btn btn-primary btn-sm me-1" onclick="abrirModal(${i})">Editar</button>
-        <button class="btn btn-secondary btn-sm me-1" onclick="toggleEstado(${i})">
-          ${cliente.estado === 'ACTIVO' ? 'Inactivar' : 'Activar'}
-        </button>
-        <button class="btn btn-warning btn-sm text-white me-1" onclick="abrirHistorial()">Historial</button>
-        <button class="btn btn-danger btn-sm" onclick="eliminarCliente(${i})">Eliminar</button>
-      </td>
+      <td><span class="badge ${cliente.estado === 'ACTIVO' ? 'bg-success' : 'bg-secondary'}">${cliente.estado}</span></td>
+      <td class="text-center align-middle">${crearDropdown(i, cliente.estado)}</td>
     `;
     tbody.appendChild(fila);
   });
+
+  document.querySelectorAll('.dropdown-toggle').forEach(el => new bootstrap.Dropdown(el));
+}
+
+function crearDropdown(index, estado) {
+  const activo = estado === "ACTIVO";
+  return `
+    <div class="dropdown">
+      <button class="btn btn-sm btn-secondary dropdown-toggle"
+              type="button"
+              data-bs-toggle="dropdown"
+              data-bs-display="static"
+              aria-expanded="false">
+        Acciones
+      </button>
+      <ul class="dropdown-menu shadow">
+        <li><a class="dropdown-item" href="#" onclick="verDetalle(${index})"><i class="fa-solid fa-eye text-primary"></i> Ver</a></li>
+        <li><a class="dropdown-item" href="#" onclick="abrirModal(${index})"><i class="fa-solid fa-pen-to-square text-warning"></i> Editar</a></li>
+        <li><a class="dropdown-item" href="#" onclick="toggleEstado(${index})">
+          <i class="fa-solid ${activo ? 'fa-user-slash text-danger' : 'fa-user-check text-success'}"></i> ${activo ? 'Inactivar' : 'Activar'}
+        </a></li>
+        <li><a class="dropdown-item" href="#" onclick="abrirHistorial(${index})"><i class="fa-solid fa-clock-rotate-left text-info"></i> Historial</a></li>
+      </ul>
+    </div>
+  `;
 }
 
 
 function filtrarClientes() {
   const filtro = document.getElementById('buscarInput').value.toLowerCase();
   const filas = document.querySelectorAll('#tablaClientes tr');
-
   let visibles = 0;
+
   filas.forEach(fila => {
     const texto = fila.textContent.toLowerCase();
     const match = texto.includes(filtro);
@@ -59,16 +69,8 @@ function filtrarClientes() {
   });
 
   if (visibles === 0) {
-    const tbody = document.getElementById('tablaClientes');
-    const tr = document.createElement('tr');
-    tr.innerHTML = "<td colspan='8'>sin resultados</td>";
-    tbody.appendChild(tr);
+    document.getElementById('tablaClientes').innerHTML = "<tr><td colspan='8'>Sin resultados</td></tr>";
   }
-}
-
-
-function abrirHistorial() {
-  new bootstrap.Modal(document.getElementById('modalHistorial')).show();
 }
 
 
@@ -87,21 +89,22 @@ async function cargarClientes() {
   }
 }
 
+
 async function registrarCliente() {
-  const nombre    = document.getElementById('nuevoNombre').value.trim();
-  const razon     = document.getElementById('nuevaRazon').value.trim();
-  const cedula    = document.getElementById('nuevaCedula').value.trim();
-  const telefono  = document.getElementById('nuevoTelefono').value.trim();
-  const correo    = document.getElementById('nuevoCorreo').value.trim();
+  const nombre = document.getElementById('nuevoNombre').value.trim();
+  const razon = document.getElementById('nuevaRazon').value.trim();
+  const cedula = document.getElementById('nuevaCedula').value.trim();
+  const telefono = document.getElementById('nuevoTelefono').value.trim();
+  const correo = document.getElementById('nuevoCorreo').value.trim();
   const direccion = document.getElementById('nuevaDireccion').value.trim();
-  const estado    = document.getElementById('nuevoEstado').value;
+  const estado = document.getElementById('nuevoEstado').value;
 
   if (!nombre || !cedula) {
-    alert('Por favor, verifique que los campos obligatorios estén completos y digitados correctamente.');
+    alert('⚠️ Por favor complete los campos obligatorios.');
     return;
   }
   if (correo && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
-    alert('Los datos ingresados no son válidos. Por favor, verifique e intente de nuevo.');
+    alert('⚠️ Correo electrónico no válido.');
     return;
   }
 
@@ -112,9 +115,8 @@ async function registrarCliente() {
       body: JSON.stringify({ nombre, razon_social: razon, cedula, telefono, correo, direccion, estado })
     });
     const data = await resp.json();
-    if (!resp.ok || !data.ok) throw new Error(data.detail || data.message || 'Error al registrar');
-
-    alert('Cliente registrado exitosamente');
+    if (!resp.ok || !data.ok) throw new Error(data.message || 'Error al registrar');
+    alert('✅ Cliente registrado exitosamente');
     document.getElementById('formRegistro').reset();
     await cargarClientes();
   } catch (err) {
@@ -126,23 +128,24 @@ async function registrarCliente() {
 function abrirModal(index) {
   clienteActual = index;
   const c = clientes[index];
-
-  document.getElementById('modalIdCliente').value   = c.id_cliente;
-  document.getElementById('modalRazon').value       = c.razon_social ?? '';
-  document.getElementById('modalNombre').value      = c.nombre ?? '';
-  document.getElementById('modalCedula').value      = c.cedula ?? '';
-  document.getElementById('modalTelefono').value    = c.telefono ?? '';
-  document.getElementById('modalCorreo').value      = c.correo_electronico ?? '';
-  document.getElementById('modalDireccion').value   = c.direccion ?? '';
-  document.getElementById('modalEstado').value      = c.estado ?? 'ACTIVO';
+  document.getElementById('modalIdCliente').value = c.id_cliente;
+  document.getElementById('modalRazon').value = c.razon_social ?? '';
+  document.getElementById('modalNombre').value = c.nombre ?? '';
+  document.getElementById('modalCedula').value = c.cedula ?? '';
+  document.getElementById('modalTelefono').value = c.telefono ?? '';
+  document.getElementById('modalCorreo').value = c.correo_electronico ?? '';
+  document.getElementById('modalDireccion').value = c.direccion ?? '';
+  document.getElementById('modalEstado').value = c.estado ?? 'ACTIVO';
 
   const bloqueado = (c.estado === 'INACTIVO');
-  const inputs = ['modalRazon','modalNombre','modalTelefono','modalCorreo','modalDireccion'];
-  inputs.forEach(id => document.getElementById(id).disabled = bloqueado);
+  ['modalRazon', 'modalNombre', 'modalTelefono', 'modalCorreo', 'modalDireccion'].forEach(id => {
+    document.getElementById(id).disabled = bloqueado;
+  });
   document.getElementById('alertBloqueado').classList.toggle('d-none', !bloqueado);
 
   new bootstrap.Modal(document.getElementById('modalEditarCliente')).show();
 }
+
 
 async function guardarCambios() {
   if (clienteActual < 0) return;
@@ -152,7 +155,7 @@ async function guardarCambios() {
     id_cliente: c.id_cliente,
     nombre: document.getElementById('modalNombre').value.trim(),
     razon_social: document.getElementById('modalRazon').value.trim(),
-    cedula: c.cedula.getElementById('modalCedula').value.trim(),
+    cedula: document.getElementById('modalCedula').value.trim(),
     telefono: document.getElementById('modalTelefono').value.trim(),
     correo: document.getElementById('modalCorreo').value.trim(),
     direccion: document.getElementById('modalDireccion').value.trim(),
@@ -160,11 +163,11 @@ async function guardarCambios() {
   };
 
   if (!payload.nombre || !payload.cedula) {
-    alert('Por favor, verifique que los campos obligatorios estén completos y digitados correctamente.');
+    alert('⚠️ Complete los campos obligatorios.');
     return;
   }
   if (payload.correo && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.correo)) {
-    alert('Los datos ingresados no son válidos. Por favor, verifique e intente de nuevo.');
+    alert('⚠️ Correo inválido.');
     return;
   }
 
@@ -175,40 +178,28 @@ async function guardarCambios() {
       body: JSON.stringify(payload)
     });
     const data = await resp.json();
-    if (!resp.ok || !data.ok) throw new Error(data.detail || data.message || 'Error al guardar');
-
-    alert('Datos actualizados con éxito');
+    if (!resp.ok || !data.ok) throw new Error(data.message || 'Error al guardar');
+    alert('✅ Datos actualizados');
     await cargarClientes();
   } catch (err) {
     console.error(err);
     alert('❌ ' + err.message);
   }
 }
+
 
 async function toggleEstado(index) {
   const c = clientes[index];
   const nuevoEstado = c.estado === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO';
 
-  const payload = {
-    id_cliente: c.id_cliente,
-    nombre: c.nombre,
-    razon_social: c.razon_social ?? '',
-    cedula: c.cedula,
-    telefono: c.telefono ?? '',
-    correo: c.correo_electronico ?? '',
-    direccion: c.direccion ?? '',
-    estado: nuevoEstado
-  };
-
   try {
     const resp = await fetch(API, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({ ...c, estado: nuevoEstado })
     });
     const data = await resp.json();
-    if (!resp.ok || !data.ok) throw new Error(data.detail || data.message || 'No se pudo cambiar el estado');
-
+    if (!resp.ok || !data.ok) throw new Error(data.message || 'Error al cambiar estado');
     await cargarClientes();
   } catch (err) {
     console.error(err);
@@ -216,33 +207,20 @@ async function toggleEstado(index) {
   }
 }
 
-async function eliminarCliente(index) {
-  const c = clientes[index];
-  if (!confirm(`¿Inactivar al cliente "${c.nombre}"?`)) return;
-
-  try {
-    const resp = await fetch(`${API}?id_cliente=${encodeURIComponent(c.id_cliente)}`, {
-      method: 'DELETE'
-    });
-    const data = await resp.json();
-    if (!resp.ok || !data.ok) throw new Error(data.detail || data.message || 'No se pudo eliminar');
-
-    await cargarClientes();
-  } catch (err) {
-    console.error(err);
-    alert('❌ ' + err.message);
-  }
-}
 
 function verDetalle(index) {
   const c = clientes[index];
-  document.getElementById('detRazon').textContent     = c.razon_social ?? '';
-  document.getElementById('detNombre').textContent    = c.nombre ?? '';
-  document.getElementById('detCedula').textContent    = c.cedula ?? '';
-  document.getElementById('detCorreo').textContent    = c.correo_electronico ?? '';
-  document.getElementById('detTelefono').textContent  = c.telefono ?? '';
+  document.getElementById('detRazon').textContent = c.razon_social ?? '';
+  document.getElementById('detNombre').textContent = c.nombre ?? '';
+  document.getElementById('detCedula').textContent = c.cedula ?? '';
+  document.getElementById('detCorreo').textContent = c.correo_electronico ?? '';
+  document.getElementById('detTelefono').textContent = c.telefono ?? '';
   document.getElementById('detDireccion').textContent = c.direccion ?? '';
-  document.getElementById('detEstado').textContent    = c.estado ?? 'ACTIVO';
+  document.getElementById('detEstado').textContent = c.estado ?? 'ACTIVO';
   new bootstrap.Modal(document.getElementById('modalDetalleCliente')).show();
 }
 
+
+function abrirHistorial() {
+  new bootstrap.Modal(document.getElementById('modalHistorial')).show();
+}
