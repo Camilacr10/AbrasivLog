@@ -108,7 +108,17 @@
                     <li class="nav-item"><a class="nav-link" href="/HTML/empleados.html">Empleados</a></li>
                     <li class="nav-item"><a class="nav-link" href="/HTML/inventario.html">Inventario</a></li>
                     <li class="nav-item"><a class="nav-link" href="/HTML/entregas.html">Entregas</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/HTML/proveedores.html">Proveedores</a></li>
+                    <!-- Menú desplegable Inventario -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="inventarioDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Inventario
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="inventarioDropdown">
+                            <li><a class="dropdown-item" href="inventario.html">Inventario de Productos</a></li>
+                            <li><a class="dropdown-item" href="inventarioCategorias.html">Inventario de Categorías</a>
+                            </li>
+                        </ul>
                     <li class="nav-item"><a class="nav-link" href="/HTML/dashboardReportes.html">Reportes</a></li>
                     <li class="nav-item">
                     <li class="nav-item"><a class="nav-link" href="/HTML/registro.html"> <i class="fas fa-user"></i>
@@ -133,7 +143,8 @@
         </div>
 
         <!-- Campo de texto para buscar proveedores -->
-        <input type="text" id="buscarProveedor" class="form-control mb-3" placeholder="Buscar proveedor por nombre o cedula juridica...">
+        <input type="text" id="buscarProveedor" class="form-control mb-3"
+            placeholder="Buscar proveedor por nombre o cedula juridica...">
 
 
         <!-- Tabla donde se van a listar los proveedores que se agreguen -->
@@ -227,19 +238,20 @@
     <!-- Modal para ver y agregar evaluaciones de desempeño de un proveedor -->
     <div class="modal fade" id="modalEvaluaciones" tabindex="-1">
         <div class="modal-dialog">
-            <div class="modal-content"> 
+            <div class="modal-content">
 
                 <!-- Encabezado del modal -->
                 <div class="modal-header">
-                    <h5 class="modal-title">Evaluaciones de Desempeño</h5> 
+                    <h5 class="modal-title">Evaluaciones de Desempeño</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div> 
-                
+                </div>
+
                 <!-- Cuerpo del modal -->
-                <div class="modal-body"> 
+                <div class="modal-body">
                     <!-- Botón VER HISTORIAL -->
-                    <div class="text-end mb-2"> 
-                        <button id="btnVerHistorialEvaluaciones" class="btn btn-outline-secondary btn-sm">Ver historial</button> 
+                    <div class="text-end mb-2">
+                        <button id="btnVerHistorialEvaluaciones" class="btn btn-outline-secondary btn-sm">Ver
+                            historial</button>
                     </div>
 
                     <!-- Contenedor de evaluaciones con fecha de hoy -->
@@ -250,8 +262,8 @@
                     <hr>
 
                     <h6 class="mt-4 mb-3 text-center">Agregar nueva evaluación</h6>
-                    <!-- Marcadores de 1 a 5 para el slider --> 
-                     <datalist id="ticks-1-5">
+                    <!-- Marcadores de 1 a 5 para el slider -->
+                    <datalist id="ticks-1-5">
                         <option value="1"></option>
                         <option value="2"></option>
                         <option value="3"></option>
@@ -259,26 +271,26 @@
                         <option value="5"></option>
                     </datalist>
 
-                    <div class="mb-2"> 
-                        <!-- Puntualidad --> 
-                         <label class="form-label">Puntualidad (1-5):</label>
+                    <div class="mb-2">
+                        <!-- Puntualidad -->
+                        <label class="form-label">Puntualidad (1-5):</label>
                         <div class="d-flex align-items-center gap-2"> <input type="range" class="form-range range-sm"
                                 id="evaPuntualidad" min="1" max="5" step="1" list="ticks-1-5" required>
                             <div class="range-value-box" id="lblPuntualidad">3</div>
                         </div>
-                    </div> 
-                    
+                    </div>
+
                     <!-- Atención -->
-                    <div class="mb-2"> 
+                    <div class="mb-2">
                         <label class="form-label">Atención (1-5):</label>
                         <div class="d-flex align-items-center gap-2"> <input type="range" class="form-range range-sm"
                                 id="evaAtencion" min="1" max="5" step="1" list="ticks-1-5" required>
                             <div class="range-value-box" id="lblAtencion">3</div>
                         </div>
-                    </div> 
-                    
+                    </div>
+
                     <!-- Disponibilidad -->
-                    <div class="mb-2"> 
+                    <div class="mb-2">
                         <label class="form-label">Disponibilidad (1-5):</label>
                         <div class="d-flex align-items-center gap-2"> <input type="range" class="form-range range-sm"
                                 id="evaDisponibilidad" min="1" max="5" step="1" list="ticks-1-5" required>
@@ -286,17 +298,19 @@
                         </div>
                     </div>
 
-                     <!-- Observaciones -->
-                    <div class="mb-2"> 
-                        <label>Observaciones:</label> <textarea class="form-control" id="evaObservacion" rows="2"></textarea> 
+                    <!-- Observaciones -->
+                    <div class="mb-2">
+                        <label>Observaciones:</label> <textarea class="form-control" id="evaObservacion"
+                            rows="2"></textarea>
                     </div>
 
-                    <!-- Índice de la evaluación actual --> 
-                     <input type="hidden" id="indiceEvaluacionActual">
+                    <!-- Índice de la evaluación actual -->
+                    <input type="hidden" id="indiceEvaluacionActual">
 
                     <!-- Botón para guardar la evaluación -->
                     <div class="text-center">
-                        <button id="btnGuardarEvaluacion" class="btn btn-custom mt-2" type="button"> Guardar Evaluación </button>
+                        <button id="btnGuardarEvaluacion" class="btn btn-custom mt-2" type="button"> Guardar Evaluación
+                        </button>
                     </div>
                 </div>
             </div>
@@ -322,8 +336,10 @@
 
                     <!-- Botones para exportar evaluaciones -->
                     <div class="d-flex gap-2 mb-3">
-                        <button class="btn btn-outline-success btn-sm" id="btnExportarPDF">Exportar historial - PDF</button>
-                        <button class="btn btn-outline-primary btn-sm" id="btnExportarExcel">Exportar historial - Excel</button>
+                        <button class="btn btn-outline-success btn-sm" id="btnExportarPDF">Exportar historial -
+                            PDF</button>
+                        <button class="btn btn-outline-primary btn-sm" id="btnExportarExcel">Exportar historial -
+                            Excel</button>
                     </div>
 
                     <!-- Filtros para búsqueda de evaluaciones -->
@@ -338,7 +354,8 @@
                             placeholder="Ej: 3">
                     </div>
 
-                    <button class="btn btn-outline-secondary btn-sm mb-3" id="btnBuscarEvaluaciones">Buscar Evaluaciones</button>
+                    <button class="btn btn-outline-secondary btn-sm mb-3" id="btnBuscarEvaluaciones">Buscar
+                        Evaluaciones</button>
 
                     <!-- Contenedor de evaluaciones existentes -->
                     <div id="historialContenido"></div>

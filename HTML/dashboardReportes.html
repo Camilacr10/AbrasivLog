@@ -15,23 +15,27 @@
       text-align: center;
       margin-bottom: 20px;
     }
+
     .encabezado-pdf img {
       max-width: 100px;
       margin-bottom: 10px;
     }
+
     .encabezado-pdf h4 {
       margin: 0;
       font-weight: bold;
     }
+
     .encabezado-pdf small {
       font-style: italic;
       color: #555;
     }
+
     h1 {
-            font-family: 'Arial', sans-serif;
-            font-size: 28pt;
-            color: #675541;
-        }
+      font-family: 'Arial', sans-serif;
+      font-size: 28pt;
+      color: #675541;
+    }
   </style>
 </head>
 
@@ -44,26 +48,38 @@
       </a>
       <div class="collapse navbar-collapse" id="menuPrincipal">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
-            <li class="nav-item"><a class="nav-link" href="clientes.html">Clientes</a></li>
-            <li class="nav-item"><a class="nav-link" href="empleados.html">Empleados</a></li>
-            <li class="nav-item"><a class="nav-link" href="inventario.html">Inventario</a></li>
-            <li class="nav-item"><a class="nav-link" href="entregas.html">Entregas</a></li>
-            <li class="nav-item"><a class="nav-link" href="proveedores.html">Proveedores</a></li>
-            <li class="nav-item"><a class="nav-link" href="dashboardReportes.html">Reportes</a></li>
-            <li class="nav-item">
-            <li class="nav-item"><a class="nav-link" href="registro.html">  <i class="fas fa-user"></i>Gestionar Credenciales</a></li>        
-            <li class="nav-item"><a class="nav-link" href="login.html">  <i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
-            </li>
+          <li class="nav-item"><a class="nav-link" href="clientes.html">Clientes</a></li>
+          <li class="nav-item"><a class="nav-link" href="empleados.html">Empleados</a></li>
+          <!-- Menú desplegable Inventario -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="inventarioDropdown" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              Inventario
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="inventarioDropdown">
+              <li><a class="dropdown-item" href="inventario.html">Inventario de Productos</a></li>
+              <li><a class="dropdown-item" href="inventarioCategorias.html">Inventario de Categorías</a>
+              </li>
+            </ul>
+          <li class="nav-item"><a class="nav-link" href="entregas.html">Entregas</a></li>
+          <li class="nav-item"><a class="nav-link" href="proveedores.html">Proveedores</a></li>
+          <li class="nav-item"><a class="nav-link" href="dashboardReportes.html">Reportes</a></li>
+          <li class="nav-item">
+          <li class="nav-item"><a class="nav-link" href="registro.html"> <i class="fas fa-user"></i>Gestionar
+              Credenciales</a></li>
+          <li class="nav-item"><a class="nav-link" href="login.html"> <i class="fas fa-sign-out-alt"></i> Cerrar
+              Sesión</a></li>
+          </li>
         </ul>
-    </div>
+      </div>
     </div>
   </nav>
 
-  
+
 
   <div class="container mt-3 mb-5">
     <h1>Dashboard y Reporte</h1>
-<br>
+    <br>
     <!-- Métricas -->
     <div class="row g-4 text-white">
       <div class="col-md-3">
@@ -135,23 +151,27 @@
                 <td>Industrias Repuestos</td>
                 <td>Disco Corte 7"</td>
                 <td>12/07/2025</td>
-                <td><span class="badge bg-warning text-dark"><i class="fas fa-hourglass-half me-1"></i>Pendiente</span></td>
+                <td><span class="badge bg-warning text-dark"><i class="fas fa-hourglass-half me-1"></i>Pendiente</span>
+                </td>
               </tr>
               <tr>
                 <td>Herramientas CR</td>
                 <td>Lija Grano 60</td>
                 <td>13/07/2025</td>
-                <td><span class="badge bg-warning text-dark"><i class="fas fa-hourglass-half me-1"></i>Pendiente</span></td>
+                <td><span class="badge bg-warning text-dark"><i class="fas fa-hourglass-half me-1"></i>Pendiente</span>
+                </td>
               </tr>
               <tr>
                 <td>Taller Sánchez</td>
                 <td>Disco Flap</td>
                 <td>15/07/2025</td>
-                <td><span class="badge bg-warning text-dark"><i class="fas fa-hourglass-half me-1"></i>Pendiente</span></td>
+                <td><span class="badge bg-warning text-dark"><i class="fas fa-hourglass-half me-1"></i>Pendiente</span>
+                </td>
               </tr>
             </tbody>
           </table>
-          <button class="btn btn-outline-secondary me-2" onclick="descargarPorId('reporteEntregas', 'entregas_pendientes.pdf', 'Entregas Pendientes')">
+          <button class="btn btn-outline-secondary me-2"
+            onclick="descargarPorId('reporteEntregas', 'entregas_pendientes.pdf', 'Entregas Pendientes')">
             <i class="fas fa-download me-1"></i> Entregas Pendientes
           </button>
         </div>
@@ -215,7 +235,8 @@
               </tr>
             </tbody>
           </table>
-          <button class="btn btn-outline-secondary" onclick="descargarPorId('reporteProveedores', 'top_proveedores.pdf', 'Top Proveedores')">
+          <button class="btn btn-outline-secondary"
+            onclick="descargarPorId('reporteProveedores', 'top_proveedores.pdf', 'Top Proveedores')">
             <i class="fas fa-download me-1"></i> Top Proveedores
           </button>
         </div>

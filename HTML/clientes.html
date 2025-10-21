@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <title>Gestión de Clientes - AbrasivLog</title>
@@ -10,7 +11,7 @@
   <link rel="stylesheet" href="/CSS/style.css">
 
   <style>
-    /* ✅ Corrige la posición de los dropdowns */
+ 
     .table-responsive {
       overflow: visible !important;
     }
@@ -45,7 +46,6 @@
 
 <body class="d-flex flex-column min-vh-100">
 
-  <!-- 🔹 Navbar -->
   <nav class="navbar navbar-expand-lg navbar-custom">
     <div class="container">
       <a class="navbar-brand d-flex align-items-center" href="index.html">
@@ -55,18 +55,29 @@
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
           <li class="nav-item"><a class="nav-link" href="clientes.html">Clientes</a></li>
           <li class="nav-item"><a class="nav-link" href="empleados.html">Empleados</a></li>
-          <li class="nav-item"><a class="nav-link" href="inventario.html">Inventario</a></li>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="inventarioDropdown" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              Inventario
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="inventarioDropdown">
+              <li><a class="dropdown-item" href="inventario.html">Inventario de Productos</a></li>
+              <li><a class="dropdown-item" href="inventarioCategorias.html">Inventario de Categorías</a>
+              </li>
+            </ul>
           <li class="nav-item"><a class="nav-link" href="entregas.html">Entregas</a></li>
           <li class="nav-item"><a class="nav-link" href="proveedores.html">Proveedores</a></li>
           <li class="nav-item"><a class="nav-link" href="dashboardReportes.html">Reportes</a></li>
-          <li class="nav-item"><a class="nav-link" href="registro.html"><i class="fas fa-user"></i> Gestionar Credenciales</a></li>
-          <li class="nav-item"><a class="nav-link" href="login.html"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
+          <li class="nav-item"><a class="nav-link" href="registro.html"><i class="fas fa-user"></i> Gestionar
+              Credenciales</a></li>
+          <li class="nav-item"><a class="nav-link" href="login.html"><i class="fas fa-sign-out-alt"></i> Cerrar
+              Sesión</a></li>
         </ul>
       </div>
     </div>
   </nav>
 
-  <!-- 🔹 Contenido -->
   <div class="container pt-7 mt-7" style="padding-top: 10rem;">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h1 class="fw-bold">Lista de Clientes</h1>
@@ -76,7 +87,12 @@
     </div>
 
     <div class="mb-3">
+
       <input type="text" class="form-control" id="buscarInput" placeholder="Buscar cliente por nombre o cédula..." onkeyup="filtrarClientes()">
+
+      <input type="text" class="form-control" id="buscarInput" placeholder="Buscar cliente..."
+        onkeyup="filtrarClientes()">
+
     </div>
 
     <div class="table-responsive">
@@ -94,14 +110,18 @@
           </tr>
         </thead>
         <tbody id="tablaClientes">
-          <tr><td colspan="8">Cargando...</td></tr>
+          <tr>
+            <td colspan="8">Cargando...</td>
+          </tr>
         </tbody>
       </table>
     </div>
   </div>
 
-  <!-- 🔹 Modales -->
   <div class="modal fade" id="modalRegistroCliente" tabindex="-1" aria-labelledby="modalRegistroClienteLabel" aria-hidden="true">
+  <div class="modal fade" id="modalRegistroCliente" tabindex="-1" aria-labelledby="modalRegistroClienteLabel"
+    aria-hidden="true">
+
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -125,15 +145,26 @@
           </form>
         </div>
         <div class="modal-footer">
+
           <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
           <button class="btn btn-warning fw-semibold" onclick="registrarCliente()" data-bs-dismiss="modal">Guardar</button>
+
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-warning fw-semibold" onclick="registrarCliente()"
+            data-bs-dismiss="modal">Guardar</button>
+
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Modal editar -->
+
+ 
   <div class="modal fade" id="modalEditarCliente" tabindex="-1" aria-hidden="true">
+->
+  <div class="modal fade" id="modalEditarCliente" tabindex="-1" aria-labelledby="modalEditarClienteLabel"
+    aria-hidden="true">
+
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -160,7 +191,8 @@
         </div>
         <div class="modal-footer">
           <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button class="btn btn-warning fw-semibold" onclick="guardarCambios()" data-bs-dismiss="modal">Guardar Cambios</button>
+          <button class="btn btn-warning fw-semibold" onclick="guardarCambios()" data-bs-dismiss="modal">Guardar
+            Cambios</button>
         </div>
       </div>
     </div>
@@ -173,13 +205,20 @@
         <div class="modal-header"><h5 class="modal-title">Detalle del Cliente</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
         <div class="modal-body">
           <dl class="row mb-0">
-            <dt class="col-sm-4">Razón Social</dt><dd class="col-sm-8" id="detRazon"></dd>
-            <dt class="col-sm-4">Nombre</dt><dd class="col-sm-8" id="detNombre"></dd>
-            <dt class="col-sm-4">Cédula</dt><dd class="col-sm-8" id="detCedula"></dd>
-            <dt class="col-sm-4">Correo</dt><dd class="col-sm-8" id="detCorreo"></dd>
-            <dt class="col-sm-4">Teléfono</dt><dd class="col-sm-8" id="detTelefono"></dd>
-            <dt class="col-sm-4">Dirección</dt><dd class="col-sm-8" id="detDireccion"></dd>
-            <dt class="col-sm-4">Estado</dt><dd class="col-sm-8" id="detEstado"></dd>
+            <dt class="col-sm-4">Razón Social</dt>
+            <dd class="col-sm-8" id="detRazon"></dd>
+            <dt class="col-sm-4">Nombre</dt>
+            <dd class="col-sm-8" id="detNombre"></dd>
+            <dt class="col-sm-4">Cédula</dt>
+            <dd class="col-sm-8" id="detCedula"></dd>
+            <dt class="col-sm-4">Correo</dt>
+            <dd class="col-sm-8" id="detCorreo"></dd>
+            <dt class="col-sm-4">Teléfono</dt>
+            <dd class="col-sm-8" id="detTelefono"></dd>
+            <dt class="col-sm-4">Dirección</dt>
+            <dd class="col-sm-8" id="detDireccion"></dd>
+            <dt class="col-sm-4">Estado</dt>
+            <dd class="col-sm-8" id="detEstado"></dd>
           </dl>
         </div>
       </div>
@@ -211,4 +250,5 @@
     </div>
   </footer>
 </body>
+
 </html>

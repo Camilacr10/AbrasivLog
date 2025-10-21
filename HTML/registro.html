@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -15,7 +16,13 @@
       margin: 120px auto 60px auto;
       padding: 20px;
       text-align: left;
+<<<<<<< HEAD
     }
+=======
+      margin-top: 100px;
+    }
+
+>>>>>>> e281063f12017e41db73d0b4d32ad46de5f5e0dd
     h1 {
       font-family: 'Segoe UI', sans-serif;
       font-weight: bold;
@@ -23,6 +30,10 @@
       color: #5a3e1b;
       margin-bottom: 10px;
     }
+<<<<<<< HEAD
+=======
+
+>>>>>>> e281063f12017e41db73d0b4d32ad46de5f5e0dd
     #buscarEmpleado {
       width: 100%;
       padding: 10px;
@@ -30,28 +41,121 @@
       border: 1px solid #ccc;
       margin-bottom: 20px;
     }
+<<<<<<< HEAD
+=======
+
+    .btn-registrar {
+      background-color: #ffc107;
+      color: black;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      float: right;
+      margin-bottom: 20px;
+
+    }
+
+>>>>>>> e281063f12017e41db73d0b4d32ad46de5f5e0dd
     .tabla-empleados {
       width: 100%;
       border-collapse: collapse;
       font-family: Arial, sans-serif;
       margin-top: 10px;
     }
+<<<<<<< HEAD
     .tabla-empleados th, .tabla-empleados td {
+=======
+
+    .tabla-empleados thead {
+      background-color: #f8f9fa;
+    }
+
+    .tabla-empleados th,
+    .tabla-empleados td {
+>>>>>>> e281063f12017e41db73d0b4d32ad46de5f5e0dd
       border: 1px solid #dee2e6;
       padding: 12px;
       text-align: center;
     }
+<<<<<<< HEAD
     .tabla-empleados tr:hover {
       background-color: #f8f9fa;
     }
+=======
+
+    .tabla-empleados tr:hover {
+      background-color: #f2f2f2;
+    }
+
+    .tabla-empleados td .acciones-btns {
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .tabla-empleados td .acciones-btns button {
+      white-space: nowrap;
+      padding: 5px 10px;
+      margin: 0;
+      border-radius: 6px;
+      border: none;
+    }
+
+    .btn-ver {
+      background-color: #0d6efd;
+      color: white;
+    }
+
+    .btn-inactivar {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .btn-historial {
+      background-color: #ffc107;
+      color: black;
+    }
+
+    .btn-eliminar {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .form-control {
+      margin-bottom: 10px;
+    }
+
+    .modal-contenido {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    .modal .cerrar {
+      float: right;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+>>>>>>> e281063f12017e41db73d0b4d32ad46de5f5e0dd
     footer {
       margin-top: auto;
     }
   </style>
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> e281063f12017e41db73d0b4d32ad46de5f5e0dd
 </head>
 
 <body class="d-flex flex-column min-vh-100">
 
+<<<<<<< HEAD
+=======
+  <!-- Menú  -->
+>>>>>>> e281063f12017e41db73d0b4d32ad46de5f5e0dd
   <nav class="navbar navbar-expand-lg navbar-custom">
     <div class="container">
       <a class="navbar-brand d-flex align-items-center" href="index.html">
@@ -61,12 +165,35 @@
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
           <li class="nav-item"><a class="nav-link" href="clientes.html">Clientes</a></li>
           <li class="nav-item"><a class="nav-link" href="empleados.html">Empleados</a></li>
+<<<<<<< HEAD
           <li class="nav-item"><a class="nav-link" href="inventario.html">Inventario</a></li>
           <li class="nav-item"><a class="nav-link" href="entregas.html">Entregas</a></li>
           <li class="nav-item"><a class="nav-link" href="proveedores.html">Proveedores</a></li>
           <li class="nav-item"><a class="nav-link" href="dashboardReportes.html">Reportes</a></li>
           <li class="nav-item"><a class="nav-link active" href="registro.html"><i class="fas fa-user"></i> Gestionar Credenciales</a></li>
           <li class="nav-item"><a class="nav-link" href="#" onclick="cerrarSesion()"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
+=======
+          <!-- Menú desplegable Inventario -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="inventarioDropdown" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              Inventario
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="inventarioDropdown">
+              <li><a class="dropdown-item" href="inventario.html">Inventario de Productos</a></li>
+              <li><a class="dropdown-item" href="inventarioCategorias.html">Inventario de Categorías</a>
+              </li>
+            </ul>
+          <li class="nav-item"><a class="nav-link" href="entregas.html">Entregas</a></li>
+          <li class="nav-item"><a class="nav-link" href="proveedores.html">Proveedores</a></li>
+          <li class="nav-item"><a class="nav-link" href="dashboardReportes.html">Reportes</a></li>
+          <li class="nav-item">
+          <li class="nav-item"><a class="nav-link" href="registro.html"> <i class="fas fa-user"></i>Gestionar
+              Credenciales</a></li>
+          <li class="nav-item"><a class="nav-link" href="login.html"> <i class="fas fa-sign-out-alt"></i> Cerrar
+              Sesión</a></li>
+          </li>
+>>>>>>> e281063f12017e41db73d0b4d32ad46de5f5e0dd
         </ul>
       </div>
     </div>
@@ -93,7 +220,13 @@
     </table>
   </div>
 
+<<<<<<< HEAD
   <div class="modal fade" id="modalRegistroEmpleado" tabindex="-1" aria-labelledby="tituloModalEmpleado" aria-hidden="true">
+=======
+  <!-- Modal de Registro -->
+  <div class="modal fade" id="modalRegistroEmpleado" tabindex="-1" aria-labelledby="tituloModalEmpleado"
+    aria-hidden="true">
+>>>>>>> e281063f12017e41db73d0b4d32ad46de5f5e0dd
     <div class="modal-dialog">
       <div class="modal-content">
 
@@ -123,13 +256,19 @@
 
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+<<<<<<< HEAD
           <button type="button" class="btn btn-success" onclick="registrarEmpleado()" data-bs-dismiss="modal">Guardar</button>
+=======
+          <button type="button" class="btn btn-success" onclick="registrarEmpleado()"
+            data-bs-dismiss="modal">Registrar</button>
+>>>>>>> e281063f12017e41db73d0b4d32ad46de5f5e0dd
         </div>
 
       </div>
     </div>
   </div>
 
+<<<<<<< HEAD
 
   <div class="modal fade" id="modalCambiarRol" tabindex="-1" aria-labelledby="tituloCambiarRol" aria-hidden="true">
     <div class="modal-dialog">
@@ -161,6 +300,109 @@
     <div class="container text-center">
       <p class="mb-1 fw-bold">Abrasivos Industriales S.A.</p>
       <p class="mb-0 small">© 2025 Todos los derechos reservados</p>
+=======
+  <!-- Modal de Historial -->
+  <div id="modalHistorialEmpleado" class="modal"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,0.5); z-index:1050;">
+    <div class="modal-contenido" style="width:60%; margin: 100px auto;">
+      <span class="cerrar" onclick="cerrarModalHistorial()">&times;</span>
+      <h4>Historial de Cambios</h4>
+      <ul id="listaHistorial"></ul>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    const empleados = [];
+    const historial = [];
+    let indiceEditando = null;
+
+    empleados.push(
+      {
+        nombre: "Ana Ramírez",
+        puesto: "Administrador",
+        correo: "ana.ramirez@abrasivlog.com",
+        contrasena: "admin123",
+        rol: "Administrador",
+        estado: "Activo"
+      },
+      {
+        nombre: "Allan Corrales",
+        puesto: "Administrador",
+        correo: "acorrales@abrasivlog.com",
+        contrasena: "abrasivLog1",
+        rol: "Administrador",
+        estado: "Activo"
+      },
+      {
+        nombre: "Marta Gómez",
+        puesto: "Bodega",
+        correo: "marta.gomez@abrasivlog.com",
+        contrasena: "bodega123",
+        rol: "Empleado",
+        estado: "Activo"
+      },
+      {
+        nombre: "Carlos Méndez",
+        puesto: "Bodega",
+        correo: "carlos.mendez@abrasivlog.com",
+        contrasena: "bodega456",
+        rol: "Empleado",
+        estado: "Activo"
+      }
+    );
+
+    function registrarEmpleado() {
+      const nombre = document.getElementById('nombreEmpleado').value;
+      const puesto = document.getElementById('puestoEmpleado').value;
+      const correo = document.getElementById('correoEmpleado').value;
+      const contrasena = document.getElementById('contrasenaEmpleado').value;
+      const rol = document.getElementById('rolEmpleado').value;
+
+      if (!nombre || !puesto || !correo || !contrasena || !rol) {
+        alert("Complete todos los campos");
+        return;
+      }
+
+      if (indiceEditando !== null) {
+        empleados[indiceEditando] = {
+          ...empleados[indiceEditando],
+          nombre,
+          puesto,
+          correo,
+          contrasena,
+          rol
+        };
+        historial.push(`${nombre} fue editado el ${new Date().toLocaleString()}`);
+        indiceEditando = null;
+      } else {
+        empleados.push({ nombre, puesto, correo, contrasena, rol, estado: 'Activo' });
+        historial.push(`${nombre} registrado el ${new Date().toLocaleString()}`);
+      }
+
+      actualizarTablaEmpleados();
+      document.getElementById('formRegistroEmpleado').reset();
+    }
+
+    function actualizarTablaEmpleados() {
+      const tbody = document.getElementById('tablaEmpleados');
+      tbody.innerHTML = '';
+      empleados.forEach((emp, i) => {
+        const fila = document.createElement('tr');
+        fila.innerHTML = `
+          <td>${emp.nombre}</td>
+          <td>${emp.puesto}</td>
+          <td>${emp.correo}</td>
+          <td>${emp.contrasena}</td>
+          <td>${emp.rol}</td>
+          <td>${emp.estado}</td>
+          <td>
+     <div class="acciones-btns">
+      <button class="btn-ver" onclick="editarEmpleado(${i})">Editar</button>
+      <button class="btn-inactivar" onclick="inactivarEmpleado(${i})">${emp.estado === 'Activo' ? 'Inactivar' : 'Activar'}</button>
+      <button class="btn-historial" onclick="verHistorial(${i})">Historial</button>
+      <button class="btn-eliminar" onclick="eliminarEmpleado(${i})">Eliminar</button>
+>>>>>>> e281063f12017e41db73d0b4d32ad46de5f5e0dd
     </div>
   </footer>
 
@@ -189,5 +431,18 @@
       }
     });
   </script>
+<<<<<<< HEAD
+=======
+
+  <!-- Footer -->
+  <footer class="footer-custom mt-auto py-4">
+    <div class="container text-center">
+      <p class="mb-1 fw-bold">Abrasivos Industriales S.A.</p>
+      <p class="mb-0 small">© 2025 Todos los derechos reservados</p>
+    </div>
+  </footer>
+
+>>>>>>> e281063f12017e41db73d0b4d32ad46de5f5e0dd
 </body>
+
 </html>

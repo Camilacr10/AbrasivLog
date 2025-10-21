@@ -222,7 +222,7 @@ switch ($method) {
 
             if ($editResult) {
                 http_response_code(200); // Código de respuesta HTTP 200 (OK)
-                echo json_encode(["message" => "Producto editado exitosamente"]);
+                echo json_encode(["message" => "Producto {$input['nombre']} editado exitosamente"]);
             } else {
                 http_response_code(500); // Código de respuesta HTTP 500 (Internal Server Error)
                 echo json_encode(["error" => "Error al editar el producto"]);
@@ -243,7 +243,7 @@ switch ($method) {
 
             if ($result) {
                 http_response_code(200); // Código de respuesta HTTP 200 (OK)
-                echo json_encode(["message" => "Producto inactivado exitosamente"]);
+                echo json_encode(["message" => "Producto inactivado correctamente."]);
             } else {
                 http_response_code(500); // Código de respuesta HTTP 500 (Internal Server Error)
                 echo json_encode(["error" => "Error al inactivar el producto"]);
