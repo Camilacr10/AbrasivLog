@@ -14,8 +14,8 @@ $server = 'LAPTOP-VALERIA';
 $db     = 'Abrasivlog';
 
 //INFO DB Jose
-$server = 'DESKTOP-LUIKLRP';
-$db     = 'Abrasivlog';
+//$server = 'DESKTOP-LUIKLRP';
+//$db     = 'Abrasivlog';
 
 
 //Es una cadena de conexión con el servidor de base de datos, nombre de base de datos, con Encrypt=Yes para cifrar la comunicación y
