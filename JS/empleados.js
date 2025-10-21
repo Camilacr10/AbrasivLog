@@ -18,7 +18,9 @@ function renderTabla(lista) {
   <td>${formatoFecha(emp.fecha_ingreso)}</td>
   <td>${emp.puesto}</td>
   <td>${emp.dias_vacaciones}</td>
-  <td><span class="badge ${emp.estado == "1" ? "bg-success" : "bg-secondary"}">${emp.estado == "1" ? "Activo" : "Inactivo"}</span></td>
+  <td><span class="badge ${emp.estado === "Activo" ? "bg-success" : "bg-secondary"}">
+  ${emp.estado}
+</span></td>
   <td>
     <div class="dropdown">
       <button class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown">Acciones</button>
@@ -130,7 +132,7 @@ async function inactivarEmpleado(id) {
     try {
         const formData = new FormData();
         formData.append("id", id);
-        formData.append("estado", 0); // Forzar a inactivo
+        formData.append("estado", "Inactivo"); 
 
         const res = await fetch("../backend/Empleados.php?accion=cambiarEstado", {
             method: "POST",
@@ -139,7 +141,7 @@ async function inactivarEmpleado(id) {
 
         const data = await res.json();
         if (data.success) {
-            cargarEmpleados(); // Recargar tabla
+            cargarEmpleados();
         } else {
             alert("Error al inactivar empleado");
         }
@@ -147,6 +149,7 @@ async function inactivarEmpleado(id) {
         console.error("Error al cambiar estado:", error);
     }
 }
+
 
 /*
    const asignarRol = i => {
