@@ -16,7 +16,7 @@
             margin: 0;
             display: flex;
             flex-direction: column;
-            
+
         }
 
         footer {
@@ -42,12 +42,18 @@
             background-color: #675541;
             color: white;
         }
+
+        @media (min-width: 768px) {
+            .table {
+                overflow: visible;
+            }
+        }
     </style>
 </head>
 
 <body>
     <!-- Header -->
-      <nav class="navbar navbar-expand-lg navbar-custom">
+    <nav class="navbar navbar-expand-lg navbar-custom">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="#">
                 <img src="../IMG/logo.png" alt="Logo" class="logo" />
@@ -214,22 +220,23 @@
     </div>
 
 
-  <!-- Modal Detalles Empleado -->
-<div class="modal fade" id="modalDetallesEmpleado" tabindex="-1" aria-labelledby="modalDetallesEmpleadoLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header" style="background-color: #FEBF00; color: black;">
-        <h5 class="modal-title" id="modalDetallesEmpleadoLabel">Detalles del Empleado</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
-      <div class="modal-body" id="detalleContenido">
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-      </div>
+    <!-- Modal Detalles Empleado -->
+    <div class="modal fade" id="modalDetallesEmpleado" tabindex="-1" aria-labelledby="modalDetallesEmpleadoLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #FEBF00; color: black;">
+                    <h5 class="modal-title" id="modalDetallesEmpleadoLabel">Detalles del Empleado</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body" id="detalleContenido">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 
 
     <!--
