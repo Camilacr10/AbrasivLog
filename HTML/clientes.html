@@ -19,31 +19,9 @@
       overflow: visible !important;
     }
 
-    .dropdown {
-      position: static !important;
-    }
-
-    .dropdown-menu {
-      z-index: 1060 !important;
-      position: absolute !important;
-      inset: auto !important;
-      transform: translate3d(0, 40px, 0) !important;
-      min-width: 170px;
-      border-radius: 0.5rem;
-    }
-
-    .dropdown-menu.show {
-      animation: fadeIn 0.15s ease-in-out;
-    }
-
-    .dropdown-item i {
-      width: 18px;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translate3d(0, 30px, 0); }
-      to { opacity: 1; transform: translate3d(0, 40px, 0); }
-    }
+    @media (min-width: 768px){
+  .table { overflow: visible; }   /* por si algún estilo heredado lo oculta */
+}
   </style>
 </head>
 
