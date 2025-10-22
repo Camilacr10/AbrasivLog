@@ -130,6 +130,9 @@ document.getElementById("formEditarEmpleado").addEventListener("submit", async e
 
 async function inactivarEmpleado(id) {
     try {
+        const confirmar = confirm("¿Seguro que deseas inactivar este empleado?");
+        if (!confirmar) return; 
+
         const formData = new FormData();
         formData.append("id", id);
         formData.append("estado", "Inactivo"); 
@@ -149,6 +152,7 @@ async function inactivarEmpleado(id) {
         console.error("Error al cambiar estado:", error);
     }
 }
+
 
 
 /*
