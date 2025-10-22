@@ -69,8 +69,8 @@ document.addEventListener('DOMContentLoaded', function () {
                       </li>
                       <li><hr class="dropdown-divider"></li>
                       <li>
-                        <button type="button" class="dropdown-item text-danger inactivar-proveedor" data-id="${proveedor.id_proveedor}">
-                          <i class="fa-solid fa-user-slash me-2"></i>Inactivar
+                        <button type="button" class="dropdown-item ${proveedor.estado === 'Activo' ? 'text-danger' : 'text-success'} inactivar-proveedor" data-id="${proveedor.id_proveedor}">
+                       <i class="fa-solid ${proveedor.estado === 'Activo' ? 'fa-user-slash' : 'fa-user-check'} me-2"></i>${proveedor.estado === 'Activo' ? 'Inactivar' : 'Activar'}
                         </button>
                       </li>
                       </li>
@@ -156,19 +156,77 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-  // Función para manejar inactivar de un proveedor
+  // Función para manejar inactivar o activar un proveedor
   async function handleInactivarProveedor(event) {
-    const proveedorId = parseInt(event.target.dataset.id);
 
-    const response = await fetch(`${API_URL}?id_proveedor=${proveedorId}`, {
-      method: 'DELETE',
-      credentials: 'include'
-    });
+    // Obtiene el id del proveedor desde el botón
+    const proveedorId = parseInt(event.currentTarget?.dataset.id || event.target.dataset.id, 10);
 
-    if (response.ok) {
-      loadProveedores();
+    // Busca el proveedor en el arreglo global
+    const p = proveedores.find(x => Number(x.id_proveedor) === proveedorId);
+
+    // Si no lo encuentra, muestra mensaje y detiene
+    if (!p) {
+      alert('Proveedor no encontrado');
+      return;
+    }
+
+    // Verifica si el proveedor está activo o inactivo
+    const estaActivo = String(p.estado).trim().toLowerCase() === 'activo';
+
+    // Si está activo → inactivar (DELETE)
+    if (estaActivo) {
+
+      // Confirma antes de inactivar
+      const ok1 = confirm(`¿Está seguro de inactivar al proveedor ${p.nombre}? Esta acción no se puede deshacer.`);
+      if (!ok1) return; // Si cancela, no hace nada
+
+      // Llama al backend con método DELETE
+      const response = await fetch(`${API_URL}?id_proveedor=${proveedorId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+
+      // Si la respuesta es correcta
+      if (response.ok) {
+        alert('Proveedor inactivado correctamente.');
+        loadProveedores(); // Recarga la tabla
+      } else {
+        console.error("Error al inactivar el proveedor");
+      }
+
     } else {
-      console.error("Error al inactivar el proveedor");
+      // Si está inactivo → activar (PUT con estado Activo)
+
+      // Confirma antes de activar
+      const ok2 = confirm(`¿Desea activar nuevamente al proveedor ${p.nombre}?`);
+      if (!ok2) return; // Si cancela, no hace nada
+
+      // Cuerpo con los datos del proveedor
+      const body = {
+        id_proveedor: proveedorId,
+        nombre: p.nombre || '',
+        cedula_juridica: p.cedula_juridica || '',
+        telefono: p.telefono || '',
+        correo: p.correo || '',
+        estado: 'Activo' // Cambia el estado
+      };
+
+      // Llama al backend con método PUT
+      const response = await fetch(API_URL, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(body)
+      });
+
+      // Si la respuesta es correcta
+      if (response.ok) {
+        alert('Proveedor activado correctamente.');
+        loadProveedores(); // Recarga la tabla
+      } else {
+        console.error('Error al activar el proveedor');
+      }
     }
   }
 

@@ -112,8 +112,8 @@ document.addEventListener('DOMContentLoaded', function () {
               </li>
               <li><hr class="dropdown-divider"></li>
               <li>
-                <button type="button" class="dropdown-item text-danger inactivar-producto" data-id="${p.id_producto}">
-                  <i class="fa-solid fa-box-archive me-2"></i>Inactivar
+                <button type="button" class="dropdown-item ${p.estado === 'Activo' ? 'text-danger' : 'text-success'} inactivar-producto" data-id="${p.id_producto}">
+                    <i class="fa-solid ${p.estado === 'Activo' ? 'fa-box-archive' : 'fa-box-open'} me-2"></i>${p.estado === 'Activo' ? 'Inactivar' : 'Activar'}
                 </button>
               </li>
             </ul>
@@ -216,37 +216,93 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-    // Función para manejar inactivar de un producto
-    async function handleInactivarProducto(event) {
-        const productoId = parseInt(event.currentTarget.dataset.id, 10);
+   // Función para manejar inactivar o activar un producto
+async function handleInactivarProducto(event) {
 
-        // Busca el producto para obtener su nombre en el mensaje
-        const p = productos.find(x => Number(x.id_producto) === productoId);
-        if (!p) {
-            alert('Producto no encontrado');
-            return;
-        }
+    // Obtiene el id del producto desde el botón
+    const productoId = parseInt(event.currentTarget.dataset.id, 10);
 
+    // Busca el producto en el arreglo global
+    const p = productos.find(x => Number(x.id_producto) === productoId);
 
-        // Confirmación con nombre y advertencia
+    // Si no lo encuentra, muestra mensaje y detiene
+    if (!p) {
+        alert('Producto no encontrado');
+        return;
+    }
+
+    // Verifica si el producto está activo o inactivo
+    const estaActivo = String(p.estado).trim().toLowerCase() === 'activo';
+
+    // Si el producto está activo
+    if (estaActivo) {
+
+        // Confirma antes de inactivar
         const ok1 = confirm(`¿Está seguro de inactivar el producto ${p.nombre}? Esta acción no se puede deshacer.`);
-        if (!ok1) return;
+        if (!ok1) return; // Si cancela, no hace nada
 
-        // Llamada al backend para inactivar
+        // Llama al backend con método DELETE
         const response = await fetch(`${API_URL}?id_producto=${productoId}`, {
             method: 'DELETE',
             credentials: 'include'
         });
 
+        // Si la respuesta es correcta
         if (response.ok) {
-            // Mensaje solicitado
             alert('Producto inactivado correctamente.');
-            // Refresca la lista para que aparezca como Inactivo y se bloqueen acciones
-            loadProductos();
+            loadProductos(); // Recarga la tabla
         } else {
             console.error("Error al inactivar el producto");
         }
+
+    } else {
+        // Si el producto está inactivo
+
+        // Confirma antes de activar
+        const ok2 = confirm(`¿Desea activar nuevamente el producto ${p.nombre}?`);
+        if (!ok2) return;
+
+        // Calcula valores antes de enviar al backend
+        const precio_base = Number(p.precio_base) || 0;
+        const porcentaje_iva = Number(p.porcentaje_iva) || 0;
+        const porcentaje_descuento = Number(p.porcentaje_descuento) || 0;
+        const iva = +(precio_base * porcentaje_iva / 100).toFixed(2);
+        const precio_final = +(precio_base + iva - (precio_base * porcentaje_descuento / 100)).toFixed(2);
+
+        // Cuerpo con los datos del producto
+        const body = {
+            id_producto: productoId,
+            id_categoria: Number(p.id_categoria),
+            nombre: p.nombre || '',
+            codigo: p.codigo || '',
+            detalle: p.detalle || '',
+            precio_base,
+            porcentaje_iva,
+            cantidad: Number(p.cantidad) || 0,
+            iva,
+            porcentaje_descuento,
+            precio_final,
+            estado: 'Activo', // Cambia el estado
+            imagen_path: p.imagen_path || ''
+        };
+
+        // Llama al backend con método PUT
+        const response = await fetch(API_URL, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(body)
+        });
+
+        // Si la respuesta es correcta
+        if (response.ok) {
+            alert('Producto activado correctamente.');
+            loadProductos(); // Recarga la tabla
+        } else {
+            console.error('Error al activar el producto');
+        }
     }
+}
 
 
 
