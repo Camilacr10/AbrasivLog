@@ -163,30 +163,23 @@ async function cambiarEstadoEmpleado(id, nuevoEstado) {
 }
 
 async function verPerfil(id) {
-    // Buscar el empleado en la lista global
     const empleado = empleadosGlobal.find(e => e.id_empleado == id);
-
     if (!empleado) {
         alert("Empleado no encontrado");
         return;
     }
 
-    // Insertar los detalles en el modal
-    const modalBody = document.getElementById("detalleContenido");
-    modalBody.innerHTML = `
-        <h4>${empleado.nombre_completo}</h4>
-        <p><strong>Puesto:</strong> ${empleado.puesto}</p>
-        <p><strong>Fecha de ingreso:</strong> ${formatoFecha(empleado.fecha_ingreso)}</p>
-        <p><strong>Días de vacaciones:</strong> ${empleado.dias_vacaciones ?? 'No registrado'}</p>
-       ${empleado.archivo
-  ? `<p><strong>Currículum:</strong> <a href="${empleado.archivo}" target="_blank">Ver Archivo</a></p>`
-  : `<p><strong>Currículum:</strong> No disponible</p>`}
+    document.getElementById("detNombreEmpleado").textContent = empleado.nombre_completo;
+    document.getElementById("detPuestoEmpleado").textContent = empleado.puesto;
+    document.getElementById("detFechaIngresoEmpleado").textContent = formatoFecha(empleado.fecha_ingreso);
+    document.getElementById("detDiasVacacionesEmpleado").textContent = empleado.dias_vacaciones ?? 'No registrado';
+    document.getElementById("detArchivoEmpleado").innerHTML = empleado.archivo
+        ? `<a href="${empleado.archivo}" target="_blank">Ver Archivo</a>`
+        : 'No disponible';
 
-    `;
-
-    // Mostrar el modal
     new bootstrap.Modal(document.getElementById("modalDetallesEmpleado")).show();
 }
+
 
 
 function formatoFecha(fecha) {

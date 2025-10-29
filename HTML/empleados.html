@@ -211,22 +211,38 @@
 
 
     <!-- Modal Detalles Empleado -->
-    <div class="modal fade" id="modalDetallesEmpleado" tabindex="-1" aria-labelledby="modalDetallesEmpleadoLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header" style="background-color: #FEBF00; color: black;">
-                    <h5 class="modal-title" id="modalDetallesEmpleadoLabel">Detalles del Empleado</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
-                <div class="modal-body" id="detalleContenido">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                </div>
+<div class="modal fade" id="modalDetallesEmpleado" tabindex="-1" aria-labelledby="modalDetallesEmpleadoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #FEBF00; color: black;">
+                <h5 class="modal-title" id="modalDetallesEmpleadoLabel">Detalle del Empleado</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Nombre</dt>
+                    <dd class="col-sm-8" id="detNombreEmpleado"></dd>
+
+                    <dt class="col-sm-4">Puesto</dt>
+                    <dd class="col-sm-8" id="detPuestoEmpleado"></dd>
+
+                    <dt class="col-sm-4">Fecha de ingreso</dt>
+                    <dd class="col-sm-8" id="detFechaIngresoEmpleado"></dd>
+
+                    <dt class="col-sm-4">Días de vacaciones</dt>
+                    <dd class="col-sm-8" id="detDiasVacacionesEmpleado"></dd>
+
+                    <dt class="col-sm-4">Currículum</dt>
+                    <dd class="col-sm-8" id="detArchivoEmpleado"></dd>
+                </dl>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>
+</div>
+
 
 
     <!--
