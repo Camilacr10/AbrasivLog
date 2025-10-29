@@ -510,3 +510,12 @@ h1 {
 .cerrar:hover {
     color: #000;
 }
+
+.titulo-seccion {
+    color: #675541;
+    font-weight: 600;
+    font-size: 2rem;
+    font-family: inherit;
+    margin-bottom: 1rem;
+  }
+  
