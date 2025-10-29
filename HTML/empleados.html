@@ -109,9 +109,7 @@
             <thead>
                 <tr>
                     <th>Nombre</th>
-                    <th>Fecha Ingreso</th>
                     <th>Puesto</th>
-                    <th>Días de vacaciones</th>
                     <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
@@ -152,9 +150,9 @@
                             <input type="number" class="form-control" id="vacacionesEmpleado" required>
                         </div>
                         <div class="mb-3">
-                            <label for="archivoEmpleado">Adjuntar curriculum</label>
-                            <input type="file" class="form-control" id="archivoEmpleado" name="archivo"
-                                accept=".pdf,.jpg,.png,.doc,.docx">
+                            <label for="archivoEmpleado">Link del curriculum</label>
+                            <input type="url" class="form-control" id="archivoEmpleado" name="archivo"
+                                placeholder="Pega aquí el enlace de Google Drive, OneDrive, etc.">
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -198,17 +196,9 @@
                             <input type="number" class="form-control" id="editVacacionesEmpleado" required>
                         </div>
                         <div class="mb-3">
-                            <label for="editEstadoEmpleado" class="form-label">Estado</label>
-                            <select class="form-control" id="editEstadoEmpleado" required>
-                                <option value="">Seleccione un estado</option>
-                                <option>Activo</option>
-                                <option>Inactivo</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editArchivoEmpleado">Adjuntar curriculum</label>
-                            <input type="file" id="editArchivoEmpleado" name="archivo" class="form-control"
-                                accept=".pdf,.doc,.docx,.jpg,.png">
+                            <label for="editArchivoEmpleado">Link del curriculum</label>
+                            <input type="url" class="form-control" id="editArchivoEmpleado" name="archivo"
+                                placeholder="Pega aquí el enlace actualizado (opcional)">
                         </div>
                     </div>
                     <div class="modal-footer">

@@ -15,9 +15,7 @@ function renderTabla(lista) {
         ? lista.map(emp => `
 <tr>
   <td>${emp.nombre_completo}</td>
-  <td>${formatoFecha(emp.fecha_ingreso)}</td>
   <td>${emp.puesto}</td>
-  <td>${emp.dias_vacaciones}</td>
   <td><span class="badge ${emp.estado === "Activo" ? "bg-success" : "bg-secondary"}">
   ${emp.estado}
 </span></td>
@@ -25,15 +23,31 @@ function renderTabla(lista) {
     <div class="dropdown">
       <button class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown">Acciones</button>
       <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="#" onclick="abrirEditar(${emp.id_empleado})"><i class="fa-solid fa-pen-to-square me-2"></i>Editar</a></li>
-        <li><a class="dropdown-item text-danger" href="#" onclick="inactivarEmpleado(${emp.id_empleado})"><i class="fa-solid fa-user-slash me-2"></i>Inactivar</a></li>
-       <li><a class="dropdown-item" href="#" onclick="verPerfil(${emp.id_empleado})"><i class="fa-solid fa-user me-2"></i>Ver Perfil</a></li>
+        <li>
+          <a class="dropdown-item" href="#" onclick="abrirEditar(${emp.id_empleado})">
+            <i class="fa-solid fa-pen-to-square me-2"></i>Editar
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item" href="#" onclick="verPerfil(${emp.id_empleado})">
+            <i class="fa-solid fa-user me-2"></i>Ver Perfil
+          </a>
+        </li>
+        <li><hr class="dropdown-divider"></li>
+        <li>
+          <a class="dropdown-item ${emp.estado === "Activo" ? "text-danger" : "text-success"}" href="#"
+             onclick="cambiarEstadoEmpleado(${emp.id_empleado}, '${emp.estado === "Activo" ? "Inactivo" : "Activo"}')">
+            <i class="fa-solid ${emp.estado === "Activo" ? "fa-user-slash" : "fa-user-check"} me-2"></i>
+            ${emp.estado === "Activo" ? "Inactivar" : "Activar"}
+          </a>
+        </li>
       </ul>
     </div>
   </td>
 </tr>`).join("")
         : `<tr><td colspan="7" class="text-center text-muted">No se encontraron empleados</td></tr>`;
 }
+
 
 // 🔍 Filtrar en tiempo real
 buscar.addEventListener("keyup", () => {
@@ -57,10 +71,9 @@ document.getElementById("formAgregarEmpleado").addEventListener("submit", async 
     formData.append("puesto", puestoEmpleado.value);
 
     // archivo
-    const archivo = document.getElementById("archivoEmpleado").files[0];
-    if (archivo) {
-        formData.append("archivo", archivo);
-    }
+   const linkArchivo = document.getElementById("archivoEmpleado").value.trim();
+formData.append("archivo", linkArchivo);
+
 
     const res = await fetch("../backend/Empleados.php?accion=agregar", {
         method: "POST",
@@ -91,7 +104,6 @@ async function abrirEditar(id) {
     editFechaIngreso.value = emp.fecha_ingreso;
     editPuestoEmpleado.value = emp.puesto;
     editVacacionesEmpleado.value = emp.dias_vacaciones;
-    editEstadoEmpleado.value = emp.estado;
     document.getElementById("editArchivoEmpleado").value = "";
     new bootstrap.Modal(modalEditarEmpleado).show();
 }
@@ -105,12 +117,9 @@ document.getElementById("formEditarEmpleado").addEventListener("submit", async e
     formData.append("fecha", editFechaIngreso.value);
     formData.append("vacaciones", editVacacionesEmpleado.value);
     formData.append("puesto", editPuestoEmpleado.value);
-    formData.append("estado", editEstadoEmpleado.value);
 
-    const archivo = document.getElementById("editArchivoEmpleado").files[0];
-    if (archivo) {
-        formData.append("archivo", archivo);
-    }
+    const linkArchivoEdit = document.getElementById("editArchivoEmpleado").value.trim();
+formData.append("archivo", linkArchivoEdit);
 
     const res = await fetch("../backend/Empleados.php?accion=editar", {
         method: "POST",
@@ -128,14 +137,14 @@ document.getElementById("formEditarEmpleado").addEventListener("submit", async e
 });
 
 
-async function inactivarEmpleado(id) {
+async function cambiarEstadoEmpleado(id, nuevoEstado) {
     try {
-        const confirmar = confirm("¿Seguro que deseas inactivar este empleado?");
-        if (!confirmar) return; 
+        const confirmar = confirm(`¿Seguro que deseas ${nuevoEstado === "Inactivo" ? "inactivar" : "activar"} este empleado?`);
+        if (!confirmar) return;
 
         const formData = new FormData();
         formData.append("id", id);
-        formData.append("estado", "Inactivo"); 
+        formData.append("estado", nuevoEstado);
 
         const res = await fetch("../backend/Empleados.php?accion=cambiarEstado", {
             method: "POST",
@@ -146,31 +155,12 @@ async function inactivarEmpleado(id) {
         if (data.success) {
             cargarEmpleados();
         } else {
-            alert("Error al inactivar empleado");
+            alert("Error al cambiar el estado del empleado");
         }
     } catch (error) {
         console.error("Error al cambiar estado:", error);
     }
 }
-
-
-
-/*
-   const asignarRol = i => {
-       indiceRolEmpleado.value = i;
-       rolEmpleado.value = empleados[i].rol;
-       new bootstrap.Modal(modalAsignarRol).show();
-   };
- 
-   const guardarRol = () => {
-       empleados[+indiceRolEmpleado.value].rol = rolEmpleado.value;
-       bootstrap.Modal.getInstance(modalAsignarRol).hide();
-       renderTablaEmpleados();
-       mensaje2.classList.remove("d-none");
-       setTimeout(() => mensaje2.classList.add("d-none"), 3000);
-   };
- 
-   */
 
 async function verPerfil(id) {
     // Buscar el empleado en la lista global
@@ -188,9 +178,10 @@ async function verPerfil(id) {
         <p><strong>Puesto:</strong> ${empleado.puesto}</p>
         <p><strong>Fecha de ingreso:</strong> ${formatoFecha(empleado.fecha_ingreso)}</p>
         <p><strong>Días de vacaciones:</strong> ${empleado.dias_vacaciones ?? 'No registrado'}</p>
-        ${empleado.archivo
-            ? `<p><strong>Archivo:</strong> <a href="../${empleado.archivo}" target="_blank">Ver Curriculum</a></p>`
-            : `<p><strong>Archivo:</strong> No adjunto</p>`}
+       ${empleado.archivo
+  ? `<p><strong>Currículum:</strong> <a href="${empleado.archivo}" target="_blank">Ver Archivo</a></p>`
+  : `<p><strong>Currículum:</strong> No disponible</p>`}
+
     `;
 
     // Mostrar el modal
