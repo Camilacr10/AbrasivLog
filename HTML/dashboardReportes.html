@@ -1,6 +1,5 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="es">
-
 <head>
   <meta charset="UTF-8" />
   <title>Inicio - Dashboard</title>
@@ -11,36 +10,15 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="../CSS/style.css">
   <style>
-    .encabezado-pdf {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .encabezado-pdf img {
-      max-width: 100px;
-      margin-bottom: 10px;
-    }
-
-    .encabezado-pdf h4 {
-      margin: 0;
-      font-weight: bold;
-    }
-
-    .encabezado-pdf small {
-      font-style: italic;
-      color: #555;
-    }
-
-    h1 {
-      font-family: 'Arial', sans-serif;
-      font-size: 28pt;
-      color: #675541;
-    }
+    .encabezado-pdf { text-align: center; margin-bottom: 20px; }
+    .encabezado-pdf img { max-width: 100px; margin-bottom: 10px; }
+    .encabezado-pdf h4 { margin: 0; font-weight: bold; }
+    .encabezado-pdf small { font-style: italic; color: #555; }
+    h1 { font-family: 'Arial', sans-serif; font-size: 28pt; color: #675541; }
   </style>
 </head>
-
 <body>
-  <!-- Menú  -->
+  <!-- Menú -->
   <nav class="navbar navbar-expand-lg navbar-custom">
     <div class="container">
       <a class="navbar-brand d-flex align-items-center" href="index.html">
@@ -50,64 +28,57 @@
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
           <li class="nav-item"><a class="nav-link" href="clientes.html">Clientes</a></li>
           <li class="nav-item"><a class="nav-link" href="empleados.html">Empleados</a></li>
-          <!-- Menú desplegable Inventario -->
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="inventarioDropdown" role="button" data-bs-toggle="dropdown"
-              aria-expanded="false">
-              Inventario
-            </a>
+            <a class="nav-link dropdown-toggle" href="#" id="inventarioDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Inventario</a>
             <ul class="dropdown-menu" aria-labelledby="inventarioDropdown">
               <li><a class="dropdown-item" href="inventario.html">Inventario de Productos</a></li>
-              <li><a class="dropdown-item" href="inventarioCategorias.html">Inventario de Categorías</a>
-              </li>
+              <li><a class="dropdown-item" href="inventarioCategorias.html">Inventario de Categorías</a></li>
             </ul>
           <li class="nav-item"><a class="nav-link" href="entregas.html">Entregas</a></li>
           <li class="nav-item"><a class="nav-link" href="proveedores.html">Proveedores</a></li>
-          <li class="nav-item"><a class="nav-link" href="dashboardReportes.html">Reportes</a></li>
-          <li class="nav-item">
-          <li class="nav-item"><a class="nav-link" href="registro.html"> <i class="fas fa-user"></i>Gestionar
-              Credenciales</a></li>
-          <li class="nav-item"><a class="nav-link" href="login.html"> <i class="fas fa-sign-out-alt"></i> Cerrar
-              Sesión</a></li>
-          </li>
+          <li class="nav-item"><a class="nav-link active" href="dashboardReportes.html">Reportes</a></li>
+          <li class="nav-item"><a class="nav-link" href="registro.html"><i class="fas fa-user"></i> Gestionar Credenciales</a></li>
+          <li class="nav-item"><a class="nav-link" href="login.html"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
         </ul>
       </div>
     </div>
   </nav>
 
-
-
   <div class="container mt-3 mb-5">
-    <h1>Dashboard y Reporte</h1>
+    <div class="d-flex align-items-center gap-3">
+      <h1 class="mb-0">Dashboard y Reporte</h1>
+      
+    </div>
     <br>
+
     <!-- Métricas -->
     <div class="row g-4 text-white">
       <div class="col-md-3">
         <div class="card bg-success shadow-sm text-center p-3">
           <i class="fas fa-dollar-sign fa-2x mb-2"></i>
           <h6>Ventas Totales</h6>
-          <h4>$25,410</h4>
+          <h4 id="ventasTotales">₡0.00</h4>
         </div>
       </div>
       <div class="col-md-3">
         <div class="card bg-primary shadow-sm text-center p-3">
           <i class="fas fa-users fa-2x mb-2"></i>
           <h6>Clientes</h6>
-          <h4>4,890</h4>
+          <h4 id="totalClientes">0</h4>
         </div>
       </div>
       <div class="col-md-3">
         <div class="card bg-warning text-dark shadow-sm text-center p-3">
           <i class="fas fa-box fa-2x mb-2"></i>
           <h6>Pedidos</h6>
-          <h4>201</h4>
+          <h4 id="totalPedidos">0</h4>
         </div>
       </div>
       <div class="col-md-3">
         <div class="card bg-info text-dark shadow-sm text-center p-3">
           <i class="fas fa-industry fa-2x mb-2"></i>
           <h6>Proveedores</h6>
-          <h4>36</h4>
+          <h4 id="totalProveedores">0</h4>
         </div>
       </div>
     </div>
@@ -124,8 +95,8 @@
       </div>
       <div class="col-md-6">
         <div class="card shadow-sm p-3">
-          <h5 class="mb-3">Clientes Frecuentes por Provincia</h5>
-          <div class="chart-container">
+          <h5 class="mb-3">Clientes Frecuentes</h5>
+          <div class="chart-container" style="height: 300px;">
             <canvas id="donutChart"></canvas>
           </div>
         </div>
@@ -147,31 +118,11 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>Industrias Repuestos</td>
-                <td>Disco Corte 7"</td>
-                <td>12/07/2025</td>
-                <td><span class="badge bg-warning text-dark"><i class="fas fa-hourglass-half me-1"></i>Pendiente</span>
-                </td>
-              </tr>
-              <tr>
-                <td>Herramientas CR</td>
-                <td>Lija Grano 60</td>
-                <td>13/07/2025</td>
-                <td><span class="badge bg-warning text-dark"><i class="fas fa-hourglass-half me-1"></i>Pendiente</span>
-                </td>
-              </tr>
-              <tr>
-                <td>Taller Sánchez</td>
-                <td>Disco Flap</td>
-                <td>15/07/2025</td>
-                <td><span class="badge bg-warning text-dark"><i class="fas fa-hourglass-half me-1"></i>Pendiente</span>
-                </td>
-              </tr>
+              <tr><td colspan="4" class="text-muted">Cargando...</td></tr>
             </tbody>
           </table>
           <button class="btn btn-outline-secondary me-2"
-            onclick="descargarPorId('reporteEntregas', 'entregas_pendientes.pdf', 'Entregas Pendientes')">
+            onclick="descargarReporteLimpio({ id:'reporteEntregas', filename:'entregas_pendientes.pdf', title:'Reporte de Entregas Pendientes', orientation:'landscape' })">
             <i class="fas fa-download me-1"></i> Entregas Pendientes
           </button>
         </div>
@@ -189,54 +140,11 @@
               </tr>
             </thead>
             <tbody class="text-center">
-              <tr>
-                <td>Proveeduría Delta</td>
-                <td>
-                  <i class="fas fa-star text-warning"></i>
-                  <i class="fas fa-star text-warning"></i>
-                  <i class="fas fa-star text-warning"></i>
-                  <i class="fas fa-star text-warning"></i>
-                  <i class="fas fa-star text-warning"></i>
-                </td>
-                <td>05/07/2025</td>
-              </tr>
-              <tr>
-                <td>DiscoPlus S.A.</td>
-                <td>
-                  <i class="fas fa-star text-warning"></i>
-                  <i class="fas fa-star text-warning"></i>
-                  <i class="fas fa-star text-warning"></i>
-                  <i class="fas fa-star text-warning"></i>
-                  <i class="fas fa-star-half-alt text-warning"></i>
-                </td>
-                <td>03/07/2025</td>
-              </tr>
-              <tr>
-                <td>Lijas Pro</td>
-                <td>
-                  <i class="fas fa-star text-warning"></i>
-                  <i class="fas fa-star text-warning"></i>
-                  <i class="fas fa-star text-warning"></i>
-                  <i class="fas fa-star text-warning"></i>
-                  <i class="far fa-star text-warning"></i>
-                </td>
-                <td>01/07/2025</td>
-              </tr>
-              <tr>
-                <td>Abrasivos Tico</td>
-                <td>
-                  <i class="fas fa-star text-warning"></i>
-                  <i class="fas fa-star text-warning"></i>
-                  <i class="fas fa-star text-warning"></i>
-                  <i class="fas fa-star-half-alt text-warning"></i>
-                  <i class="far fa-star text-warning"></i>
-                </td>
-                <td>28/06/2025</td>
-              </tr>
+              <tr><td colspan="3" class="text-muted">Cargando...</td></tr>
             </tbody>
           </table>
           <button class="btn btn-outline-secondary"
-            onclick="descargarPorId('reporteProveedores', 'top_proveedores.pdf', 'Top Proveedores')">
+            onclick="descargarReporteLimpio({ id:'reporteProveedores', filename:'top_proveedores.pdf', title:'Reporte de Top Proveedores', orientation:'landscape' })">
             <i class="fas fa-download me-1"></i> Top Proveedores
           </button>
         </div>
@@ -252,61 +160,102 @@
     </div>
   </footer>
 
-  <!-- Scripts -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <script>
-    function descargarPorId(idElemento, nombreArchivo, tituloReporte) {
-      const contenido = document.getElementById(idElemento).cloneNode(true);
-      const wrapper = document.createElement('div');
+<!-- Librería jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-      const encabezado = document.createElement('div');
-      encabezado.classList.add('encabezado-pdf');
-      encabezado.innerHTML = `
-        <img src="/IMG/logo.png" alt="Logo">
-        <h4>Abrasivos Industriales S.A.</h4>
-        <h5>Reporte: ${tituloReporte}</h5>
-        <small>Generado el ${new Date().toLocaleDateString()}</small>
-      `;
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const { jsPDF } = window.jspdf;
 
-      wrapper.appendChild(encabezado);
-      wrapper.appendChild(contenido);
+  // === FUNCIONES AUXILIARES ===
+  function formatearFecha(fecha) {
+    const d = new Date(fecha);
+    if (isNaN(d)) return fecha;
+    const dd = String(d.getDate()).padStart(2, '0');
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const yyyy = d.getFullYear();
+    return `${dd}/${mm}/${yyyy}`;
+  }
 
-      const opciones = {
-        margin: 0.5,
-        filename: nombreArchivo,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-      };
-      html2pdf().set(opciones).from(wrapper).save();
+  // === DESCARGA PDF PARA ENTREGAS ===
+  window.descargarPorId = async function (id, nombreArchivo, tituloReporte) {
+    const doc = new jsPDF({ orientation: 'landscape' });
+    let y = 15;
+
+    // Logo y título
+    const logo = new Image();
+    logo.src = '../IMG/logo.png';
+    doc.addImage(logo, 'PNG', 14, 10, 15, 15);
+    doc.setFontSize(14);
+    doc.text('Abrasivos Industriales S.A.', 32, 18);
+    doc.setFontSize(11);
+    doc.text(tituloReporte, 32, 26);
+    y = 40;
+
+    // Fecha actual
+    doc.setFontSize(9);
+    doc.text(`Generado: ${new Date().toLocaleString('es-CR')}`, 250, 18, null, null, 'right');
+
+    // Obtener tabla y datos
+    const card = document.getElementById(id);
+    const tabla = card?.querySelector('table');
+    if (!tabla) {
+      doc.text('No se encontraron datos para mostrar.', 14, y);
+      doc.save(nombreArchivo);
+      return;
     }
-  </script>
-  <script>
-    new Chart(document.getElementById('barChart'), {
-      type: 'bar',
-      data: {
-        labels: ['Lija 80', 'Disco Corte', 'Lija Agua', 'Disco Flap', 'Lija Banda'],
-        datasets: [{
-          label: 'Unidades Vendidas',
-          data: [890, 712, 630, 598, 545],
-          backgroundColor: 'rgba(255, 159, 64, 0.7)'
-        }]
-      },
-      options: { responsive: true }
+
+    const filas = [...tabla.querySelectorAll('tbody tr')];
+    if (filas.length === 0) {
+      doc.text('No hay registros para exportar.', 14, y);
+      doc.save(nombreArchivo);
+      return;
+    }
+
+    // Cabeceras
+    const cabeceras = [...tabla.querySelectorAll('thead th')].map(th => th.innerText.trim());
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    let x = 14;
+    cabeceras.forEach((txt, i) => {
+      doc.text(txt, x, y);
+      x += 65;
+    });
+    y += 8;
+    doc.setFont('helvetica', 'normal');
+
+    // Filas
+    filas.forEach((fila) => {
+      const celdas = [...fila.querySelectorAll('td')].map(td => td.innerText.trim());
+      x = 14;
+      celdas.forEach((celda) => {
+        doc.text(celda || '-', x, y);
+        x += 65;
+      });
+      y += 8;
+      if (y > 190) { // salto de página
+        doc.addPage();
+        y = 20;
+      }
     });
 
-    new Chart(document.getElementById('donutChart'), {
-      type: 'doughnut',
-      data: {
-        labels: ['San José', 'Alajuela', 'Heredia', 'Cartago', 'Puntarenas'],
-        datasets: [{
-          data: [45, 39, 35, 30, 28],
-          backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#dc3545', '#0dcaf0']
-        }]
-      },
-      options: { responsive: true }
-    });
-  </script>
+    // Pie de página
+    const total = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= total; i++) {
+      doc.setPage(i);
+      doc.setFontSize(9);
+      doc.text(`Página ${i} de ${total}`, 280, 200, null, null, 'right');
+      doc.text('Abrasivos Industriales S.A.', 14, 200);
+    }
+
+    // Guardar PDF
+    doc.save(nombreArchivo);
+  };
+});
+</script>
+
+
+  <!-- Lógica del dashboard -->
+  <script src="../JS/dashboardReportes.js"></script>
 </body>
-
 </html>

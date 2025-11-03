@@ -556,3 +556,32 @@ h1 {
     background-color: #e0e0e0;
     color: #000;
 }
+
+/* --- Estilo de tarjetas del dashboard --- */
+.card.bg-success,
+.card.bg-primary,
+.card.bg-warning,
+.card.bg-info {
+  color: #fff !important;              /* texto blanco */
+}
+
+.card.bg-success i,
+.card.bg-primary i,
+.card.bg-warning i,
+.card.bg-info i {
+  color: #fff !important;              /* iconos blancos */
+}
+
+.card.bg-success h6,
+.card.bg-primary h6,
+.card.bg-warning h6,
+.card.bg-info h6 {
+  color: #fff !important;              /* subtítulo blanco */
+}
+
+.card.bg-success h4,
+.card.bg-primary h4,
+.card.bg-warning h4,
+.card.bg-info h4 {
+  color: #fff !important;              /* número blanco */
+}
