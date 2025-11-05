@@ -113,6 +113,7 @@ try {
     exit;
   }
 
+  // ======= AQUÍ EL CAMBIO: devolver teléfono como "ultimo_pedido" =======
   if ($q === 'top_suppliers') {
     $sql = "
       SELECT TOP 10
@@ -121,20 +122,17 @@ try {
                + CAST(ISNULL(d.atencion,0) AS FLOAT)
                + CAST(ISNULL(d.disponibilidad,0) AS FLOAT)
           )/3.0 AS DECIMAL(10,2)) AS calificacion,
-        MAX(c.fecha_compra) AS ultimo_pedido
+        pr.telefono AS ultimo_pedido
       FROM proveedores pr
       LEFT JOIN desempeno d ON d.id_proveedor = pr.id_proveedor
-      LEFT JOIN compras c   ON c.id_proveedor = pr.id_proveedor
-      GROUP BY pr.nombre
+      GROUP BY pr.nombre, pr.telefono
       ORDER BY calificacion DESC, pr.nombre ASC
     ";
     $rows = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-    foreach ($rows as &$r) {
-      $r['ultimo_pedido'] = $r['ultimo_pedido'] ? date('d/m/Y', strtotime($r['ultimo_pedido'])) : '—';
-    }
     echo json_encode(['ok'=>true,'data'=>$rows], JSON_UNESCAPED_UNICODE);
     exit;
   }
+  // ======================================================================
 
   if ($q === 'all') {
     echo json_encode([

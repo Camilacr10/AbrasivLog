@@ -1,4 +1,5 @@
-// JS/dashboardReportes.js
+// JS/dashboardReportes.js (completo, listo para pegar)
+
 (function () {
   const API_URL = '/backend/dashboardReportes.php';
 
@@ -37,18 +38,12 @@
     if (el) el.textContent = value;
   }
 
-  // ====== MÉTRICAS ======
+  // ====== MÉTRICAS ======  (sin ventasTotales)
   async function cargarMetricas() {
     const res = await fetchJSON(`${API_URL}?q=metrics${buildRangeQuery()}`);
-
-    // Si alguna métrica viene indefinida, cae a 0 sin romper nada
     setText('totalClientes',    res.totalClientes ?? 0);
     setText('totalPedidos',     res.totalPedidos ?? 0);
     setText('totalProveedores', res.totalProveedores ?? 0);
-
-    // Ya NO tocamos ventasTotales (elemento eliminado)
-    // Si en algún momento lo vuelves a usar, bastaría:
-    // setText('ventasTotales', moneyCR(res.ventasTotales));
   }
 
   // ====== TOP PRODUCTOS ======
@@ -126,7 +121,7 @@
     }
   }
 
-  // ====== TOP PROVEEDORES ======
+  // ====== TOP PROVEEDORES ======  (agrega data-score para PDF)
   async function cargarTopProveedores() {
     const res = await fetchJSON(`${API_URL}?q=top_suppliers`);
     const tbody = document.querySelector('#reporteProveedores table tbody');
@@ -146,11 +141,12 @@
               '<i class="far fa-star text-warning"></i>'.repeat(empty)}`;
     };
     for (const r of res.data) {
+      const score = Number(r.calificacion ?? 0);
       const tr = document.createElement('tr');
       tr.className = 'text-center';
       tr.innerHTML = `
         <td>${safe(r.proveedor)}</td>
-        <td>${renderStars(r.calificacion)}</td>
+        <td data-score="${score}">${renderStars(score)}</td>
         <td>${safe(r.ultimo_pedido || '—')}</td>
       `;
       tbody.appendChild(tr);
@@ -181,6 +177,7 @@
 })();
 
 (function () {
+  // Exporta tablas a PDF mostrando "Calificación" como "X / 5" usando data-score
   window.descargarReporteLimpio = function ({ id, filename, title, orientation = 'landscape' }) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ orientation });
@@ -210,11 +207,14 @@
     }
 
     const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.innerText.trim());
-    const bodyRows = Array.from(table.querySelectorAll('tbody tr'))
-      .map(tr => Array.from(tr.querySelectorAll('td')).map(td => td.innerText.trim()))
-      .filter(cols => !(cols.length === 1 && /cargando|sin datos|no hay/i.test(cols[0])));
+    const bodyTrs = Array.from(table.querySelectorAll('tbody tr'));
+    const califIdx = headers.findIndex(h => /calificaci[oó]n/i.test(h)); // índice columna Calificación
 
-    if (bodyRows.length === 0) {
+    const rowsTds = bodyTrs
+      .map(tr => Array.from(tr.querySelectorAll('td')))
+      .filter(cols => !(cols.length === 1 && /cargando|sin datos|no hay/i.test(cols[0].innerText)));
+
+    if (rowsTds.length === 0) {
       doc.text('No hay datos para exportar.', 12, y);
       doc.save(filename || 'reporte.pdf');
       return;
@@ -223,26 +223,43 @@
     const pageW = doc.internal.pageSize.getWidth();
     const leftX = 12, rightX = pageW - 12;
     const tableW = rightX - leftX;
-    const cols = headers.length || (bodyRows[0] ? bodyRows[0].length : 1);
+    const cols = headers.length || (rowsTds[0] ? rowsTds[0].length : 1);
     const colW = tableW / cols;
 
+    // Encabezados
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(10);
     for (let c = 0; c < cols; c++) {
       doc.text(headers[c] || '', leftX + c * colW + 1, y);
     }
-    y += 6; doc.setDrawColor(200); doc.line(leftX, y, rightX, y); y += 4;
+    y += 6; 
+    doc.setDrawColor(200); 
+    doc.line(leftX, y, rightX, y); 
+    y += 4;
     doc.setFont('helvetica', 'normal');
 
+    // Cuerpo
     const lineHeight = 6, bottomMargin = doc.internal.pageSize.getHeight() - 16;
-    bodyRows.forEach((row) => {
-      if (y + lineHeight > bottomMargin) { doc.addPage({ orientation }); y = 16; }
+    rowsTds.forEach((tds) => {
+      if (y + lineHeight > bottomMargin) { 
+        doc.addPage({ orientation }); 
+        y = 16; 
+      }
       for (let c = 0; c < cols; c++) {
-        doc.text((row[c] || '-').trim(), leftX + c * colW + 1, y);
+        let text = (tds[c]?.innerText || '-').trim();
+
+        // Si es la columna Calificación → imprime número "X / 5" desde data-score
+        if (c === califIdx) {
+          const score = Number(tds[c]?.getAttribute('data-score') ?? NaN);
+          if (!Number.isNaN(score)) text = `${score} / 5`;
+        }
+
+        doc.text(text, leftX + c * colW + 1, y);
       }
       y += lineHeight;
     });
 
+    // Pie de página
     const total = doc.internal.getNumberOfPages();
     for (let i = 1; i <= total; i++) {
       doc.setPage(i);
