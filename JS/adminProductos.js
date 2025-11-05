@@ -216,93 +216,93 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-   // Función para manejar inactivar o activar un producto
-async function handleInactivarProducto(event) {
+    // Función para manejar inactivar o activar un producto
+    async function handleInactivarProducto(event) {
 
-    // Obtiene el id del producto desde el botón
-    const productoId = parseInt(event.currentTarget.dataset.id, 10);
+        // Obtiene el id del producto desde el botón
+        const productoId = parseInt(event.currentTarget.dataset.id, 10);
 
-    // Busca el producto en el arreglo global
-    const p = productos.find(x => Number(x.id_producto) === productoId);
+        // Busca el producto en el arreglo global
+        const p = productos.find(x => Number(x.id_producto) === productoId);
 
-    // Si no lo encuentra, muestra mensaje y detiene
-    if (!p) {
-        alert('Producto no encontrado');
-        return;
-    }
-
-    // Verifica si el producto está activo o inactivo
-    const estaActivo = String(p.estado).trim().toLowerCase() === 'activo';
-
-    // Si el producto está activo
-    if (estaActivo) {
-
-        // Confirma antes de inactivar
-        const ok1 = confirm(`¿Está seguro de inactivar el producto ${p.nombre}? Esta acción no se puede deshacer.`);
-        if (!ok1) return; // Si cancela, no hace nada
-
-        // Llama al backend con método DELETE
-        const response = await fetch(`${API_URL}?id_producto=${productoId}`, {
-            method: 'DELETE',
-            credentials: 'include'
-        });
-
-        // Si la respuesta es correcta
-        if (response.ok) {
-            alert('Producto inactivado correctamente.');
-            loadProductos(); // Recarga la tabla
-        } else {
-            console.error("Error al inactivar el producto");
+        // Si no lo encuentra, muestra mensaje y detiene
+        if (!p) {
+            alert('Producto no encontrado');
+            return;
         }
 
-    } else {
-        // Si el producto está inactivo
+        // Verifica si el producto está activo o inactivo
+        const estaActivo = String(p.estado).trim().toLowerCase() === 'activo';
 
-        // Confirma antes de activar
-        const ok2 = confirm(`¿Desea activar nuevamente el producto ${p.nombre}?`);
-        if (!ok2) return;
+        // Si el producto está activo
+        if (estaActivo) {
 
-        // Calcula valores antes de enviar al backend
-        const precio_base = Number(p.precio_base) || 0;
-        const porcentaje_iva = Number(p.porcentaje_iva) || 0;
-        const porcentaje_descuento = Number(p.porcentaje_descuento) || 0;
-        const iva = +(precio_base * porcentaje_iva / 100).toFixed(2);
-        const precio_final = +(precio_base + iva - (precio_base * porcentaje_descuento / 100)).toFixed(2);
+            // Confirma antes de inactivar
+            const ok1 = confirm(`¿Está seguro de inactivar el producto ${p.nombre}? Esta acción no se puede deshacer.`);
+            if (!ok1) return; // Si cancela, no hace nada
 
-        // Cuerpo con los datos del producto
-        const body = {
-            id_producto: productoId,
-            id_categoria: Number(p.id_categoria),
-            nombre: p.nombre || '',
-            codigo: p.codigo || '',
-            detalle: p.detalle || '',
-            precio_base,
-            porcentaje_iva,
-            cantidad: Number(p.cantidad) || 0,
-            iva,
-            porcentaje_descuento,
-            precio_final,
-            estado: 'Activo', // Cambia el estado
-            imagen_path: p.imagen_path || ''
-        };
+            // Llama al backend con método DELETE
+            const response = await fetch(`${API_URL}?id_producto=${productoId}`, {
+                method: 'DELETE',
+                credentials: 'include'
+            });
 
-        // Llama al backend con método PUT
-        const response = await fetch(API_URL, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify(body)
-        });
+            // Si la respuesta es correcta
+            if (response.ok) {
+                alert('Producto inactivado correctamente.');
+                loadProductos(); // Recarga la tabla
+            } else {
+                console.error("Error al inactivar el producto");
+            }
 
-        // Si la respuesta es correcta
-        if (response.ok) {
-            alert('Producto activado correctamente.');
-            loadProductos(); // Recarga la tabla
         } else {
-            console.error('Error al activar el producto');
+            // Si el producto está inactivo
+
+            // Confirma antes de activar
+            const ok2 = confirm(`¿Desea activar nuevamente el producto ${p.nombre}?`);
+            if (!ok2) return;
+
+            // Calcula valores antes de enviar al backend
+            const precio_base = Number(p.precio_base) || 0;
+            const porcentaje_iva = Number(p.porcentaje_iva) || 0;
+            const porcentaje_descuento = Number(p.porcentaje_descuento) || 0;
+            const iva = +(precio_base * porcentaje_iva / 100).toFixed(2);
+            const precio_final = +(precio_base + iva - (precio_base * porcentaje_descuento / 100)).toFixed(2);
+
+            // Cuerpo con los datos del producto
+            const body = {
+                id_producto: productoId,
+                id_categoria: Number(p.id_categoria),
+                nombre: p.nombre || '',
+                codigo: p.codigo || '',
+                detalle: p.detalle || '',
+                precio_base,
+                porcentaje_iva,
+                cantidad: Number(p.cantidad) || 0,
+                iva,
+                porcentaje_descuento,
+                precio_final,
+                estado: 'Activo', // Cambia el estado
+                imagen_path: p.imagen_path || ''
+            };
+
+            // Llama al backend con método PUT
+            const response = await fetch(API_URL, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify(body)
+            });
+
+            // Si la respuesta es correcta
+            if (response.ok) {
+                alert('Producto activado correctamente.');
+                loadProductos(); // Recarga la tabla
+            } else {
+                console.error('Error al activar el producto');
+            }
         }
     }
-}
 
 
 
@@ -567,6 +567,90 @@ async function handleInactivarProducto(event) {
         document.getElementById('ivaColones').value = '';
         document.getElementById('descColones').value = '';
         document.getElementById('precioFinal').value = '';
+    });
+
+
+
+
+    // NOTIFICACIONES DE BAJO STOCK
+
+    // Busca los productos con cantidad menor o igual al mínimo
+    function getProductosBajoStock(arr) {
+        return (arr || []).filter(p => Number(p.cantidad) <= STOCK_MIN);
+    }
+
+    // Muestra las alertas dentro del dropdown de la campana
+    function pintarDropdownBajoStock(lista) {
+        const cont = document.getElementById('listaLowStock');
+        const badge = document.getElementById('badgeLowStock');
+        if (!cont || !badge) return;
+
+        cont.innerHTML = ''; // Limpia el contenido anterior
+
+        // Si no hay productos en bajo stock
+        if (!lista.length) {
+            badge.classList.add('d-none'); // Oculta el número
+            cont.innerHTML = '<div class="text-center text-muted small py-2">No hay productos con bajo inventario.</div>';
+            return;
+        }
+
+        // Muestra el total de alertas
+        badge.textContent = String(lista.length);
+        badge.classList.remove('d-none');
+
+        // Recorre la lista y muestra cada alerta
+        lista.forEach(p => {
+            const nombre = p.nombre || '';
+            const img = p.imagen_path || '';
+
+            const div = document.createElement('div');
+            div.className = 'd-flex align-items-center gap-2 py-2 border-bottom';
+
+            // Mensaje exacto solicitado + imagen
+            div.innerHTML = `
+                            <img src="${img}" alt="${nombre}" style="width:28px;height:28px;object-fit:cover;border-radius:6px;">
+                            <div class="small">
+                                <strong>Alerta:</strong> el producto <strong>${nombre}</strong> está por debajo del stock mínimo.
+                            </div>
+                            `;
+
+            cont.appendChild(div);
+        });
+    }
+
+    // Refresca el dropdown y el badge usando la lista actual
+    function refrescarBajoStock() {
+        const bajos = getProductosBajoStock(productos) // Busca los productos con bajo stock
+            .sort((a, b) => a.cantidad - b.cantidad); // Ordena de menor a mayor stock
+        pintarDropdownBajoStock(bajos); // Actualiza el dropdown
+    }
+
+    // Observa los cambios en la tabla (cuando se agregan o editan productos)
+    (function observarTabla() {
+        const tbody = document.getElementById('tablaProductos');
+        if (!tbody || typeof MutationObserver === 'undefined') return;
+        new MutationObserver(refrescarBajoStock).observe(tbody, { childList: true });
+    })();
+
+    // Actualiza al cerrar los modales de agregar o editar
+    ['modalAgregar', 'modalEditar'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('hidden.bs.modal', refrescarBajoStock);
+    });
+
+    // Refresca cada 3 segundos (por si cambia sin recargar tabla)
+    setInterval(refrescarBajoStock, 3000);
+
+    // Refresca al entrar a la página
+    refrescarBajoStock();
+
+    // Limpia manualmente las notificaciones desde el botón del dropdown
+    document.addEventListener('click', e => {
+        if (!e.target.closest('#btnLimpiarNotif')) return;
+        const cont = document.getElementById('listaLowStock');
+        const badge = document.getElementById('badgeLowStock');
+        if (cont) cont.innerHTML = '<div class="text-center text-muted small py-2">No hay productos con bajo inventario.</div>';
+        if (badge) badge.classList.add('d-none');
     });
 
 

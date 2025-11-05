@@ -346,72 +346,154 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-    // Reporte de evaluaciones para exportar a PDF (simple)
+    // Reporte de evaluaciones para exportar a PDF (formato dashboard)
     window.exportarEvaluacionesPDF = function () {
-        // Obtiene la clase jsPDF de la librería cargada en el HTML
+        // Crea el PDF en horizontal como en el dashboard
         const { jsPDF } = window.jspdf;
-        const doc = new jsPDF(); // Crea el documento PDF
-        let y = 15;// Posición vertical
+        const doc = new jsPDF({ orientation: 'landscape' });
 
-        // Título y proveedor
+        // Márgenes y posición inicial
+        const MARGIN_L = 14;
+        const MARGIN_R = 14;
+        const MARGIN_T = 10;
+        const PAGE_W = doc.internal.pageSize.getWidth();
+        const PAGE_H = doc.internal.pageSize.getHeight();
+
+        let y = MARGIN_T + 5;
+
+        // ---- Encabezado con logo, empresa y título ----
+        const logo = new Image();
+        logo.src = '../IMG/logo.png';
+        doc.addImage(logo, 'PNG', MARGIN_L, MARGIN_T, 15, 15);
+
         doc.setFontSize(14);
-        doc.text('Evaluaciones de Proveedor', 14, y);
-        y += 6; // Espacio despues del título
+        doc.text('Abrasivos Industriales S.A.', MARGIN_L + 18, MARGIN_T + 8);
 
-        // Si hay un proveedor seleccionado, lo muestra (usa el idProveedorActual)
+        doc.setFontSize(11);
+        doc.text('Reporte de Evaluaciones de Proveedores', MARGIN_L + 18, MARGIN_T + 16);
+
+        // Fecha y hora (alineado a la derecha)
+        doc.setFontSize(9);
+        doc.text(`Generado: ${new Date().toLocaleString('es-CR')}`, PAGE_W - MARGIN_R, MARGIN_T + 8, { align: 'right' });
+
+        // Si hay un proveedor seleccionado, lo indica debajo del título
         if (typeof idProveedorActual !== 'undefined' && idProveedorActual) {
-            doc.setFontSize(11);
-            doc.text(`Proveedor: ${idProveedorActual}`, 14, y);
-            y += 8;// Espacio después del proveedor
-        } else {
-            y += 4;// Pequeño espacio si no hay proveedor
+            doc.setFontSize(10);
+            doc.text(`Proveedor: ${idProveedorActual}`, MARGIN_L, MARGIN_T + 26);
         }
 
-        // Toma la lista que se va a exportar (respeta los filtros activos)
-        const lista = evaluaciones;
+        y = MARGIN_T + 30; // baja un poco para empezar la tabla
 
-        // Si no hay datos, avisa en el PDF y lo guarda
+        // ---- Datos a exportar (usa tu arreglo "evaluaciones") ----
+        const lista = evaluaciones || [];
+
         if (!lista.length) {
             doc.setFontSize(11);
-            doc.text('No hay evaluaciones para exportar.', 14, y);
+            doc.text('No hay evaluaciones para exportar.', MARGIN_L, y);
+            ponerPieDePagina(doc);
             doc.save('evaluaciones.pdf');
             return;
         }
 
-        // Recorre cada evaluación y la escribe en el PDF
-        doc.setFontSize(11);
-        lista.forEach(ev => {
-            const fecha = formatearFechaDMY(fechaRaw(ev)); // Formatea la fecha a DD/MM/AAAA
-            const prom = promedio1(ev);                   // Calcula el promedio con 1 decimal
+        // ---- Definición de columnas (ancho similar al dashboard) ----
+        // El ancho total usable ~ PAGE_W - (MARGIN_L + MARGIN_R) ≈ 269mm
+        const cols = [
+            { key: 'numero', title: 'Evaluación #', width: 22 },
+            { key: 'fecha', title: 'Fecha', width: 28 },
+            { key: 'puntualidad', title: 'Puntualidad', width: 28 },
+            { key: 'atencion', title: 'Atención', width: 28 },
+            { key: 'disponibilidad', title: 'Disponibilidad', width: 33 },
+            { key: 'promedio', title: 'Promedio', width: 25 },
+            { key: 'observacion', title: 'Observación', width: 100 }
+        ];
 
-            // Encabezado de cada evaluación con número y fecha
-            doc.text(`Evaluación #${ev.numero} — Fecha: ${fecha}`, 14, y); y += 6;
-
-            // Detalle de calificaciones
-            doc.text(`Puntualidad: ${ev.puntualidad}/5`, 14, y); y += 6;
-            doc.text(`Atención: ${ev.atencion}/5`, 14, y); y += 6;
-            doc.text(`Disponibilidad: ${ev.disponibilidad}/5`, 14, y); y += 6;
-
-            // Promedio
-            doc.text(`Promedio: ${prom}/5`, 14, y); y += 6;
-
-            // Observación
-            if (ev.observacion) {
-                doc.text(`Observación: ${ev.observacion}`, 14, y);
-                y += 6;
-            }
-
-            y += 4; // Espacio entre evaluaciones
-
-            // Salto de página simple si se acerca al final de la hoja
-            if (y > 280) {
-                doc.addPage(); // Nueva página
-                y = 15;        // Reinicia posición vertical
-            }
+        // ---- Dibuja cabeceras ----
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(10);
+        let x = MARGIN_L;
+        cols.forEach(c => {
+            doc.text(c.title, x, y);
+            x += c.width;
         });
+        y += 8;
+        doc.setFont('helvetica', 'normal');
 
-        // Guarda el archivo PDF con un nombre fijo
+        // ---- Filas ----
+        doc.setFontSize(10);
+        const lineH = 6; // alto de línea por fila
+
+        for (const ev of lista) {
+            // Prepara valores
+            const fecha = formatearFechaDMY(fechaRaw(ev)); // ya tienes esta función
+            const prom = promedio1(ev);                     // ya tienes esta función
+            const fila = {
+                numero: `#${ev.numero || '-'}`,
+                fecha: fecha || '-',
+                puntualidad: `${ev.puntualidad ?? '-'}/5`,
+                atencion: `${ev.atencion ?? '-'}/5`,
+                disponibilidad: `${ev.disponibilidad ?? '-'}/5`,
+                promedio: `${prom ?? '-'}/5`,
+                observacion: (ev.observacion || '').toString()
+            };
+
+            // Calcular alto real de la fila según observación (se hace wrap)
+            const obsCol = cols.find(c => c.key === 'observacion');
+            const obsLines = doc.splitTextToSize(fila.observacion || '-', obsCol.width - 2);
+            const rowHeight = Math.max(lineH, obsLines.length * (lineH - 1)); // un poco más compacto
+
+            // Salto de página si no cabe
+            if (y + rowHeight > PAGE_H - 20) {
+                doc.addPage();
+                y = MARGIN_T + 20;
+                // Repetir cabeceras en nueva página
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(10);
+                x = MARGIN_L;
+                cols.forEach(c => {
+                    doc.text(c.title, x, y);
+                    x += c.width;
+                });
+                y += 8;
+                doc.setFont('helvetica', 'normal');
+            }
+
+            // Imprimir celdas (las simples en una línea)
+            x = MARGIN_L;
+            cols.forEach(c => {
+                if (c.key !== 'observacion') {
+                    const val = (fila[c.key] ?? '').toString();
+                    doc.text(val || '-', x, y);
+                } else {
+                    // Observación con wrap
+                    let yy = y;
+                    for (const line of obsLines) {
+                        doc.text(line, x, yy);
+                        yy += (lineH - 1);
+                    }
+                }
+                x += c.width;
+            });
+
+            y += rowHeight; // siguiente fila
+            // línea separadora opcional: doc.line(MARGIN_L, y - 2, PAGE_W - MARGIN_R, y - 2);
+        }
+
+        // ---- Pie de página con numeración ----
+        ponerPieDePagina(doc);
+
+        // ---- Guardar PDF ----
         doc.save('evaluaciones.pdf');
+
+        // ---- Función: pie de página al estilo dashboard ----
+        function ponerPieDePagina(docRef) {
+            const total = docRef.internal.getNumberOfPages();
+            for (let i = 1; i <= total; i++) {
+                docRef.setPage(i);
+                docRef.setFontSize(9);
+                docRef.text(`Página ${i} de ${total}`, PAGE_W - MARGIN_R, PAGE_H - 10, { align: 'right' });
+                docRef.text('Abrasivos Industriales S.A.', MARGIN_L, PAGE_H - 10);
+            }
+        }
     };
 
 
@@ -420,7 +502,7 @@ document.addEventListener('DOMContentLoaded', function () {
     //Listener para exportar a PDF
     const btnExportarPDF = document.getElementById('btnExportarPDF');
     if (btnExportarPDF) {
-    btnExportarPDF.addEventListener('click', exportarEvaluacionesPDF);
+        btnExportarPDF.addEventListener('click', exportarEvaluacionesPDF);
     }
 
 
@@ -462,10 +544,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-//Listener para exportar a Excel
+    //Listener para exportar a Excel
     const btnExportarExcel = document.getElementById('btnExportarExcel');
     if (btnExportarExcel) {
-    btnExportarExcel.addEventListener('click', exportarEvaluacionesExcel);
+        btnExportarExcel.addEventListener('click', exportarEvaluacionesExcel);
     }
 
 
