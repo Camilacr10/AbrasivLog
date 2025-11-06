@@ -1,8 +1,8 @@
 <?php
-
 declare(strict_types=1);
 
 require_once __DIR__ . '/db.php';
+
 if (!isset($pdo)) {
   error_log('[login.php] $pdo no está definido por db.php');
   http_response_code(500);
@@ -10,6 +10,7 @@ if (!isset($pdo)) {
   echo json_encode(['success' => false, 'message' => 'Error de configuración de base de datos.']);
   exit;
 }
+
 try {
   $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (Throwable $e) {
@@ -18,50 +19,48 @@ try {
 
 session_start();
 header('Content-Type: application/json');
-<<<<<<< HEAD
-
 
 function sha256_hex_upper(string $plain): string {
   return strtoupper(bin2hex(hash('sha256', $plain, true)));
 }
 
 $op     = $_GET['op'] ?? '';
-$method = $_SERVER['REQUEST_METHOD'];
+$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 try {
-  
+
   if ($method === 'GET' && $op === 'me') {
     $u = $_SESSION['user'] ?? null;
     echo json_encode([
       'authenticated'   => !empty($u['id_usuario']),
-      'id_usuario'      => $u['id_usuario']   ?? null,
-      'username'        => $u['username']     ?? null,
-      'rol'             => $u['rol']          ?? null,
-      'id_empleado'     => $u['id_empleado']  ?? null,
+      'id_usuario'      => $u['id_usuario']      ?? null,
+      'username'        => $u['username']        ?? null,
+      'rol'             => $u['rol']             ?? null,
+      'id_empleado'     => $u['id_empleado']     ?? null,
       'empleado_nombre' => $u['empleado_nombre'] ?? null,
-      'login_utc'       => $u['login_utc']    ?? null,
+      'login_utc'       => $u['login_utc']       ?? null,
     ]);
     exit;
   }
-
 
   if ($method === 'POST' && $op === 'logout') {
     $_SESSION = [];
     if (ini_get('session.use_cookies')) {
       $p = session_get_cookie_params();
-      setcookie(session_name(), '', time()-42000, $p['path'],$p['domain'],$p['secure'],$p['httponly']);
+      setcookie(session_name(), '', time() - 42000, $p['path'], $p['domain'], $p['secure'], $p['httponly']);
     }
     session_destroy();
     echo json_encode(['success' => true, 'message' => 'Sesión cerrada.']);
     exit;
   }
 
-  
+
   if ($method === 'POST' && $op === '') {
     $raw  = file_get_contents('php://input');
-    $data = json_decode($raw, true);
+    $data = json_decode($raw ?? '', true);
+
     if (!is_array($data)) {
-      error_log('[login.php] Body no-JSON: ' . substr($raw ?? '', 0, 200));
+      error_log('[login.php] Body no-JSON: ' . substr((string)$raw, 0, 200));
       http_response_code(400);
       echo json_encode(['success' => false, 'message' => 'Solicitud inválida.']);
       exit;
@@ -75,7 +74,6 @@ try {
       exit;
     }
 
-
     $sql = "
       SELECT TOP 1
         u.id_usuario,
@@ -87,43 +85,15 @@ try {
         u.id_empleado,
         e.nombre_completo AS emp_nombre_completo
       FROM usuarios u
-      LEFT JOIN roles r      ON r.id_rol = u.id_rol
-      LEFT JOIN empleados e  ON e.id_empleado = u.id_empleado
+      LEFT JOIN roles r     ON r.id_rol = u.id_rol
+      LEFT JOIN empleados e ON e.id_empleado = u.id_empleado
       WHERE u.username = :username
     ";
+
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':username' => $username]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-=======
- 
-$data = json_decode(file_get_contents("php://input"), true);
-$username = trim($data['username'] ?? '');
-$password = trim($data['password'] ?? '');
- 
-if ($username === '' || $password === '') {
-    echo json_encode(["success" => false, "message" => "Debe ingresar usuario y contraseña."]);
-    exit;
-}
- 
-try {
-    $sql = "
-        SELECT
-            u.id_usuario,
-            u.username,
-            u.password_hash,
-            u.activo,
-            r.nombre AS rol
-        FROM usuarios u
-        INNER JOIN roles r ON u.id_rol = r.id_rol
-        WHERE u.username = :username
-    ";
- 
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([':username' => $username]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
- 
->>>>>>> 18447f41d7740061b2ce48b0d3311c8ee83d4304
     if (!$user) {
       echo json_encode(['success' => false, 'message' => 'Usuario no encontrado.']);
       exit;
@@ -134,16 +104,18 @@ try {
       exit;
     }
 
-
-    $ok = false;
     $stored = (string)($user['password_hash'] ?? '');
+    $ok = false;
+
     if ($stored !== '') {
       $info = password_get_info($stored);
+     
       if (($info['algo'] ?? 0) !== 0) {
-        $ok = password_verify($password, $stored); // bcrypt
+        $ok = password_verify($password, $stored);
       }
+ 
       if (!$ok && $stored === sha256_hex_upper($password)) {
-        $ok = true; // sha256 hex
+        $ok = true;
       }
     }
 
@@ -151,22 +123,23 @@ try {
       echo json_encode(['success' => false, 'message' => 'Credenciales inválidas.']);
       exit;
     }
-<<<<<<< HEAD
 
-  
     session_regenerate_id(true);
     $_SESSION['user'] = [
       'id_usuario'      => (int)$user['id_usuario'],
-      'username'        => $user['username'],
+      'username'        => (string)$user['username'],
       'id_rol'          => isset($user['id_rol']) ? (int)$user['id_rol'] : null,
       'rol'             => $user['rol'] ?? null,
       'id_empleado'     => isset($user['id_empleado']) ? (int)$user['id_empleado'] : null,
-     
       'empleado_nombre' => trim((string)($user['emp_nombre_completo'] ?? '')),
       'login_utc'       => gmdate('Y-m-d\TH:i:s\Z'),
     ];
 
-    echo json_encode(['success' => true, 'rol' => $_SESSION['user']['rol'] ?? null]);
+    echo json_encode([
+      'success' => true,
+      'rol' => $_SESSION['user']['rol'] ?? null,
+      'message' => 'Inicio de sesión exitoso.'
+    ]);
     exit;
   }
 
@@ -177,35 +150,3 @@ try {
   http_response_code(500);
   echo json_encode(['success' => false, 'message' => 'Error del servidor.']);
 }
-=======
- 
-    if ((int)$user['activo'] === 0) {
-        echo json_encode(["success" => false, "message" => "Usuario inactivo. Contacte al administrador."]);
-        exit;
-    }
- 
-    // ✅ Nueva verificación universal (SHA2_256 o bcrypt)
-    $inputHash = strtoupper(bin2hex(hash('sha256', $password, true)));
- 
-    if (
-        password_verify($password, $user['password_hash']) || 
-        $user['password_hash'] === $inputHash
-    ) {
-        echo json_encode([
-            "success" => true,
-            "rol" => $user['rol'],
-            "message" => "Inicio de sesión exitoso como " . $user['rol']
-        ]);
-    } else {
-        echo json_encode(["success" => false, "message" => "Contraseña incorrecta."]);
-    }
- 
-} catch (PDOException $e) {
-    echo json_encode([
-        "success" => false,
-        "message" => "Error en el servidor.",
-        "details" => $e->getMessage()
-    ]);
-}
-?>
->>>>>>> 18447f41d7740061b2ce48b0d3311c8ee83d4304
