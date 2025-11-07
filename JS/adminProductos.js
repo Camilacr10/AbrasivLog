@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let categorias = []; // Arreglo para almacenar las categorías
     let editOriginalCodigo = ''; // Variable para almacenar el código original en la edicion
     let agreOriginalCodigo = ''; // Variable para almacenar el código original cuando se agrega un nuevo producto
+    const STOCK_MIN = 5;
     const API_URL = '../backend/adminProductos.php';
     const API_CATS = '../backend/adminCategorias.php';
     const categoriaIndex = {}; // Índice id_categoria -> nombre

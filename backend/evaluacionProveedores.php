@@ -3,6 +3,9 @@
 
 // Archivo que conecta con la base de datos
 require 'db.php';
+//Archivo de auditoria
+require 'auditoria.php';
+
 
 
 
@@ -140,6 +143,7 @@ switch ($method) {
                 (int) $input['disponibilidad'],
                 $input['observacion']
             );
+            registrarAuditoria('desempeno', $id_desempeno, 'CREAR', 'Se creo una nueva evaluacion');
 
             if ($id > 0) {
                 http_response_code(201); // Código de respuesta HTTP 201 (Created)
@@ -172,6 +176,7 @@ switch ($method) {
                 $input['disponibilidad'],
                 $input['observacion']
             );
+            registrarAuditoria('desempeno', $id_desempeno, 'EDITAR', 'Se edito una evaluacion');
             if ($editResult) {
                 http_response_code(200); // Código de respuesta HTTP 200 (OK)
                 echo json_encode(["message" => "Evaluación actualizada"]);
@@ -188,6 +193,7 @@ switch ($method) {
     case 'DELETE':
         $id = $_GET['id_desempeno'] ?? ($input['id_desempeno'] ?? null); // Obtiene el ID de la evaluación de la URL
         $input = getJsonInput(); // Obtiene el cuerpo de la solicitud
+        registrarAuditoria('desempeno', $id_desempeno, 'INACTIVAR', 'Se inactivo una evaluacion');
         if ($id) {
             $result = eliminarDesempeno($id);
 

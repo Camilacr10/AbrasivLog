@@ -60,6 +60,44 @@
             margin: 0;
             padding: 0;
         }
+
+        /* Tarjeta compacta del item de notificación */
+
+        .item-low-stock {
+            display: grid;
+            grid-template-columns: 48px 1fr auto;
+            gap: 10px;
+            align-items: center;
+            padding: 6px 8px;
+            border-radius: 8px;
+        }
+
+        .item-low-stock:hover {
+            background-color: rgba(0, 0, 0, 0.04);
+        }
+
+        .item-low-stock img {
+            width: 48px;
+            height: 48px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .item-low-stock .titulo {
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .item-low-stock .meta {
+            font-size: .85rem;
+            opacity: .8;
+        }
+
+        /* Quita el punto del li de la campana sin afectar los demás */
+        .nav-item.dropdown {
+            list-style-type: none;
+            display: inline-block;
+        }
     </style>
 </head>
 
@@ -86,6 +124,7 @@
                             <li><a class="dropdown-item" href="inventarioCategorias.html">Inventario de Categorías</a>
                             </li>
                         </ul>
+                    </li>
                     <li class="nav-item"><a class="nav-link" href="entregas.html">Entregas</a></li>
                     <li class="nav-item"><a class="nav-link" href="proveedores.html">Proveedores</a></li>
                     <li class="nav-item"><a class="nav-link" href="dashboardReportes.html">Reportes</a></li>
@@ -104,11 +143,43 @@
     <div class="container mt-4 mb-5">
         <h1>Inventario de Productos</h1>
 
-        <!-- Botón para abrir el modal que permite agregar un nuevo producto -->
+        <!-- Notificaciones de stock bajo -->
         <div class="text-end">
+            <li class="nav-item dropdown">
+                <a class="nav-link position-relative" href="#" id="notifLowStock" role="button"
+                    data-bs-toggle="dropdown" aria-expanded="false" title="Productos con poco inventario">
+                    <i class="fa-regular fa-bell"></i>
+                    <span id="badgeLowStock"
+                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">0</span>
+                </a>
+
+                <ul class="dropdown-menu dropdown-menu-end p-0" aria-labelledby="notifLowStock"
+                    style="min-width: 320px;">
+                    <li class="px-3 py-2 border-bottom">
+                        <strong>Productos con bajo inventario</strong>
+                    </li>
+                    <li>
+                        <div id="listaLowStock" class="p-2" style="max-height: 300px; overflow:auto;">
+                            <!-- Acá se van a mostrar los productos con bajo inventario -->
+                        </div>
+                    </li>
+                    <li class="border-top">
+                        <button id="btnLimpiarNotif" class="dropdown-item text-center small">Ocultar notificaciones
+                            vistas</button>
+                    </li>
+                </ul>
+            </li>
+        </div>
+
+        <!-- Botón para abrir el modal que permite agregar un nuevo producto -->
+
+
+        <div class="text-end">
+
             <button class="btn btn-custom my-3" data-bs-toggle="modal" data-bs-target="#modalAgregar">Registrar
                 Producto</button>
         </div>
+
 
         <!-- Campo de texto para buscar productos por nombre o código -->
         <input type="text" id="buscar" class="form-control mb-3" placeholder="Buscar producto por codigo o nombre...">
@@ -330,4 +401,4 @@
     </footer>
 </body>
 
-</html>
+</html>>

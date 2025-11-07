@@ -3,6 +3,9 @@
 
 // Archivo que conecta con la base de datos
 require 'db.php';
+//Archivo de auditoria
+require 'auditoria.php';
+
 
 
 
@@ -170,6 +173,7 @@ switch ($method) {
                 $estado = 'Activo',
                 $input['imagen_path']
             );
+            registrarAuditoria('productos', $id_producto, 'CREAR', 'Se agregó un nuevo producto');
 
             if ($id_producto > 0) {
                 http_response_code(201); // Código de respuesta HTTP 201 (Created)
@@ -219,6 +223,7 @@ switch ($method) {
                 $input['estado'],
                 $input['imagen_path']
             );
+            registrarAuditoria('productos', $id_producto, 'EDITAR', 'Se editó un producto');
 
             if ($editResult) {
                 http_response_code(200); // Código de respuesta HTTP 200 (OK)
@@ -236,6 +241,7 @@ switch ($method) {
     case 'DELETE':
         $id_producto = $_GET['id_producto'] ?? ($input['id_producto'] ?? null); // Obtiene el ID del producto de la URL o del body
         $input = getJsonInput(); // Obtiene el cuerpo de la solicitud (por si viene el id en JSON)
+        registrarAuditoria('productos', $id_producto, 'INACTIVAR', 'Se inactivo un producto');
 
         if ($id_producto) {
             // Llama a la función que actualiza el estado = Inactivo

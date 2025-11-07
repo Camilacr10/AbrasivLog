@@ -3,6 +3,9 @@
 
 // Archivo que conecta con la base de datos
 require 'db.php';
+//Archivo de auditoria
+require 'auditoria.php';
+
 
 
 
@@ -138,6 +141,7 @@ switch ($method) {
                 $estado = 'Activo',
                 $input['nombre']
             );
+            registrarAuditoria('proveedores', $id_proveedor, 'CREAR', 'Se creo un proveedor');
 
             if ($id_proveedor > 0) {
                 http_response_code(201); // Código de respuesta HTTP 201 (Created)
@@ -173,6 +177,7 @@ switch ($method) {
                 $input['estado'],
                 $input['nombre']
             );
+            registrarAuditoria('proveedores', $id_proveedor, 'EDITAR', 'Se edito un proveedor');
 
             if ($editResult) {
                 http_response_code(200); // Código de respuesta HTTP 200 (OK)
@@ -190,6 +195,7 @@ switch ($method) {
     case 'DELETE':
         $id_proveedor = $_GET['id_proveedor'] ?? ($input['id_proveedor'] ?? null); // Obtiene el ID del proveedor de la URL o del body
         $input = getJsonInput(); // Obtiene el cuerpo de la solicitud (por si viene el id en JSON)
+        registrarAuditoria('proveedores', $id_proveedor, 'INACTIVAR', 'Se inactivo un proveedor');
 
         if ($id_proveedor) {
             // Llama a la función que actualiza el estado = 0 (Inactivo)

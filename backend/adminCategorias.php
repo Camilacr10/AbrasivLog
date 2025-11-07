@@ -3,6 +3,9 @@
 
 // Archivo que conecta con la base de datos
 require 'db.php';
+//Archivo de auditoria
+require 'auditoria.php';
+
 
 
 
@@ -134,6 +137,7 @@ switch ($method) {
                 $estado = 'Activo',
                 $input['icono_path'] // URL del icono
             );
+            registrarAuditoria('categorias', $id, 'CREAR', 'Se agregó una nueva categoría');
 
             if ($id_categoria > 0) {
                 http_response_code(201); // Código de respuesta HTTP 201 (Created)
@@ -167,6 +171,7 @@ switch ($method) {
                 $input['estado'],
                 $input['icono_path'] // URL del icono
             );
+            registrarAuditoria('categorias', $id_categoria, 'EDITAR', 'Se edito una categoría');
 
             if ($editResult) {
                 http_response_code(200); // Código de respuesta HTTP 200 (OK)
@@ -184,6 +189,7 @@ switch ($method) {
     case 'DELETE':
         $input = getJsonInput(); // Obtiene el cuerpo de la solicitud (por si viene el id en JSON)
         $id_categoria = $_GET['id_categoria'] ?? ($input['id_categoria'] ?? null); // Obtiene el ID de la categoría de la URL o del body
+        registrarAuditoria('categorias', $id_categoria, 'INACTIVAR', 'Se inactivo una categoría');
 
         if ($id_categoria) {
             // Llama a la función que actualiza el estado = Inactivo

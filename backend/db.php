@@ -2,17 +2,16 @@
 require "message_log.php"; // Para los mensajes de error
 
 //INFO DB DIANA
-//$server = 'DIANAR\\MSSQLSERVER01'; //Servidor de base de datos
-//
-// $db = 'DianaAbrasivlog'; //Nombre de la base de datos
+$server = 'DIANAR\\MSSQLSERVER01'; //Servidor de base de datos
+$db = 'DianaAbrasivlog'; //Nombre de la base de datos
 
 //INFO DB Camila
 //$server = 'DESKTOP-7KHMCN1';
 //$db     = 'Abrasivlog';
 
 //INFO DB Valeria 
-$server = 'LAPTOP-VALERIA';
-$db     = 'Abrasivlog';
+//$server = 'LAPTOP-VALERIA';
+//$db     = 'Abrasivlog';
 
 //INFO DB Jose
 //$server = 'DESKTOP-LUIKLRP';
