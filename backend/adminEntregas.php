@@ -1,6 +1,7 @@
 <?php
 require_once "db.php";
 require_once "message_log.php";
+require 'auditoria.php';
 header('Content-Type: application/json; charset=utf-8');
 
 // ─────────────── FUNCIONES ───────────────
@@ -189,7 +190,7 @@ switch ($accion) {
         $clienteCedula = $_POST['cliente_cedula'] ?? '';
         $idEmpleado = $_POST['empleado_id'] ?? '';
         $fecha = $_POST['fecha'] ?? '';
-
+        
         if (!$clienteCedula || !$idEmpleado || !$fecha) {
             echo json_encode(['success' => false, 'msg' => 'Faltan datos obligatorios']);
             exit;
@@ -202,6 +203,11 @@ switch ($accion) {
         }
 
         $id = agregarEntrega($cliente['id_cliente'], $idEmpleado, $fecha);
+
+         if ($id > 0) {
+        registrarAuditoria('entregas', $id, 'CREAR', "Se registró la entrega #$id");
+    }
+
         echo json_encode(['success' => $id > 0, 'id' => $id]);
         break;
 
@@ -239,10 +245,11 @@ switch ($accion) {
     }
 
     $ok = editarEntrega($id, $id_cliente, $id_empleado, $fecha);
+    if ($ok) {
+        registrarAuditoria('entregas', $id, 'EDITAR', "Se modificó la entrega #$id");
+    }
     echo json_encode(['success' => (bool)$ok]);
     break;
-
-
 
     case 'editarDetalle':
     $id_entrega = $_POST['id_entrega'];
@@ -278,6 +285,10 @@ switch ($accion) {
     }
 
     $ok = cambiarEstadoEntrega($id_entrega, $estado);
+    if ($ok) {
+        registrarAuditoria('entregas', $id_entrega, 'ESTADO', "Se cambió el estado de la entrega #$id_entrega a '$estado'");
+    }
+
     echo json_encode(['success' => $ok]);
     break;
 

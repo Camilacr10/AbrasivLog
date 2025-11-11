@@ -1,6 +1,7 @@
 <?php
 require_once "db.php";
 require_once "message_log.php";
+require 'auditoria.php';
 
 // ─────────────── FUNCIONES ───────────────
 
@@ -90,12 +91,17 @@ $accion = $_GET['accion'] ?? '';
 switch ($accion) {
     case 'agregar':
         $id = agregarEmpleado(
-    $_POST['nombre'],
-    $_POST['fecha'],
-    $_POST['vacaciones'],
-    $_POST['puesto'],
-    $_POST['archivo'] 
-);
+            $_POST['nombre'],
+            $_POST['fecha'],
+            $_POST['vacaciones'],
+            $_POST['puesto'],
+            $_POST['archivo']
+        );
+
+        if ($id > 0) {
+            registrarAuditoria('empleados', $id, 'CREAR', "Se registró el empleado '{$_POST['nombre']}'");
+        }
+
         echo json_encode(['success' => $id > 0, 'id' => $id]);
         break;
 
@@ -104,15 +110,20 @@ switch ($accion) {
         echo json_encode($empleados);
         break;
 
-   case 'editar':
-    $ok = editarEmpleado(
-        $_POST['id'],
-        $_POST['nombre'],
-        $_POST['fecha'],
-        $_POST['vacaciones'],
-        $_POST['puesto'],
-        $_POST['archivo'] 
-    );
+    case 'editar':
+        $ok = editarEmpleado(
+            $_POST['id'],
+            $_POST['nombre'],
+            $_POST['fecha'],
+            $_POST['vacaciones'],
+            $_POST['puesto'],
+            $_POST['archivo']
+        );
+
+        if ($ok) {
+            registrarAuditoria('empleados', $_POST['id'], 'EDITAR', "Se editaron los datos del empleado '{$_POST['nombre']}'");
+        }
+
         echo json_encode(['success' => $ok]);
         break;
 
@@ -123,6 +134,11 @@ switch ($accion) {
         $id = $data['id'] ?? null;
         $estado = $data['estado'] ?? 'Inactivo';
         $ok = cambiarEstadoEmpleado($id, $estado);
+
+        if ($ok) {
+            registrarAuditoria('empleados', $id, 'ESTADO', "Se cambió el estado del empleado #$id a '$estado'");
+        }
+
         echo json_encode(['success' => $ok]);
         break;
 
