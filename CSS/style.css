@@ -585,3 +585,26 @@ h1 {
 .card.bg-info h4 {
   color: #fff !important;              /* número blanco */
 }
+
+html, body {
+    height: 100%;
+    margin: 0;
+  }
+  
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  main {
+    flex: 1; /* el contenido empuja el footer hacia abajo */
+  }
+  
+  footer {
+    background-color: #5b4636; /* o tu color */
+    color: white;
+    text-align: center;
+    padding: 1rem 0;
+  }
+  
