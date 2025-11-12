@@ -1,7 +1,8 @@
 // /JS/producto.js
 document.addEventListener('DOMContentLoaded', async () => {
   const $   = (id) => document.getElementById(id);
-  const fmt = (n) => new Intl.NumberFormat('es-CR', { style: 'currency', currency: 'USD' })
+  // Formato en colones
+  const fmt = (n) => new Intl.NumberFormat('es-CR', { style: 'currency', currency: 'CRC' })
                      .format(Number(n || 0));
   const qs  = new URLSearchParams(location.search);
   const codigoURL = qs.get('codigo');
@@ -25,20 +26,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (vLista)   vLista.style.display   = 'none';
 
   // Link Volver (en vista DETALLE)
-const volver = $('volver-link');
-if (volver) {
-  if (catURL) {
-    // Si venimos con ?cat=..., volver a la cuadrícula de esa categoría
-    volver.href = `/HTML/producto.html?cat=${encodeURIComponent(catURL)}`;
-  } else if (document.referrer.includes('/HTML/producto.html?cat=')) {
-    // Si no hay cat en la URL pero sí venimos de una cuadrícula, usar history.back()
-    volver.addEventListener('click', (e) => { e.preventDefault(); history.back(); });
-  } else {
-    // Fallback
-    volver.href = '/HTML/index.html#producto';
+  const volver = $('volver-link');
+  if (volver) {
+    if (catURL) {
+      volver.href = `/HTML/producto.html?cat=${encodeURIComponent(catURL)}`;
+    } else if (document.referrer.includes('/HTML/producto.html?cat=')) {
+      volver.addEventListener('click', (e) => { e.preventDefault(); history.back(); });
+    } else {
+      volver.href = '/HTML/index.html#producto';
+    }
   }
-}
-
 
   try {
     const url = `/backend/producto_detalle.php?codigo=${encodeURIComponent(codigoURL)}${catURL ? '&cat='+encodeURIComponent(catURL) : ''}`;
@@ -63,15 +60,23 @@ if (volver) {
     $('prod-nombre').textContent    = p.nombre || '—';
     $('prod-codigo').textContent    = p.codigo || '—';
     $('prod-categoria').textContent = p.categoria || '—';
-    $('prod-existencia').textContent= p.existencia ?? 0;
+    $('prod-existencia').textContent = parseInt(p.existencia ?? 0);
     $('prod-detalle').textContent   = p.detalle || '—';
 
-    $('prod-precio-final').textContent = fmt(p.precio_final);
-    $('precio-unitario').textContent   = fmt(p.precio_base);
-    $('precio-descuento').textContent  = fmt(p.porcentaje_descuento);
-    $('precio-iva-monto').textContent  = fmt(p.iva);
-    $('precio-iva-pct').textContent    = `${p.porcentaje_iva ?? 0}%`;
-    $('precio-final').textContent      = fmt(p.precio_final);
+    // Valores de BD en CRC (sin conversiones)
+    const precioBase   = Number(p.precio_base ?? 0);
+    const ivaPct       = Number(p.porcentaje_iva ?? 0);
+    const ivaColones   = Number(p.iva ?? 0);
+    const descPct      = Number(p.porcentaje_descuento ?? 0);
+    const descColones  = (precioBase * descPct) / 100; // el JSON no trae el monto, se calcula
+    const precioFinal  = Number(p.precio_final ?? 0);
+
+    $('prod-precio-final').textContent = fmt(precioFinal);
+    $('precio-unitario').textContent   = fmt(precioBase);
+    $('precio-descuento').textContent  = fmt(descColones);
+    $('precio-iva-monto').textContent  = fmt(ivaColones);
+    $('precio-iva-pct').textContent    = `${ivaPct}%`;
+    $('precio-final').textContent      = fmt(precioFinal);
 
     const load = $('estado-carga'); if (load) load.style.display = 'none';
   }
@@ -154,14 +159,13 @@ if (volver) {
       if (bc) bc.textContent = `Categoría: ${list[0]?.categoria ?? slug}`;
       if (titulo) titulo.textContent = `Productos en ${list[0]?.categoria ?? slug}`;
 
-
       if (!list.length) {
         if (grid) grid.innerHTML = `<div class="col-12 text-muted">Sin productos en esta categoría.</div>`;
         if (load) load.style.display = 'none';
         return;
       }
 
-      // Render cards
+      // Render cards (precio en CRC)
       if (grid) {
         grid.innerHTML = list.map(p => cardProducto(p, slug)).join('');
       }
