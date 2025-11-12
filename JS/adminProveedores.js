@@ -429,14 +429,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Si la actualización fue exitosa:
     if (res.ok) {
-      // Cierra el modal de edición
-      bootstrap.Modal.getInstance(document.getElementById('modalEditarProveedor')).hide();
-      // Limpia la variable global de edición
+      // Cierra el modal de edición y muestra el alert cuando termine de cerrarse
+      const modalEl = document.getElementById('modalEditarProveedor');
+      const modal = bootstrap.Modal.getInstance(modalEl);
+      if (modal) modal.hide();
+
+      modalEl.addEventListener('hidden.bs.modal', () => {
+        alert(`Proveedor ${nombre} actualizado correctamente.`);
+      }, { once: true });
+
+      // Limpia la variable global de edición y recarga la tabla
       edittingId = null;
-      // Recarga la lista de proveedores
       loadProveedores();
     } else {
-      // Si falla, muestra un error en consola
       console.error('PUT proveedor failed');
     }
   });
