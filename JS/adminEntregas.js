@@ -3,6 +3,9 @@ const tabla = document.getElementById("tablaEntregas");
 const modalAgregarEntrega = document.getElementById("modalAgregarEntrega");
 const modalAgregarDetallesEntrega = document.getElementById("modalAgregarDetallesEntrega");
 const selectMensajero = document.getElementById("mensajeroEntrega");
+const filtroClienteMensajero = document.getElementById("filtroClienteMensajero");
+const filtroFecha = document.getElementById("filtroFecha");
+const filtroEstado = document.getElementById("filtroEstado");
 
 let entregasGlobal = [];
 let empleadosMensajeros = [];
@@ -53,14 +56,43 @@ function renderTabla(lista) {
     : `<tr><td colspan="5" class="text-center text-muted">No se encontraron entregas</td></tr>`;
 }
 
-// 🔹 Cargar entregas
+
+// 🔍 Filtrar en tiempo real
+function aplicarFiltros() {
+    let texto = filtroClienteMensajero.value.toLowerCase().trim();
+    let fecha = filtroFecha.value;
+    let estado = filtroEstado.value;
+
+    let filtradas = entregasGlobal.filter(ent => {
+
+        let coincideTexto =
+            ent.nombre_cliente.toLowerCase().includes(texto) ||
+            ent.nombre_empleado.toLowerCase().includes(texto);
+
+        let coincideFecha =
+            fecha === "" || ent.fecha_entrega === fecha;
+
+        let coincideEstado =
+            estado === "" || ent.estado === estado;
+
+        return coincideTexto && coincideFecha && coincideEstado;
+    });
+
+    renderTabla(filtradas);
+}
+
+filtroClienteMensajero.addEventListener("keyup", aplicarFiltros);
+filtroFecha.addEventListener("change", aplicarFiltros);
+filtroEstado.addEventListener("change", aplicarFiltros);
+
+// Cargar entregas
 async function cargarEntregas() {
   const res = await fetch("../backend/adminEntregas.php?accion=listar");
   entregasGlobal = await res.json();
   renderTabla(entregasGlobal);
 }
 
-// 🔹 Cargar empleados con puesto "Mensajero"
+// Cargar empleados con puesto "Mensajero"
 async function cargarMensajeros() {
   const res = await fetch("../backend/Empleados.php?accion=listar");
   const empleados = await res.json();
@@ -399,7 +431,7 @@ async function guardarNuevoEstado() {
     if (result.success) {
       alert("Estado actualizado correctamente.");
       bootstrap.Modal.getInstance(document.getElementById("modalCambiarEstado")).hide();
-      cargarEntregas(); // refresca la lista
+      cargarEntregas(); 
     } else {
       alert(result.msg || "Error al actualizar el estado.");
     }
@@ -419,9 +451,8 @@ async function verEntrega(idEntrega) {
       return;
     }
 
-    const d = detalles[0]; // asumimos que una entrega tiene un conjunto de productos similares
+    const d = detalles[0]; 
 
-    // Llenar datos principales
     document.getElementById("detCliente").textContent = d.nombre_cliente;
     document.getElementById("detDireccion").textContent = d.direccion;
     document.getElementById("detTelefono").textContent = d.telefono;
@@ -433,7 +464,6 @@ async function verEntrega(idEntrega) {
     document.getElementById("detDescuento").innerHTML = detalles.map(p => `${parseFloat(p.descuento_aplicado).toFixed(2)}%`).join(", ");
     document.getElementById("detIVA").innerHTML = detalles.map(p => `${parseFloat(p.porcentaje_iva_aplicado).toFixed(2)}%`).join(", ");
     
-    // Estado visual
     const badgeClass =
       d.estado === "Completada" ? "bg-success" :
       d.estado === "Pendiente" ? "bg-warning text-dark" :
@@ -441,7 +471,6 @@ async function verEntrega(idEntrega) {
       "bg-secondary";
     document.getElementById("detEstado").innerHTML = `<span class="badge ${badgeClass}">${d.estado}</span>`;
 
-    // Mostrar modal
     new bootstrap.Modal(document.getElementById("modalDetallesEntrega")).show();
 
   } catch (error) {
@@ -450,6 +479,30 @@ async function verEntrega(idEntrega) {
   }
 }
 
+async function cargarCedulas() {
+    const res = await fetch("../backend/adminEntregas.php?accion=buscarCedulas");
+    const datos = await res.json();
+
+    const lista = document.getElementById("listaCedulas");
+    lista.innerHTML = datos.map(c =>
+        `<option value="${c.cedula}">${c.nombre}</option>`
+    ).join("");
+}
+
+cargarCedulas();
+
+async function cargarCedulasEditar() {
+    const res = await fetch("../backend/adminEntregas.php?accion=buscarCedulas");
+    const clientes = await res.json();
+
+    const lista = document.getElementById("listaCedulasEditar");
+
+    lista.innerHTML = clientes.map(c =>
+        `<option value="${c.cedula}" data-id="${c.id_cliente || ''}">${c.nombre}</option>`
+    ).join("");
+}
+
+cargarCedulasEditar();
 
 function formatoFecha(fecha) {
     if (!fecha) return "";

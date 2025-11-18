@@ -292,6 +292,11 @@ switch ($accion) {
     echo json_encode(['success' => $ok]);
     break;
 
+    case 'buscarCedulas':
+    $stmt = $pdo->query("SELECT cedula, nombre FROM clientes WHERE estado = 'ACTIVO'");
+    echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+    break;
+
     default:
         echo json_encode(['success' => false, 'msg' => 'Acción no válida']);
 }

@@ -59,7 +59,7 @@
     <!-- Header -->
     <nav class="navbar navbar-expand-lg navbar-custom fixed-top bg-transparent">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="#">
+              <a class="navbar-brand d-flex align-items-center" href="index.html">
                 <img src="../IMG/logo.png" alt="Logo" class="logo" />
             </a>
             <div class="collapse navbar-collapse" id="menuPrincipal">
@@ -102,7 +102,7 @@
         <!-- Filtros -->
         <div class="row mb-3">
             <div class="col-md-3">
-                <input type="text" id="filtroCliente" class="form-control" placeholder="Filtrar por cliente" />
+                <input type="text" id="filtroClienteMensajero" class="form-control" placeholder="Filtrar por cliente o mensajero" />
             </div>
             <div class="col-md-3">
                 <input type="date" id="filtroFecha" class="form-control" />
@@ -147,7 +147,8 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="cedulaCliente" class="form-label">Cédula del Cliente</label>
-                            <input type="text" class="form-control" id="cedulaCliente" required />
+                            <input list="listaCedulas" id="cedulaCliente" class="form-control" placeholder="Ingrese la cédula">
+                            <datalist id="listaCedulas"></datalist>
                         </div>
                         <div class="mb-3">
                             <label for="mensajeroEntrega" class="form-label">Mensajero Asignado</label>
@@ -229,7 +230,8 @@
 
                         <div class="mb-3">
                             <label for="editCedulaCliente" class="form-label">Cédula del Cliente</label>
-                            <input type="text" class="form-control" id="editCedulaCliente" required>
+                            <input list="listaCedulasEditar" id="editCedulaCliente" class="form-control" placeholder="Ingrese la cédula">
+                            <datalist id="listaCedulasEditar"></datalist>
                             <input type="hidden" id="editClienteId" name="cliente_id">
                         </div>
 
