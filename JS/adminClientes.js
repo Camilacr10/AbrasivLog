@@ -3,7 +3,52 @@ const API = "../backend/adminClientes.php";
 let clientes = [];
 let clienteActual = -1;
 
-document.addEventListener('DOMContentLoaded', cargarClientes);
+async function verificarSesionYMostrarUsuario() {
+  try {
+    const res = await fetch("../backend/login.php?op=me", {
+      credentials: "same-origin"
+    });
+
+    const me = await res.json();
+
+  
+    if (!me.authenticated) {
+      window.location.href = "login.html";
+      return;
+    }
+
+  
+    const spanUser = document.getElementById("usuarioActual");
+    const spanRol  = document.getElementById("usuarioRol");
+
+    if (spanUser) spanUser.textContent = (me.empleado_nombre || me.username);
+    if (spanRol)  spanRol.textContent  = "Rol: " + (me.rol || "-");
+
+  } catch (err) {
+    console.error("Error verificando sesión:", err);
+    window.location.href = "login.html";
+  }
+}
+
+
+async function salir() {
+  try {
+    await fetch("../backend/login.php?op=logout", {
+      method: "POST",
+      credentials: "same-origin"
+    });
+  } catch (e) {
+    console.error(e);
+  }
+  window.location.href = "login.html";
+}
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  verificarSesionYMostrarUsuario(); 
+  cargarClientes();               
+});
+
 
 function renderTabla() {
   const tbody = document.getElementById('tablaClientes');
@@ -55,7 +100,6 @@ function crearDropdown(index, estado) {
   `;
 }
 
-
 function filtrarClientes() {
   const filtro = document.getElementById('buscarInput').value.toLowerCase();
   const filas = document.querySelectorAll('#tablaClientes tr');
@@ -73,12 +117,11 @@ function filtrarClientes() {
   }
 }
 
-
 async function cargarClientes() {
   const tbody = document.getElementById('tablaClientes');
   tbody.innerHTML = "<tr><td colspan='8'>Cargando...</td></tr>";
   try {
-    const resp = await fetch(API);
+    const resp = await fetch(API, { credentials: "include" });
     const data = await resp.json();
     if (!resp.ok || !data.ok) throw new Error(data.message || 'Error al cargar');
     clientes = data.data || [];
@@ -88,7 +131,6 @@ async function cargarClientes() {
     tbody.innerHTML = "<tr><td colspan='8'>Error al cargar</td></tr>";
   }
 }
-
 
 async function registrarCliente() {
   const nombre = document.getElementById('nuevoNombre').value.trim();
@@ -112,6 +154,7 @@ async function registrarCliente() {
     const resp = await fetch(API, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: "include",
       body: JSON.stringify({ nombre, razon_social: razon, cedula, telefono, correo, direccion, estado })
     });
     const data = await resp.json();
@@ -146,7 +189,6 @@ function abrirModal(index) {
   new bootstrap.Modal(document.getElementById('modalEditarCliente')).show();
 }
 
-
 async function guardarCambios() {
   if (clienteActual < 0) return;
   const c = clientes[clienteActual];
@@ -175,6 +217,7 @@ async function guardarCambios() {
     const resp = await fetch(API, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
+      credentials: "include",
       body: JSON.stringify(payload)
     });
     const data = await resp.json();
@@ -187,7 +230,6 @@ async function guardarCambios() {
   }
 }
 
-
 async function toggleEstado(index) {
   const c = clientes[index];
   const nuevoEstado = c.estado === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO';
@@ -196,6 +238,7 @@ async function toggleEstado(index) {
     const resp = await fetch(API, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
+      credentials: "include",
       body: JSON.stringify({ ...c, estado: nuevoEstado })
     });
     const data = await resp.json();
@@ -206,7 +249,6 @@ async function toggleEstado(index) {
     alert('❌ ' + err.message);
   }
 }
-
 
 function verDetalle(index) {
   const c = clientes[index];
@@ -220,7 +262,39 @@ function verDetalle(index) {
   new bootstrap.Modal(document.getElementById('modalDetalleCliente')).show();
 }
 
-
 function abrirHistorial() {
   new bootstrap.Modal(document.getElementById('modalHistorial')).show();
+}
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    const res = await fetch("../backend/login.php?op=me", { credentials: "same-origin" });
+    const me = await res.json();
+
+    if (!me.authenticated) {
+      alert("Sesión expirada. Inicie sesión nuevamente.");
+      window.location.href = "login.html"; 
+      return;
+    }
+
+    const spanUser = document.getElementById("usuarioActual");
+    const spanRol  = document.getElementById("usuarioRol");
+    if (spanUser) spanUser.textContent = (me.empleado_nombre || me.username);
+    if (spanRol)  spanRol.textContent  = "Rol: " + (me.rol || "-");
+
+  } catch (e) {
+    console.error(e);
+    alert("No se pudo verificar la sesión.");
+    window.location.href = "login.html";  
+  }
+});
+
+async function salir() {
+  try {
+    await fetch("../backend/login.php?op=logout", {
+      method: "POST",
+      credentials: "same-origin"
+    });
+  } catch (e) { /* ignore */ }
+
+  window.location.href = "login.html";  
 }

@@ -14,7 +14,7 @@
 
   function redirectByRole(rol) {
     if (rol === "Administrador") {
-      window.location.href = "registro.html";
+      window.location.href = "index.html";
     } else {
       window.location.href = "index.html";
     }

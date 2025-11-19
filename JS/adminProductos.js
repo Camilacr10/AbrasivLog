@@ -806,3 +806,37 @@ document.addEventListener('DOMContentLoaded', function () {
     loadCategorias(); // Cargar primero categorías (para selects y nombre en tabla)
     loadProductos();
 });
+
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    const res = await fetch("../backend/login.php?op=me", { credentials: "same-origin" });
+    const me = await res.json();
+
+    if (!me.authenticated) {
+      alert("Sesión expirada. Inicie sesión nuevamente.");
+      window.location.href = "login.html"; 
+      return;
+    }
+
+    const spanUser = document.getElementById("usuarioActual");
+    const spanRol  = document.getElementById("usuarioRol");
+    if (spanUser) spanUser.textContent = (me.empleado_nombre || me.username);
+    if (spanRol)  spanRol.textContent  = "Rol: " + (me.rol || "-");
+
+  } catch (e) {
+    console.error(e);
+    alert("No se pudo verificar la sesión.");
+    window.location.href = "login.html";  
+  }
+});
+
+async function salir() {
+  try {
+    await fetch("../backend/login.php?op=logout", {
+      method: "POST",
+      credentials: "same-origin"
+    });
+  } catch (e) { /* ignore */ }
+
+  window.location.href = "login.html";  
+}
