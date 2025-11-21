@@ -17,8 +17,8 @@ function registrarAuditoria($tabla, $id_registro, $accion, $detalle = null)
     try {
         $usuario = $_SESSION['user']['id_usuario'] ?? null;
 
-        $sql = "INSERT INTO auditoria_general (tabla, id_registro, accion, id_usuario, fecha_hora, detalle)
-                VALUES (:tabla, :id_registro, :accion, :id_usuario, GETDATE(), :detalle)";
+        $sql = "INSERT INTO auditoria_general (tabla, id_registro, accion, id_usuario, detalle)
+                VALUES (:tabla, :id_registro, :accion, :id_usuario, :detalle)";
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
