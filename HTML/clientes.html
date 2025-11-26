@@ -36,6 +36,14 @@
       background-color: #675541;
       color: #fff;
     }
+    .nav-link.active {
+    color: #675541 !important;
+    font-weight: 600;
+}
+.nav-link:hover,
+.nav-link:focus {
+    color: #FEBF00 !important;
+}
 
     .table-responsive { overflow: visible !important; }
     @media (min-width: 768px){ .table { overflow: visible; } }
@@ -57,7 +65,7 @@
       <div class="collapse navbar-collapse" id="menuPrincipal">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
           <!-- Clientes activo -->
-          <li class="nav-item"><a class="nav-link active" href="adminclientes.html">Clientes</a></li>
+          <li class="nav-item"><a class="nav-link active" href="clientes.html">Clientes</a></li>
           <li class="nav-item"><a class="nav-link" href="empleados.html">Empleados</a></li>
 
           <li class="nav-item dropdown">
@@ -177,8 +185,8 @@
             <div>
               <label class="form-label">Estado</label>
               <select id="nuevoEstado" class="form-select">
-                <option value="ACTIVO" selected>ACTIVO</option>
-                <option value="INACTIVO">INACTIVO</option>
+                <option value="ACTIVO" selected>Activo</option>
+                <option value="INACTIVO">Inactivo</option>
               </select>
             </div>
           </form>
@@ -301,6 +309,14 @@
     </div>
   </div>
 
+
+     <!-- Footer -->
+    <footer class="footer-custom mt-auto py-4">
+        <div class="container text-center">
+            <p class="mb-1 fw-bold">Abrasivos Industriales S.A.</p>
+            <p class="mb-0 small">© 2025 Todos los derechos reservados</p>
+        </div>
+    </footer>
   <!-- JS de clientes -->
   <script src="../JS/adminClientes.js"></script>
 

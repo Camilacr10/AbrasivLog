@@ -76,6 +76,13 @@ function renderTabla() {
 
   clientes.forEach((cliente, i) => {
     const fila = document.createElement('tr');
+
+
+    const estadoRaw   = cliente.estado ?? '';
+    const estadoMayus = estadoRaw.toString().toUpperCase(); 
+    const esActivo    = (estadoMayus === 'ACTIVO');
+    const textoEstado = esActivo ? 'Activo' : 'Inactivo';
+
     fila.innerHTML = `
       <td>${cliente.razon_social ?? ''}</td>
       <td>${cliente.nombre}</td>
@@ -83,8 +90,14 @@ function renderTabla() {
       <td>${cliente.telefono ?? ''}</td>
       <td>${cliente.correo_electronico ?? ''}</td>
       <td>${cliente.direccion ?? ''}</td>
-      <td><span class="badge ${cliente.estado === 'Activo' ? 'bg-success' : 'bg-secondary'}">${cliente.estado}</span></td>
-      <td class="text-center align-middle">${crearDropdown(i, cliente.estado)}</td>
+      <!-- 🔹 Verde cuando está activo, gris cuando está inactivo, texto en minúsculas -->
+      <td>
+        <span class="badge ${esActivo ? 'bg-success' : 'bg-secondary'}">
+          ${textoEstado}
+        </span>
+      </td>
+      <!-- 🔹 Le pasamos el estado en mayúsculas para que crearDropdown funcione bien -->
+      <td class="text-center align-middle">${crearDropdown(i, estadoMayus)}</td>
     `;
     tbody.appendChild(fila);
   });
