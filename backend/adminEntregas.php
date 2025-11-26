@@ -1,11 +1,11 @@
 <?php
 require_once "db.php";
 require_once "message_log.php";
+require_once 'historialClientes.php';
 require 'auditoria.php';
+
+
 header('Content-Type: application/json; charset=utf-8');
-
-// ─────────────── BORRA CACHE ───────────────
-
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -187,6 +187,16 @@ function cambiarEstadoEntrega($id_entrega, $estado) {
     }
 }
 
+function obtenerEntregaPorId($id_entrega) {
+    global $pdo;
+    $sql = "SELECT id_entrega, id_cliente, id_empleado, estado
+            FROM entregas
+            WHERE id_entrega = :id_entrega";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([':id_entrega' => $id_entrega]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
 // ─────────────── CONTROLADOR ───────────────
 $accion = $_GET['accion'] ?? '';
 
@@ -215,9 +225,21 @@ switch ($accion) {
 
         $id = agregarEntrega($cliente['id_cliente'], $idEmpleado, $fecha);
 
-         if ($id > 0) {
-        registrarAuditoria('entregas', $id, 'CREAR', "Se registró la entrega #$id");
-    }
+        if ($id > 0) {
+            registrarAuditoria('entregas', $id, 'CREAR', "Se registró la entrega #$id");
+
+            
+            if (function_exists('registrarHistorialInteraccion')) {
+                $observaciones = "Entrega #$id registrada para la fecha $fecha con estado Pendiente.";
+                
+                registrarHistorialInteraccion(
+                    (int)$cliente['id_cliente'],
+                    "Entrega registrada",
+                    (int)$idEmpleado,
+                    $observaciones
+                );
+            }
+        }
 
         echo json_encode(['success' => $id > 0, 'id' => $id]);
         break;
@@ -228,85 +250,107 @@ switch ($accion) {
         break;
 
     case 'agregarDetalle':
-    $id_entrega = $_POST['id_entrega'] ?? '';
-    $id_producto = $_POST['id_producto'] ?? '';
-    $cantidad = $_POST['cantidad'] ?? '';
-    $precio_unitario = $_POST['precio_unitario'] ?? '';
-    $descuento = $_POST['descuento_aplicado'] ?? 0;
-    $iva = $_POST['porcentaje_iva_aplicado'] ?? 13;
+        $id_entrega = $_POST['id_entrega'] ?? '';
+        $id_producto = $_POST['id_producto'] ?? '';
+        $cantidad = $_POST['cantidad'] ?? '';
+        $precio_unitario = $_POST['precio_unitario'] ?? '';
+        $descuento = $_POST['descuento_aplicado'] ?? 0;
+        $iva = $_POST['porcentaje_iva_aplicado'] ?? 13;
 
-    if (!$id_entrega || !$id_producto || !$cantidad || !$precio_unitario) {
-        echo json_encode(['success' => false, 'msg' => 'Datos incompletos']);
-        exit;
-    }
+        if (!$id_entrega || !$id_producto || !$cantidad || !$precio_unitario) {
+            echo json_encode(['success' => false, 'msg' => 'Datos incompletos']);
+            exit;
+        }
 
-    agregarDetalleEntrega($id_entrega, $id_producto, $cantidad, $precio_unitario, $descuento, $iva);
-    echo json_encode(['success' => true]);
-    break;
+        agregarDetalleEntrega($id_entrega, $id_producto, $cantidad, $precio_unitario, $descuento, $iva);
+        echo json_encode(['success' => true]);
+        break;
    
     case 'editarEntrega':
-    $id = $_POST['id_entrega'] ?? null;
-    $id_cliente = $_POST['cliente_id'] ?? null; 
-    $id_empleado = $_POST['empleado_id'] ?? null; 
-    $fecha = $_POST['fecha'] ?? null;
+        $id = $_POST['id_entrega'] ?? null;
+        $id_cliente = $_POST['cliente_id'] ?? null; 
+        $id_empleado = $_POST['empleado_id'] ?? null; 
+        $fecha = $_POST['fecha'] ?? null;
 
-    if (!$id || !$id_cliente || !$id_empleado || !$fecha) {
-        echo json_encode(['success' => false, 'msg' => 'Faltan datos en editar Entrega']);
-        exit;
-    }
+        if (!$id || !$id_cliente || !$id_empleado || !$fecha) {
+            echo json_encode(['success' => false, 'msg' => 'Faltan datos en editar Entrega']);
+            exit;
+        }
 
-    $ok = editarEntrega($id, $id_cliente, $id_empleado, $fecha);
-    if ($ok) {
-        registrarAuditoria('entregas', $id, 'EDITAR', "Se modificó la entrega #$id");
-    }
-    echo json_encode(['success' => (bool)$ok]);
-    break;
+        $ok = editarEntrega($id, $id_cliente, $id_empleado, $fecha);
+        if ($ok) {
+            registrarAuditoria('entregas', $id, 'EDITAR', "Se modificó la entrega #$id");
+           
+        }
+        echo json_encode(['success' => (bool)$ok]);
+        break;
 
     case 'editarDetalle':
-    $id_entrega = $_POST['id_entrega'];
-    $id_producto_original = $_POST['id_producto_original']; 
-    $id_producto_nuevo = $_POST['id_producto']; 
-    $cantidad = $_POST['cantidad'];
-    $precio = $_POST['precio_unitario'];
-    $descuento = $_POST['descuento_aplicado'];
-    $iva = $_POST['porcentaje_iva_aplicado'];
+        $id_entrega = $_POST['id_entrega'];
+        $id_producto_original = $_POST['id_producto_original']; 
+        $id_producto_nuevo = $_POST['id_producto']; 
+        $cantidad = $_POST['cantidad'];
+        $precio = $_POST['precio_unitario'];
+        $descuento = $_POST['descuento_aplicado'];
+        $iva = $_POST['porcentaje_iva_aplicado'];
 
-    $ok = editarDetalleEntrega($id_entrega, $id_producto_original, $id_producto_nuevo, $cantidad, $precio, $descuento, $iva);
-    echo json_encode(['success' => $ok]);
-    break;
+        $ok = editarDetalleEntrega($id_entrega, $id_producto_original, $id_producto_nuevo, $cantidad, $precio, $descuento, $iva);
+        echo json_encode(['success' => $ok]);
+        break;
 
-    
     case 'obtenerDetallePorEntrega':
-    $id = $_GET['id_entrega'] ?? null;
-    if (!$id) {
-        echo json_encode(["error" => "ID de entrega no válido."]);
-        exit;
-    }
-    $detalles = obtenerDetallesPorEntrega($id);
-    echo json_encode($detalles);
-    break;
+        $id = $_GET['id_entrega'] ?? null;
+        if (!$id) {
+            echo json_encode(["error" => "ID de entrega no válido."]);
+            exit;
+        }
+        $detalles = obtenerDetallesPorEntrega($id);
+        echo json_encode($detalles);
+        break;
 
     case 'cambiarEstado':
-    $id_entrega = $_POST['id_entrega'] ?? null;
-    $estado = $_POST['estado'] ?? null;
+        $id_entrega = $_POST['id_entrega'] ?? null;
+        $estado = $_POST['estado'] ?? null;
 
-    if (!$id_entrega || !$estado) {
-        echo json_encode(['success' => false, 'msg' => 'No se puede cambiar el estado']);
-        exit;
-    }
+        if (!$id_entrega || !$estado) {
+            echo json_encode(['success' => false, 'msg' => 'No se puede cambiar el estado']);
+            exit;
+        }
 
-    $ok = cambiarEstadoEntrega($id_entrega, $estado);
-    if ($ok) {
-        registrarAuditoria('entregas', $id_entrega, 'ESTADO', "Se cambió el estado de la entrega #$id_entrega a '$estado'");
-    }
+        $ok = cambiarEstadoEntrega($id_entrega, $estado);
+        if ($ok) {
+            registrarAuditoria('entregas', $id_entrega, 'ESTADO', "Se cambió el estado de la entrega #$id_entrega a '$estado'");
 
-    echo json_encode(['success' => $ok]);
-    break;
+          
+            if (function_exists('registrarHistorialInteraccion')) {
+                $infoEntrega = obtenerEntregaPorId($id_entrega);
+                if ($infoEntrega) {
+                   
+                    $estadoMayus = strtoupper($estado);
+                    if (in_array($estadoMayus, ['ENTREGADO', 'ENTREGADA', 'COMPLETADO', 'COMPLETADA'])) {
+                        $tipo = 'Entrega realizada';
+                    } else {
+                        $tipo = 'Entrega - cambio de estado';
+                    }
+
+                    $observaciones = "La entrega #$id_entrega cambió al estado '$estado'.";
+                    registrarHistorialInteraccion(
+                        (int)$infoEntrega['id_cliente'],
+                        $tipo,
+                        (int)$infoEntrega['id_empleado'],
+                        $observaciones
+                    );
+                }
+            }
+        }
+
+        echo json_encode(['success' => $ok]);
+        break;
 
     case 'buscarCedulas':
-    $stmt = $pdo->query("SELECT cedula, nombre FROM clientes WHERE estado = 'ACTIVO'");
-    echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
-    break;
+        $stmt = $pdo->query("SELECT cedula, nombre FROM clientes WHERE estado = 'ACTIVO'");
+        echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+        break;
 
     default:
         echo json_encode(['success' => false, 'msg' => 'Acción no válida']);

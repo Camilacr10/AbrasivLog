@@ -1,7 +1,6 @@
 const buscar = document.getElementById("buscarEmpleado");
 const tabla = document.getElementById("tablaEmpleados");
 const modalEditarEmpleado = document.getElementById('modalEditarEmpleado');
-
 let empleadosGlobal = [];
 
 async function cargarEmpleados() {
@@ -188,28 +187,49 @@ function formatoFecha(fecha) {
     return `${dia}/${mes}/${anio}`;
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
+
+// =============================
+// ✅ VERIFICACIÓN DE SESIÓN
+// =============================
+async function verificarSesionYMostrarUsuario() {
   try {
-    const res = await fetch("../backend/login.php?op=me", { credentials: "same-origin" });
+    const res = await fetch("../backend/login.php?op=me", {
+      credentials: "same-origin"
+    });
+
     const me = await res.json();
 
     if (!me.authenticated) {
-      alert("Sesión expirada. Inicie sesión nuevamente.");
-      window.location.href = "login.html"; 
+      // SIN ALERT, igual que en clientes
+      window.location.href = "login.html";
       return;
     }
 
     const spanUser = document.getElementById("usuarioActual");
     const spanRol  = document.getElementById("usuarioRol");
+
     if (spanUser) spanUser.textContent = (me.empleado_nombre || me.username);
     if (spanRol)  spanRol.textContent  = "Rol: " + (me.rol || "-");
 
-  } catch (e) {
-    console.error(e);
-    alert("No se pudo verificar la sesión.");
-    window.location.href = "login.html";  
+  } catch (err) {
+    console.error("Error verificando sesión:", err);
+    window.location.href = "login.html";
   }
+}
+
+// 🔹 IGUAL QUE EN adminClientes.js
+document.addEventListener("DOMContentLoaded", () => {
+  verificarSesionYMostrarUsuario();
+  cargarEmpleados();
 });
+
+// 🔹 Botón Atrás del navegador (BFCache)
+window.onpageshow = function(event) {
+  if (event.persisted) {
+    verificarSesionYMostrarUsuario();
+    cargarEmpleados();
+  }
+};
 
 async function salir() {
   try {

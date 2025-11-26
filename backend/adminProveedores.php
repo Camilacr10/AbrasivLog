@@ -1,7 +1,5 @@
 <?php
 
-// ─────────────── BORRA CACHE ───────────────
-
 
 header('Content-Type: application/json; charset=utf-8');
 

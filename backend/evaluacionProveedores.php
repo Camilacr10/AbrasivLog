@@ -5,12 +5,6 @@
 require 'db.php';
 //Archivo de auditoria
 require 'auditoria.php';
-
-
-
-
-
-// Función para agregar una evaluación
 function agregarDesempeno($id_proveedor, $puntualidad, $atencion, $disponibilidad, $observacion)
 {
     global $pdo;

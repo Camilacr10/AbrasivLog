@@ -519,29 +519,45 @@ modalAgregarDetallesEntrega.addEventListener('hidden.bs.modal', () => {
   document.getElementById("formAgregarDetallesEntrega").reset();
 });
 
-
-document.addEventListener("DOMContentLoaded", async () => {
+// =============================
+//    VERIFICACIÓN DE SESIÓN
+// =============================
+async function verificarSesionYMostrarUsuario() {
   try {
-    const res = await fetch("../backend/login.php?op=me", { credentials: "same-origin" });
+    const res = await fetch("../backend/login.php?op=me", {
+      credentials: "same-origin"
+    });
+
     const me = await res.json();
 
     if (!me.authenticated) {
-      alert("Sesión expirada. Inicie sesión nuevamente.");
-      window.location.href = "login.html"; 
+      window.location.href = "login.html";
       return;
     }
 
     const spanUser = document.getElementById("usuarioActual");
     const spanRol  = document.getElementById("usuarioRol");
+
     if (spanUser) spanUser.textContent = (me.empleado_nombre || me.username);
     if (spanRol)  spanRol.textContent  = "Rol: " + (me.rol || "-");
 
-  } catch (e) {
-    console.error(e);
-    alert("No se pudo verificar la sesión.");
-    window.location.href = "login.html";  
+  } catch (err) {
+    console.error("Error verificando sesión:", err);
+    window.location.href = "login.html";
   }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  verificarSesionYMostrarUsuario();
+  cargarEntregas();
 });
+
+window.onpageshow = function(event) {
+  if (event.persisted) {
+    verificarSesionYMostrarUsuario();
+    cargarEntregas();
+  }
+};
 
 async function salir() {
   try {

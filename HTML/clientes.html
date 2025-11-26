@@ -44,7 +44,6 @@
 
 <body class="d-flex flex-column min-vh-100">
 
-  <!-- 🔹 Navbar igual que Gestionar Credenciales -->
   <nav class="navbar navbar-expand-lg navbar-custom">
     <div class="container">
       <a class="navbar-brand d-flex align-items-center" href="index.html">
@@ -76,14 +75,13 @@
           <li class="nav-item"><a class="nav-link" href="proveedores.html">Proveedores</a></li>
           <li class="nav-item"><a class="nav-link" href="dashboardReportes.html">Reportes</a></li>
 
-          <!-- Igual que en gestionar credenciales -->
           <li class="nav-item">
             <a class="nav-link" href="registro.html">
               <i class="fas fa-user me-1 opacity-75"></i> Gestionar Credenciales
             </a>
           </li>
 
-          <!-- Dropdown usuario (mismo que en Gestión de Credenciales) -->
+        
           <li class="nav-item dropdown ms-3">
             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="usuarioDropdown"
                role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -106,7 +104,7 @@
     </div>
   </nav>
 
-  <!-- 🔹 Contenido original de Clientes -->
+ 
   <div class="container mt-4 mb-5">
     <h1>Lista de Clientes</h1>
 
@@ -142,7 +140,6 @@
     </div>
   </div>
 
-  <!-- Modales (igual que tenías) -->
   <div class="modal fade" id="modalRegistroCliente" tabindex="-1"
        aria-labelledby="modalRegistroClienteLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -219,7 +216,7 @@
           </div>
           <div class="mb-3">
             <label class="form-label">Cédula</label>
-            <input type="text" class="form-control" id="modalCedula" disabled>
+            <input type="text" class="form-control" id="modalCedula">
           </div>
           <div class="mb-3">
             <label class="form-label">Teléfono</label>
@@ -236,8 +233,8 @@
           <div>
             <label class="form-label">Estado</label>
             <select id="modalEstado" class="form-select">
-              <option value="ACTIVO">ACTIVO</option>
-              <option value="INACTIVO">INACTIVO</option>
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
             </select>
           </div>
         </div>
@@ -274,19 +271,31 @@
   </div>
 
   <div class="modal fade" id="modalHistorial" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
       <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Historial del Cliente</h5>
+        <div class="modal-header" style="background-color: #FEBF00; color: black;">
+          <h5 class="modal-title" id="tituloHistorialCliente">Historial del Cliente</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
-          <p><strong>Últimos movimientos:</strong></p>
-          <ul>
-            <li>Pedido 00123 - Entregado el 15/06/2025</li>
-            <li>Pedido 00101 - Entregado el 22/05/2025</li>
-            <li>Modificación de contacto - 01/04/2025</li>
-          </ul>
+          <p class="mb-3"><strong>Historial de interacciones</strong></p>
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover text-center align-middle">
+              <thead>
+                <tr>
+                  <th>Tipo de interacción</th>
+                  <th>Fecha</th>
+                  <th>Empleado responsable</th>
+                  <th>Observaciones</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyHistorialCliente">
+                <tr>
+                  <td colspan="4" class="text-muted">Sin datos</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -295,4 +304,5 @@
   <!-- JS de clientes -->
   <script src="../JS/adminClientes.js"></script>
 
-  
+</body>
+</html>

@@ -2,7 +2,12 @@ const API = "../backend/adminClientes.php";
 
 let clientes = [];
 let clienteActual = -1;
+let usuarioActual = null;          
+let clienteHistorialActual = null;
 
+// ======================================================
+// ✅ SESIÓN Y USUARIO ACTUAL
+// ======================================================
 async function verificarSesionYMostrarUsuario() {
   try {
     const res = await fetch("../backend/login.php?op=me", {
@@ -11,13 +16,13 @@ async function verificarSesionYMostrarUsuario() {
 
     const me = await res.json();
 
-  
     if (!me.authenticated) {
       window.location.href = "login.html";
       return;
     }
 
-  
+    usuarioActual = me; // guardamos para historial (id_empleado, etc.)
+
     const spanUser = document.getElementById("usuarioActual");
     const spanRol  = document.getElementById("usuarioRol");
 
@@ -29,7 +34,6 @@ async function verificarSesionYMostrarUsuario() {
     window.location.href = "login.html";
   }
 }
-
 
 async function salir() {
   try {
@@ -43,12 +47,23 @@ async function salir() {
   window.location.href = "login.html";
 }
 
-
+// Cuando carga la página
 document.addEventListener("DOMContentLoaded", () => {
-  verificarSesionYMostrarUsuario(); 
-  cargarClientes();               
+  verificarSesionYMostrarUsuario();
+  cargarClientes();
 });
 
+// Si el usuario vuelve con el botón Atrás (BFCache)
+window.onpageshow = function(event) {
+  if (event.persisted) {
+    verificarSesionYMostrarUsuario();
+    cargarClientes();
+  }
+};
+
+// ======================================================
+// ✅ TABLA PRINCIPAL DE CLIENTES
+// ======================================================
 
 function renderTabla() {
   const tbody = document.getElementById('tablaClientes');
@@ -68,7 +83,7 @@ function renderTabla() {
       <td>${cliente.telefono ?? ''}</td>
       <td>${cliente.correo_electronico ?? ''}</td>
       <td>${cliente.direccion ?? ''}</td>
-      <td><span class="badge ${cliente.estado === 'ACTIVO' ? 'bg-success' : 'bg-secondary'}">${cliente.estado}</span></td>
+      <td><span class="badge ${cliente.estado === 'Activo' ? 'bg-success' : 'bg-secondary'}">${cliente.estado}</span></td>
       <td class="text-center align-middle">${crearDropdown(i, cliente.estado)}</td>
     `;
     tbody.appendChild(fila);
@@ -89,12 +104,27 @@ function crearDropdown(index, estado) {
         Acciones
       </button>
       <ul class="dropdown-menu shadow">
-        <li><a class="dropdown-item" href="#" onclick="verDetalle(${index})"><i class="fa-solid fa-eye text-primary"></i> Ver</a></li>
-        <li><a class="dropdown-item" href="#" onclick="abrirModal(${index})"><i class="fa-solid fa-pen-to-square text-warning"></i> Editar</a></li>
-        <li><a class="dropdown-item" href="#" onclick="toggleEstado(${index})">
-          <i class="fa-solid ${activo ? 'fa-user-slash text-danger' : 'fa-user-check text-success'}"></i> ${activo ? 'Inactivar' : 'Activar'}
-        </a></li>
-        <li><a class="dropdown-item" href="#" onclick="abrirHistorial(${index})"><i class="fa-solid fa-clock-rotate-left text-info"></i> Historial</a></li>
+        <li>
+          <a class="dropdown-item" href="#" onclick="verDetalle(${index})">
+            <i class="fa-solid fa-eye text-primary"></i> Ver
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item" href="#" onclick="abrirModal(${index})">
+            <i class="fa-solid fa-pen-to-square text-warning"></i> Editar
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item" href="#" onclick="toggleEstado(${index})">
+            <i class="fa-solid ${activo ? 'fa-user-slash text-danger' : 'fa-user-check text-success'}"></i> 
+            ${activo ? 'Inactivar' : 'Activar'}
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item" href="#" onclick="abrirHistorial(${index})">
+            <i class="fa-solid fa-clock-rotate-left text-info"></i> Historial
+          </a>
+        </li>
       </ul>
     </div>
   `;
@@ -132,6 +162,10 @@ async function cargarClientes() {
   }
 }
 
+// ======================================================
+// ✅ REGISTRO DE CLIENTE
+// ======================================================
+
 async function registrarCliente() {
   const nombre = document.getElementById('nuevoNombre').value.trim();
   const razon = document.getElementById('nuevaRazon').value.trim();
@@ -167,6 +201,10 @@ async function registrarCliente() {
     alert('❌ ' + err.message);
   }
 }
+
+// ======================================================
+// ✅ EDICIÓN DE CLIENTE
+// ======================================================
 
 function abrirModal(index) {
   clienteActual = index;
@@ -222,13 +260,26 @@ async function guardarCambios() {
     });
     const data = await resp.json();
     if (!resp.ok || !data.ok) throw new Error(data.message || 'Error al guardar');
+
     alert('✅ Datos actualizados');
+
+    // HU05: registrar en historial la actualización
+    await registrarInteraccionCliente(
+      c.id_cliente,
+      "Actualización de datos",
+      "Datos del cliente actualizados desde el módulo adminClientes."
+    );
+
     await cargarClientes();
   } catch (err) {
     console.error(err);
     alert('❌ ' + err.message);
   }
 }
+
+// ======================================================
+// ✅ CAMBIO DE ESTADO (ACTIVO / INACTIVO)
+// ======================================================
 
 async function toggleEstado(index) {
   const c = clientes[index];
@@ -243,12 +294,27 @@ async function toggleEstado(index) {
     });
     const data = await resp.json();
     if (!resp.ok || !data.ok) throw new Error(data.message || 'Error al cambiar estado');
+
+    const desc = nuevoEstado === 'ACTIVO' 
+      ? "Cliente activado nuevamente."
+      : "Cliente marcado como INACTIVO.";
+
+    await registrarInteraccionCliente(
+      c.id_cliente,
+      "Cambio de estado",
+      desc
+    );
+
     await cargarClientes();
   } catch (err) {
     console.error(err);
     alert('❌ ' + err.message);
   }
 }
+
+// ======================================================
+// ✅ DETALLE DEL CLIENTE
+// ======================================================
 
 function verDetalle(index) {
   const c = clientes[index];
@@ -258,43 +324,113 @@ function verDetalle(index) {
   document.getElementById('detCorreo').textContent = c.correo_electronico ?? '';
   document.getElementById('detTelefono').textContent = c.telefono ?? '';
   document.getElementById('detDireccion').textContent = c.direccion ?? '';
-  document.getElementById('detEstado').textContent = c.estado ?? 'ACTIVO';
+  document.getElementById('detEstado').textContent = c.estado ?? 'Activo';
   new bootstrap.Modal(document.getElementById('modalDetalleCliente')).show();
 }
 
-function abrirHistorial() {
+
+function abrirHistorial(index) {
+  const c = clientes[index];
+  if (!c) return;
+
+  clienteHistorialActual = c;
+
+ 
+  const titulo = document.getElementById("tituloHistorialCliente");
+  if (titulo) {
+    titulo.textContent = `Historial de: ${c.nombre || c.razon_social || 'Cliente'}`;
+  }
+
+  cargarHistorialCliente(c.id_cliente);
+
   new bootstrap.Modal(document.getElementById('modalHistorial')).show();
 }
-document.addEventListener("DOMContentLoaded", async () => {
-  try {
-    const res = await fetch("../backend/login.php?op=me", { credentials: "same-origin" });
-    const me = await res.json();
 
-    if (!me.authenticated) {
-      alert("Sesión expirada. Inicie sesión nuevamente.");
-      window.location.href = "login.html"; 
+async function cargarHistorialCliente(idCliente) {
+  const tbody = document.getElementById("tbodyHistorialCliente");
+  if (!tbody) return;
+
+  tbody.innerHTML = `
+    <tr>
+      <td colspan="4" class="text-muted">Cargando...</td>
+    </tr>
+  `;
+
+  try {
+    const resp = await fetch(`${API}?op=listar_historial&id_cliente=${idCliente}`, {
+      credentials: "include"
+    });
+    const data = await resp.json();
+    if (!resp.ok || !data.ok) throw new Error(data.message || "Error al cargar historial");
+
+    const historial = data.data || [];
+
+    tbody.innerHTML = "";
+
+    if (!historial.length) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="4" class="text-muted text-center">Sin datos</td>
+        </tr>
+      `;
       return;
     }
 
-    const spanUser = document.getElementById("usuarioActual");
-    const spanRol  = document.getElementById("usuarioRol");
-    if (spanUser) spanUser.textContent = (me.empleado_nombre || me.username);
-    if (spanRol)  spanRol.textContent  = "Rol: " + (me.rol || "-");
+    historial.forEach(item => {
+      const tr = document.createElement("tr");
+      const fecha = item.fecha ? new Date(item.fecha) : null;
 
-  } catch (e) {
-    console.error(e);
-    alert("No se pudo verificar la sesión.");
-    window.location.href = "login.html";  
-  }
-});
-
-async function salir() {
-  try {
-    await fetch("../backend/login.php?op=logout", {
-      method: "POST",
-      credentials: "same-origin"
+      tr.innerHTML = `
+        <td>${item.tipo_interaccion}</td>
+        <td>${fecha ? fecha.toLocaleString() : ''}</td>
+        <td>${item.empleado ?? ''}</td>
+        <td>${item.observaciones ?? ''}</td>
+      `;
+      tbody.appendChild(tr);
     });
-  } catch (e) { /* ignore */ }
 
-  window.location.href = "login.html";  
+  } catch (err) {
+    console.error("Error cargando historial:", err);
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="4" class="text-danger text-center">Error al cargar el historial.</td>
+      </tr>
+    `;
+  }
+}
+
+
+async function registrarInteraccionCliente(idCliente, tipo, observaciones) {
+  try {
+    if (!usuarioActual || !usuarioActual.id_empleado) {
+      
+      console.warn("No se encontró id_empleado en usuarioActual para historial.");
+      return;
+    }
+
+    const payload = {
+      id_cliente: idCliente,
+      tipo_interaccion: tipo,
+      id_empleado: usuarioActual.id_empleado,
+      observaciones: observaciones || ""
+    };
+
+    const resp = await fetch(`${API}?op=registrar_historial`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(payload)
+    });
+    const data = await resp.json();
+    if (!resp.ok || !data.ok) {
+      console.warn("No se pudo registrar en historial:", data.message || "");
+    } else {
+     
+      if (clienteHistorialActual && clienteHistorialActual.id_cliente === idCliente) {
+        cargarHistorialCliente(idCliente);
+      }
+    }
+  } catch (err) {
+    console.error("Error registrando interacción en historial:", err);
+  }
 }
