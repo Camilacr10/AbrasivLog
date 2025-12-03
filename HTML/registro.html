@@ -149,6 +149,52 @@
     </div>
   </div>
 
+  <!-- MODAL: Asignar credenciales -->
+<div class="modal fade" id="modalRegistroEmpleado" tabindex="-1" aria-labelledby="tituloRegistroEmpleado" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      
+      <div class="modal-header">
+        <h5 class="modal-title" id="tituloRegistroEmpleado">Asignar credenciales</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body">
+        <form id="formRegistroEmpleado" onsubmit="event.preventDefault(); registrarEmpleado();">
+          <input type="hidden" id="idEmpleado">
+
+          <div class="mb-3">
+            <label for="correoEmpleado" class="form-label">Usuario (correo)</label>
+            <input type="email" class="form-control" id="correoEmpleado" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="contrasenaEmpleado" class="form-label">Contraseña</label>
+            <input type="password" class="form-control" id="contrasenaEmpleado" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="rolEmpleado" class="form-label">Rol</label>
+            <select id="rolEmpleado" class="form-select" required>
+              <option value="">Seleccione...</option>
+              <option value="Administrador">Administrador</option>
+              <option value="Empleado">Empleado</option>
+              <!-- agrega más si tienes -->
+            </select>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-success" onclick="registrarEmpleado()">Guardar</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
   <footer class="footer-custom mt-auto py-4 text-center">
     <div class="container">
       <p class="mb-1 fw-bold">Abrasivos Industriales S.A.</p>

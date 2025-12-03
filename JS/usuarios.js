@@ -359,13 +359,13 @@ async function verificarSesionYMostrarUsuario() {
 
 document.addEventListener("DOMContentLoaded", () => {
   verificarSesionYMostrarUsuario();
-  registrarEmpleado();
+ 
 });
 
 window.onpageshow = function(event) {
   if (event.persisted) {
     verificarSesionYMostrarUsuario();
-    registrarEmpleado();
+
   }
 };
 
