@@ -2,6 +2,7 @@
 require 'db.php';
 require_once 'historialClientes.php';
 require 'auditoria.php';
+
 header('Content-Type: application/json; charset=utf-8');
 
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
@@ -15,7 +16,6 @@ function getJsonInput() {
     $data = json_decode($raw, true);
     return is_array($data) ? $data : [];
 }
-
 
 function agregarCliente($nombre, $razon_social, $cedula, $telefono, $correo, $direccion, $estado = 'ACTIVO')
 {
@@ -101,20 +101,40 @@ function inactivarCliente($id_cliente)
     }
 }
 
-
+/**
+ * 🟡 NUEVA FUNCIÓN: cambiar solo el estado (ACTIVO / INACTIVO)
+ */
+function cambiarEstadoCliente($id_cliente, $estado)
+{
+    global $pdo;
+    try {
+        $sql = "UPDATE clientes 
+                   SET estado = :estado 
+                 WHERE id_cliente = :id_cliente";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ':estado'     => $estado,
+            ':id_cliente' => $id_cliente
+        ]);
+        return $stmt->rowCount() > 0;
+    } catch (PDOException $e) {
+        return ["error" => $e->getMessage(), "code" => $e->getCode()];
+    } catch (Exception $e) {
+        return ["error" => $e->getMessage(), "code" => "0"];
+    }
+}
 
 $method = $_SERVER['REQUEST_METHOD'];
-$op     = $_GET['op'] ?? '';  
+$op     = $_GET['op'] ?? '';
 
 switch ($method) {
 
     case 'GET':
 
-       
+        // Historial de cliente
         if ($op === 'listar_historial') {
             $id_cliente = (int)($_GET['id_cliente'] ?? 0);
 
-          
             if ($id_cliente <= 0) {
                 echo json_encode(["ok" => true, "data" => []]);
                 break;
@@ -122,9 +142,7 @@ switch ($method) {
 
             $historial = obtenerHistorialCliente($id_cliente);
 
-            
             if (is_array($historial) && isset($historial['error'])) {
-                
                 echo json_encode(["ok" => true, "data" => []]);
                 break;
             }
@@ -133,7 +151,7 @@ switch ($method) {
             break;
         }
 
-   
+        // Lista de clientes
         $clientes = obtenerTodosLosClientes();
         if (isset($clientes['error'])) {
             http_response_code(500);
@@ -145,7 +163,7 @@ switch ($method) {
 
     case 'POST':
 
-     
+        // Registrar historial
         if ($op === 'registrar_historial') {
             $input = getJsonInput();
 
@@ -180,7 +198,7 @@ switch ($method) {
             break;
         }
 
-   
+        // Crear cliente
         $input = getJsonInput();
 
         if (isset($input['nombre'], $input['cedula'])) {
@@ -207,17 +225,18 @@ switch ($method) {
             $res = agregarCliente($nombre, $razon_social, $cedula, $telefono, $correo, $direccion, $estado);
 
             if (is_array($res) && isset($res['error'])) {
-                $status = ($res['code'] === '23000') ? 409 : 500; 
+                $status = ($res['code'] === '23000') ? 409 : 500;
                 http_response_code($status);
                 echo json_encode(["ok" => false, "message" => "Error al crear cliente", "detail" => $res['error']]);
                 break;
             }
+
             registrarAuditoria(
-                'clientes',          
-                $res,                
-             'CREAR',             
-             'Se agregó un nuevo cliente' 
-               );
+                'clientes',
+                $res,
+                'CREAR',
+                'Se agregó un nuevo cliente'
+            );
 
             http_response_code(201);
             echo json_encode([
@@ -233,7 +252,7 @@ switch ($method) {
 
     case 'PUT':
         $input = getJsonInput();
-        /* ============= VALIDACIONES Y CAMPOS NUEVOS ============= */
+
         if (isset($input['id_cliente'], $input['nombre'], $input['cedula'], $input['estado'])) {
             $id_cliente   = (int)$input['id_cliente'];
             $nombre       = trim($input['nombre']);
@@ -266,11 +285,12 @@ switch ($method) {
             }
 
             if ($edit === true) {
-                    registrarAuditoria(
-                     'clientes',
-                     $id_cliente,
-                     'EDITAR',
-                    'Se editaron los datos del cliente');
+                registrarAuditoria(
+                    'clientes',
+                    $id_cliente,
+                    'EDITAR',
+                    'Se editaron los datos del cliente'
+                );
                 http_response_code(200);
                 echo json_encode(["ok" => true, "message" => "Datos actualizados con éxito"]);
             } else {
@@ -280,6 +300,58 @@ switch ($method) {
         } else {
             http_response_code(400);
             echo json_encode(["ok" => false, "message" => "Por favor, verifique que los campos obligatorios estén completos y digitados correctamente."]);
+        }
+        break;
+
+    /**
+     * 🟡 NUEVO CASE: cambiar solo el estado (ACTIVO / INACTIVO)
+     */
+    case 'PATCH':
+        $input = getJsonInput();
+
+        $id_cliente = (int)($input['id_cliente'] ?? 0);
+        $estado     = trim($input['estado'] ?? '');
+
+        if ($id_cliente <= 0 || !in_array($estado, ['ACTIVO', 'INACTIVO'], true)) {
+            http_response_code(400);
+            echo json_encode([
+                "ok"      => false,
+                "message" => "Datos inválidos para cambiar el estado del cliente."
+            ]);
+            break;
+        }
+
+        $res = cambiarEstadoCliente($id_cliente, $estado);
+
+        if (is_array($res) && isset($res['error'])) {
+            http_response_code(500);
+            echo json_encode([
+                "ok"      => false,
+                "message" => "Error al cambiar estado del cliente",
+                "detail"  => $res['error']
+            ]);
+            break;
+        }
+
+        if ($res === true) {
+            registrarAuditoria(
+                'clientes',
+                $id_cliente,
+                'CAMBIO_ESTADO',
+                "Se cambió el estado del cliente a {$estado}"
+            );
+
+            http_response_code(200);
+            echo json_encode([
+                "ok"      => true,
+                "message" => "Estado actualizado correctamente."
+            ]);
+        } else {
+            http_response_code(404);
+            echo json_encode([
+                "ok"      => false,
+                "message" => "Cliente no encontrado."
+            ]);
         }
         break;
 
@@ -302,12 +374,13 @@ switch ($method) {
         }
 
         if ($res === true) {
-                registrarAuditoria(
-        'clientes',
-        $id_cliente,
-        'INACTIVAR',
-        'Se inactivó el cliente');
-        
+            registrarAuditoria(
+                'clientes',
+                $id_cliente,
+                'INACTIVAR',
+                'Se inactivó el cliente'
+            );
+
             http_response_code(200);
             echo json_encode(["ok" => true, "message" => "Cliente inactivado exitosamente"]);
         } else {

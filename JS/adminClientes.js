@@ -296,19 +296,35 @@ async function guardarCambios() {
 
 async function toggleEstado(index) {
   const c = clientes[index];
+  if (!c) return;
+
   const nuevoEstado = c.estado === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO';
+
+  const confirmar = confirm(
+    `¿Seguro que desea marcar este cliente como ${nuevoEstado}?`
+  );
+  if (!confirmar) return;
 
   try {
     const resp = await fetch(API, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'PATCH',          // 👈 ahora PATCH
+      headers: { 
+        'Content-Type': 'application/json' 
+      },
       credentials: "include",
-      body: JSON.stringify({ ...c, estado: nuevoEstado })
+      body: JSON.stringify({
+        id_cliente: c.id_cliente,
+        estado: nuevoEstado
+      })
     });
-    const data = await resp.json();
-    if (!resp.ok || !data.ok) throw new Error(data.message || 'Error al cambiar estado');
 
-    const desc = nuevoEstado === 'ACTIVO' 
+    const data = await resp.json();
+    if (!resp.ok || !data.ok) {
+      throw new Error(data.message || "Error al cambiar estado");
+    }
+
+    // Registrar en historial (opcional, ya lo tienes)
+    const desc = nuevoEstado === 'ACTIVO'
       ? "Cliente activado nuevamente."
       : "Cliente marcado como INACTIVO.";
 
@@ -320,10 +336,11 @@ async function toggleEstado(index) {
 
     await cargarClientes();
   } catch (err) {
-    console.error(err);
-    alert('❌ ' + err.message);
+    console.error("Error al cambiar estado:", err);
+    alert("❌ " + (err.message || "Error al cambiar estado."));
   }
 }
+
 
 // ======================================================
 // ✅ DETALLE DEL CLIENTE

@@ -326,7 +326,7 @@ async function guardarNuevoRol() {
 
 function redirectLogin() {
   alert("Sesión expirada. Inicie sesión nuevamente.");
-  window.location.href = "/login.html";
+  window.location.href = "login.html";
 }
 
 // =============================
