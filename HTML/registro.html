@@ -73,8 +73,9 @@
           <li class="nav-item"><a class="nav-link" href="entregas.html">Entregas</a></li>
           <li class="nav-item"><a class="nav-link" href="proveedores.html">Proveedores</a></li>
           <li class="nav-item"><a class="nav-link" href="dashboardReportes.html">Reportes</a></li>
-          <li class="nav-item"><a class="nav-link" href="registro.html">
-            <i class="fas fa-user me-1 opacity-75"></i> Gestionar Credenciales</a></li>
+          <li class="nav-item" id="linkCredenciales"> <a class="nav-link" href="registro.html">
+          <i class="fas fa-user me-1 opacity-75"></i> Gestionar Credenciales </a> </li>
+
 
           <li class="nav-item dropdown ms-3">
             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="usuarioDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -179,7 +180,6 @@
               <option value="">Seleccione...</option>
               <option value="Administrador">Administrador</option>
               <option value="Empleado">Empleado</option>
-              <!-- agrega más si tienes -->
             </select>
           </div>
         </form>
@@ -187,12 +187,55 @@
 
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-success" onclick="registrarEmpleado()">Guardar</button>
+    <button
+  type="button"
+  class="btn btn-success"
+  onclick="registrarEmpleado()"
+  data-bs-dismiss="modal"
+>
+  Guardar
+</button>
       </div>
 
     </div>
   </div>
 </div>
+
+<!-- MODAL: Editar credenciales -->
+<div class="modal fade" id="modalEditarCredenciales" tabindex="-1" aria-labelledby="tituloEditarCredenciales" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="tituloEditarCredenciales">Editar credenciales</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body">
+        <form id="formEditarEmpleado" onsubmit="event.preventDefault(); guardarEdicionCredenciales();">
+          <input type="hidden" id="editIdEmpleado">
+
+          <div class="mb-3">
+            <label for="editUsuario" class="form-label">Usuario (correo)</label>
+            <input type="email" class="form-control" id="editUsuario" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="editContrasena" class="form-label">Nueva contraseña</label>
+            <input type="password" class="form-control" id="editContrasena" required>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-success" onclick="guardarEdicionCredenciales()">Guardar</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 
 
   <footer class="footer-custom mt-auto py-4 text-center">

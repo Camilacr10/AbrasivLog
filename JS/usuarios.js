@@ -6,6 +6,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     window.location.href = "/login.html";
     return;
   }
+  const linkCredenciales = document.getElementById("linkCredenciales");
+  if (linkCredenciales && me.rol !== "Administrador") {
+    linkCredenciales.style.display = "none";
+  }
   if (me.rol !== "Administrador") {
     alert("Acceso denegado. Solo Administrador.");
     window.location.href = "/login.html";
@@ -79,7 +83,7 @@ async function cargarEmpleados() {
           <td>${esc(emp.empleado) ?? "-"}</td>
           <td>${esc(emp.puesto) ?? "-"}</td>
           <td>${emp.usuario ? esc(emp.usuario) : "<span class='text-muted'>No asignado</span>"}</td>
-          <td>${esc(emp.rol) ?? "-"}</td>
+          <td>${esc(emp.rol) ?esc(emp.usuario) : "<span class='text-muted'>No asignado</span>"}</td>
           <td>
             ${
               emp.estado
@@ -211,36 +215,59 @@ async function registrarEmpleado() {
 }
 
 // ---------------------
-// Acciones: editar credenciales
+// Acciones: editar credenciales (USANDO MODAL)
 // ---------------------
 function abrirEditar(id, usuarioActual /*, rolActual */) {
-  const nuevoUsuario = prompt(`Usuario actual: ${usuarioActual}\nIngrese nuevo nombre de usuario:`);
-  const nuevaContrasena = prompt("Ingrese nueva contraseña:");
-  if (!nuevoUsuario || !nuevaContrasena) return;
+  // llenar campos del modal
+  document.getElementById("editIdEmpleado").value = id;
+  document.getElementById("editUsuario").value = usuarioActual || "";
+  document.getElementById("editContrasena").value = "";
 
-  fetch("../backend/usuarios.php", {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    credentials: "same-origin",
-    body: JSON.stringify({
-      id_empleado: id,
-      usuario: nuevoUsuario.trim(),
-      contrasena: nuevaContrasena.trim(),
-    }),
-  })
-    .then((res) => {
-      if (res.status === 401) return redirectLogin();
-      if (res.status === 403) throw new Error("Acceso denegado.");
-      return res.json();
-    })
-    .then((data) => {
-      alert(data.message || data.success || data.error || "Operación realizada.");
-      cargarEmpleados();
-    })
-    .catch((err) => {
-      console.error("Error al editar:", err);
-      alert(err.message || "Error al editar credenciales.");
+  // mostrar modal
+  const modalEl = document.getElementById("modalEditarCredenciales");
+  const modal = new bootstrap.Modal(modalEl);
+  modal.show();
+}
+
+async function guardarEdicionCredenciales() {
+  const id_empleado = document.getElementById("editIdEmpleado").value;
+  const nuevoUsuario = document.getElementById("editUsuario").value.trim();
+  const nuevaContrasena = document.getElementById("editContrasena").value.trim();
+
+  if (!id_empleado || !nuevoUsuario || !nuevaContrasena) {
+    alert("Debe ingresar usuario y contraseña.");
+    return;
+  }
+
+  try {
+    const res = await fetch("../backend/usuarios.php", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify({
+        id_empleado,
+        usuario: nuevoUsuario,
+        contrasena: nuevaContrasena,
+      }),
     });
+
+    if (res.status === 401) return redirectLogin();
+    if (res.status === 403) throw new Error("Acceso denegado.");
+
+    const data = await res.json();
+    alert(data.message || data.success || data.error || "Operación realizada.");
+
+    // cerrar modal
+    const modalEl = document.getElementById("modalEditarCredenciales");
+    const modal = bootstrap.Modal.getInstance(modalEl);
+    if (modal) modal.hide();
+
+    // recargar tabla
+    cargarEmpleados();
+  } catch (err) {
+    console.error("Error al editar:", err);
+    alert(err.message || "Error al editar credenciales.");
+  }
 }
 
 // ---------------------
@@ -359,13 +386,11 @@ async function verificarSesionYMostrarUsuario() {
 
 document.addEventListener("DOMContentLoaded", () => {
   verificarSesionYMostrarUsuario();
- 
 });
 
 window.onpageshow = function(event) {
   if (event.persisted) {
     verificarSesionYMostrarUsuario();
-
   }
 };
 
@@ -378,4 +403,28 @@ async function salir() {
   } catch (e) { /* ignore */ }
 
   window.location.href = "login.html";  
+}
+
+function filtrarEmpleados() {
+  const input = document.getElementById("buscarEmpleado");
+  const filtro = input.value.toLowerCase();
+  const tbody = document.getElementById("tablaEmpleados");
+  const filas = tbody.querySelectorAll("tr");
+  let visibles = 0;
+
+  filas.forEach(fila => {
+    const texto = fila.textContent.toLowerCase();
+    const match = texto.includes(filtro);
+    fila.style.display = match ? "" : "none";
+    if (match) visibles++;
+  });
+
+  if (visibles === 0 && filtro !== "") {
+    tbody.innerHTML =
+      "<tr><td colspan='6' class='text-center text-muted'>Sin resultados</td></tr>";
+  }
+
+  if (filtro === "") {
+    cargarEmpleados();
+  }
 }

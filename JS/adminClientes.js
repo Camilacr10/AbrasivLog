@@ -28,6 +28,10 @@ async function verificarSesionYMostrarUsuario() {
 
     if (spanUser) spanUser.textContent = (me.empleado_nombre || me.username);
     if (spanRol)  spanRol.textContent  = "Rol: " + (me.rol || "-");
+  const linkCred = document.getElementById("linkCredenciales");
+    if (linkCred && me.rol !== "Administrador") {
+      linkCred.style.display = "none";
+    }
 
   } catch (err) {
     console.error("Error verificando sesión:", err);
