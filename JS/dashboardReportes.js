@@ -174,6 +174,10 @@
     });
     recargarTodo();
   });
+
+
+  //Se pone variable global para que se use en lo de sesion
+  window.cargarMetricas = cargarMetricas;
 })();
 
 (function () {

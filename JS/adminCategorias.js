@@ -525,7 +525,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-
+    // Hacemos disponible loadCategorias fuera de este bloque
+    window.loadCategorias = loadCategorias;
 
     // Carga la lista de categorías al cargar la página
     loadCategorias();
