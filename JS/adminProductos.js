@@ -799,7 +799,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-
+    // Hacemos disponible loadProductos fuera de este bloque
+    window.loadProductos = loadProductos;
 
     // Carga la lista de productos y categorías al cargar la página, por ser dos recursos aparte
     loadCategorias(); // Cargar primero categorías (para selects y nombre en tabla)

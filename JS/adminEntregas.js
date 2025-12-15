@@ -11,6 +11,7 @@ let entregasGlobal = [];
 let empleadosMensajeros = [];
 let idEntregaActual = null; // Guardará el ID de la entrega recién creada
 let idEntregaSeleccionada = null;
+let clientes = [];
 
 // Renderizar tabla
 function renderTabla(lista) {
@@ -109,7 +110,7 @@ async function cargarMensajeros() {
         `).join("")}
     `;
 
-  // 🔹 Para el modal de editar
+  // Para el modal de editar
   const selectEditar = document.getElementById("editMensajero");
   if (selectEditar) {
     selectEditar.innerHTML = `
@@ -149,7 +150,7 @@ async function cargarProductos() {
 }
 
 
-// 🔍 Filtrar entregas
+// Filtrar entregas
 if (buscar) {
   buscar.addEventListener("keyup", () => {
     const texto = buscar.value.toLowerCase().trim();
@@ -167,7 +168,7 @@ window.onload = () => {
   cargarProductos();
 };
 
-//Agregar nueva entrega
+// Agregar nueva entrega
 document.getElementById("formAgregarEntrega").addEventListener("submit", async e => {
   e.preventDefault();
 
@@ -479,30 +480,29 @@ async function verEntrega(idEntrega) {
   }
 }
 
-async function cargarCedulas() {
-    const res = await fetch("../backend/adminEntregas.php?accion=buscarCedulas");
-    const datos = await res.json();
+fetch("../backend/adminEntregas.php?accion=buscarCedulas")
+    .then(r => r.json())
+    .then(d => {
+        clientes = d;
+        mostrarCedulas("", "listaCedulas");
+        mostrarCedulas("", "listaCedulasEditar");
+    });
 
-    const lista = document.getElementById("listaCedulas");
-    lista.innerHTML = datos.map(c =>
-        `<option value="${c.cedula}">${c.nombre}</option>`
-    ).join("");
+function mostrarCedulas(txt, id) {
+    const l = document.getElementById(id);
+    l.innerHTML = clientes
+        .filter(c => !txt || c.cedula.includes(txt) || c.nombre.toLowerCase().includes(txt.toLowerCase()))
+        .slice(0, txt ? 10 : 3)
+        .map(c =>
+            id === "listaCedulasEditar"
+                ? `<option value="${c.cedula}" data-id="${c.id_cliente}">${c.nombre}</option>`
+                : `<option value="${c.cedula}">${c.nombre}</option>`
+        ).join("");
 }
 
-cargarCedulas();
+cedulaCliente.oninput = e => mostrarCedulas(e.target.value, "listaCedulas");
+editCedulaCliente.oninput = e => mostrarCedulas(e.target.value, "listaCedulasEditar");
 
-async function cargarCedulasEditar() {
-    const res = await fetch("../backend/adminEntregas.php?accion=buscarCedulas");
-    const clientes = await res.json();
-
-    const lista = document.getElementById("listaCedulasEditar");
-
-    lista.innerHTML = clientes.map(c =>
-        `<option value="${c.cedula}" data-id="${c.id_cliente || ''}">${c.nombre}</option>`
-    ).join("");
-}
-
-cargarCedulasEditar();
 
 function formatoFecha(fecha) {
     if (!fecha) return "";

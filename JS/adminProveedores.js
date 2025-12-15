@@ -478,7 +478,8 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
 
-
+    // Hacemos disponible loadProveedores fuera de este bloque
+    window.loadProveedores = loadProveedores;
 
   // Carga la lista de proveedores al cargar la página
   loadProveedores();
