@@ -83,7 +83,7 @@ async function cargarEmpleados() {
           <td>${esc(emp.empleado) ?? "-"}</td>
           <td>${esc(emp.puesto) ?? "-"}</td>
           <td>${emp.usuario ? esc(emp.usuario) : "<span class='text-muted'>No asignado</span>"}</td>
-          <td>${esc(emp.rol) ?esc(emp.usuario) : "<span class='text-muted'>No asignado</span>"}</td>
+          <td>${esc(emp.rol) ?esc(emp.rol) : "<span class='text-muted'>No asignado</span>"}</td>
           <td>
             ${
               emp.estado

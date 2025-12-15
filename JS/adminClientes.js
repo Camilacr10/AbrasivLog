@@ -148,22 +148,29 @@ function crearDropdown(index, estado) {
 }
 
 function filtrarClientes() {
-  const filtro = document.getElementById('buscarInput').value.toLowerCase();
+  const input = document.getElementById('buscarInput');
+  const filtro = (input?.value || "").toLowerCase().trim();
+
+  if (!filtro) {
+    cargarClientes();
+    return;
+  }
+
   const filas = document.querySelectorAll('#tablaClientes tr');
   let visibles = 0;
 
   filas.forEach(fila => {
-    const texto = fila.textContent.toLowerCase();
+    const texto = (fila.textContent || "").toLowerCase();
     const match = texto.includes(filtro);
     fila.style.display = match ? '' : 'none';
     if (match) visibles++;
   });
 
   if (visibles === 0) {
-    document.getElementById('tablaClientes').innerHTML = "<tr><td colspan='8'>Sin resultados</td></tr>";
+    document.getElementById('tablaClientes').innerHTML =
+      "<tr><td colspan='8'>Sin resultados</td></tr>";
   }
 }
-
 async function cargarClientes() {
   const tbody = document.getElementById('tablaClientes');
   tbody.innerHTML = "<tr><td colspan='8'>Cargando...</td></tr>";
