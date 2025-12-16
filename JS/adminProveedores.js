@@ -6,6 +6,20 @@ document.addEventListener('DOMContentLoaded', function () {
   let agreOriginalCedula = ''; // Variable para almacenar la cedula juridica original cuando se agrega un nuevo proveedor
   let agreOriginalCorreo = ''; // Variable para almacenar el correo original cuando se agrega un nuevo proveedor
   const API_URL = '../backend/adminProveedores.php';
+  const pagina = location.pathname.split('/').pop().toLowerCase(); // Obtiene el nombre de la página actual
+
+
+
+
+  // Función para verificar si la página actual es 'proveedores.html' y dejarlo seleccionado en negro
+  if (pagina === 'proveedores.html') {
+    const proveedoresLink = document.querySelector('a[href="proveedores.html"]');
+    if (proveedoresLink) {
+      proveedoresLink.classList.add('active');
+    }
+  }
+
+
 
 
   //Codigo para proveedores
@@ -38,6 +52,18 @@ document.addEventListener('DOMContentLoaded', function () {
   function renderProveedores(lista) {
     const proveedorList = document.getElementById('tablaProveedores');
     proveedorList.innerHTML = '';
+
+    // Si no hay resultados, muestra un mensaje en la tabla
+    if (!lista || lista.length === 0) {
+      proveedorList.innerHTML = `
+          <tr>
+            <td colspan="14" class="text-center text-muted py-3">
+              No hay resultado del proveedor buscado.
+            </td>
+          </tr>
+        `;
+      return;
+    }
 
     // Recorre la lista de proveedores
     lista.forEach(function (proveedor) {
@@ -478,8 +504,8 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
 
-    // Hacemos disponible loadProveedores fuera de este bloque
-    window.loadProveedores = loadProveedores;
+  // Hacemos disponible loadProveedores fuera de este bloque
+  window.loadProveedores = loadProveedores;
 
   // Carga la lista de proveedores al cargar la página
   loadProveedores();
@@ -502,11 +528,11 @@ async function verificarSesionYMostrarUsuario() {
     }
 
     const spanUser = document.getElementById("usuarioActual");
-    const spanRol  = document.getElementById("usuarioRol");
+    const spanRol = document.getElementById("usuarioRol");
 
     if (spanUser) spanUser.textContent = (me.empleado_nombre || me.username);
-    if (spanRol)  spanRol.textContent  = "Rol: " + (me.rol || "-");
-  const linkCred = document.getElementById("linkCredenciales");
+    if (spanRol) spanRol.textContent = "Rol: " + (me.rol || "-");
+    const linkCred = document.getElementById("linkCredenciales");
     if (linkCred && me.rol !== "Administrador") {
       linkCred.style.display = "none";
     }
@@ -522,7 +548,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadProveedores();
 });
 
-window.onpageshow = function(event) {
+window.onpageshow = function (event) {
   if (event.persisted) {
     verificarSesionYMostrarUsuario();
     loadProveedores();
@@ -537,5 +563,5 @@ async function salir() {
     });
   } catch (e) { /* ignore */ }
 
-  window.location.href = "login.html";  
+  window.location.href = "login.html";
 }

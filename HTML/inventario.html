@@ -98,6 +98,7 @@
             list-style-type: none;
             display: inline-block;
         }
+
     </style>
 </head>
 
@@ -130,29 +131,31 @@
                     <li class="nav-item"><a class="nav-link" href="dashboardReportes.html">Reportes</a></li>
                     <li class="nav-item">
 
-<li class="nav-item" id="linkCredenciales">
-  <a class="nav-link" href="registro.html">
-    <i class="fas fa-user me-1 opacity-75"></i> Gestionar Credenciales
-  </a>
-</li>
+                    <li class="nav-item" id="linkCredenciales">
+                        <a class="nav-link" href="registro.html">
+                            <i class="fas fa-user me-1 opacity-75"></i> Gestionar Credenciales
+                        </a>
+                    </li>
 
 
-          <li class="nav-item dropdown ms-3">
-            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="usuarioDropdown"
-               role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="fa-regular fa-circle-user me-2"></i>
-              <span id="usuarioActual">Cargando...</span>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="usuarioDropdown">
-              <li><a class="dropdown-item disabled small" id="usuarioRol">Rol: -</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li>
-                <button class="dropdown-item text-danger" onclick="salir()">
-                  <i class="fas fa-sign-out-alt me-2"></i> Cerrar sesión
-                </button>
-              </li>
-            </ul>
-          </li>
+                    <li class="nav-item dropdown ms-3">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="usuarioDropdown"
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-regular fa-circle-user me-2"></i>
+                            <span id="usuarioActual">Cargando...</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="usuarioDropdown">
+                            <li><a class="dropdown-item disabled small" id="usuarioRol">Rol: -</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <button class="dropdown-item text-danger" onclick="salir()">
+                                    <i class="fas fa-sign-out-alt me-2"></i> Cerrar sesión
+                                </button>
+                            </li>
+                        </ul>
+                    </li>
 
                 </ul>
             </div>

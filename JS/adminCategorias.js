@@ -6,8 +6,18 @@ document.addEventListener('DOMContentLoaded', function () {
     let editOriginalNombre = ''; // Variable para almacenar el nombre original en la edicion
     let agreOriginalNombre = ''; // Variable para almacenar el nombre original cuando se agrega una nueva categoría
     const API_CATS = '../backend/adminCategorias.php';
+    const pagina = location.pathname.split('/').pop().toLowerCase(); // Obtiene el nombre de la página actual para seleccionar la opción del menu
 
 
+
+
+    //Función para verificar si la página actual es 'inventarioCategorias.html' y la deja seleccionada en negro las letras
+    if (pagina === 'inventariocategorias.html') {
+        const inventarioCategoriasLink = document.getElementById('inventarioDropdown');
+        if (inventarioCategoriasLink) {
+            inventarioCategoriasLink.classList.add('active');
+        }
+    }
 
 
     // Función para cargar las categorías
@@ -35,6 +45,18 @@ document.addEventListener('DOMContentLoaded', function () {
     function renderCategorias(lista) {
         const catList = document.getElementById('tablaCategorias');
         catList.innerHTML = '';
+
+        // Si no hay resultados, muestra un mensaje en la tabla
+        if (!lista || lista.length === 0) {
+            catList.innerHTML = `
+          <tr>
+            <td colspan="14" class="text-center text-muted py-3">
+              No hay resultado de la categoría buscada.
+            </td>
+          </tr>
+        `;
+            return;
+        }
 
         // Recorre la lista de categorías
         lista.forEach(function (c) {
@@ -536,53 +558,53 @@ document.addEventListener('DOMContentLoaded', function () {
 //    VERIFICACIÓN DE SESIÓN
 // =============================
 async function verificarSesionYMostrarUsuario() {
-  try {
-    const res = await fetch("../backend/login.php?op=me", {
-      credentials: "same-origin"
-    });
+    try {
+        const res = await fetch("../backend/login.php?op=me", {
+            credentials: "same-origin"
+        });
 
-    const me = await res.json();
+        const me = await res.json();
 
-    if (!me.authenticated) {
-      window.location.href = "login.html";
-      return;
+        if (!me.authenticated) {
+            window.location.href = "login.html";
+            return;
+        }
+
+        const spanUser = document.getElementById("usuarioActual");
+        const spanRol = document.getElementById("usuarioRol");
+
+        if (spanUser) spanUser.textContent = (me.empleado_nombre || me.username);
+        if (spanRol) spanRol.textContent = "Rol: " + (me.rol || "-");
+        const linkCred = document.getElementById("linkCredenciales");
+        if (linkCred && me.rol !== "Administrador") {
+            linkCred.style.display = "none";
+        }
+
+    } catch (err) {
+        console.error("Error verificando sesión:", err);
+        window.location.href = "login.html";
     }
-
-    const spanUser = document.getElementById("usuarioActual");
-    const spanRol  = document.getElementById("usuarioRol");
-
-    if (spanUser) spanUser.textContent = (me.empleado_nombre || me.username);
-    if (spanRol)  spanRol.textContent  = "Rol: " + (me.rol || "-");
-const linkCred = document.getElementById("linkCredenciales");
-    if (linkCred && me.rol !== "Administrador") {
-      linkCred.style.display = "none";
-    }
-
-  } catch (err) {
-    console.error("Error verificando sesión:", err);
-    window.location.href = "login.html";
-  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  verificarSesionYMostrarUsuario();
-  loadCategorias();
-});
-
-window.onpageshow = function(event) {
-  if (event.persisted) {
     verificarSesionYMostrarUsuario();
     loadCategorias();
-  }
+});
+
+window.onpageshow = function (event) {
+    if (event.persisted) {
+        verificarSesionYMostrarUsuario();
+        loadCategorias();
+    }
 };
 
 async function salir() {
-  try {
-    await fetch("../backend/login.php?op=logout", {
-      method: "POST",
-      credentials: "same-origin"
-    });
-  } catch (e) { /* ignore */ }
+    try {
+        await fetch("../backend/login.php?op=logout", {
+            method: "POST",
+            credentials: "same-origin"
+        });
+    } catch (e) { /* ignore */ }
 
-  window.location.href = "login.html";  
+    window.location.href = "login.html";
 }
