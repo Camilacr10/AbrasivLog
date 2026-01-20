@@ -51,6 +51,13 @@
                 overflow: visible;
             }
         }
+
+        /* Quitar azul de los items del dropdown cuando se hace click/focus */
+        .dropdown-menu .dropdown-item:focus,
+        .dropdown-menu .dropdown-item:active {
+            background-color: #FEBF00 !important;
+            color: #000 !important;
+        }
     </style>
 </head>
 
@@ -58,7 +65,7 @@
     <!-- Header -->
     <nav class="navbar navbar-expand-lg navbar-custom">
         <div class="container">
-              <a class="navbar-brand d-flex align-items-center" href="index.html">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
                 <img src="../IMG/logo.png" alt="Logo" class="logo" />
             </a>
             <div class="collapse navbar-collapse" id="menuPrincipal">
@@ -81,28 +88,30 @@
                     <li class="nav-item"><a class="nav-link" href="dashboardReportes.html">Reportes</a></li>
                     <li class="nav-item">
 
-<li class="nav-item" id="linkCredenciales">
-  <a class="nav-link" href="registro.html">
-    <i class="fas fa-user me-1 opacity-75"></i> Gestionar Credenciales
-  </a>
-</li>
-         
-          <li class="nav-item dropdown ms-3">
-            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="usuarioDropdown"
-               role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="fa-regular fa-circle-user me-2"></i>
-              <span id="usuarioActual">Cargando...</span>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="usuarioDropdown">
-              <li><a class="dropdown-item disabled small" id="usuarioRol">Rol: -</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li>
-                <button class="dropdown-item text-danger" onclick="salir()">
-                  <i class="fas fa-sign-out-alt me-2"></i> Cerrar sesión
-                </button>
-              </li>
-            </ul>
-          </li>
+                    <li class="nav-item" id="linkCredenciales">
+                        <a class="nav-link" href="registro.html">
+                            <i class="fas fa-user me-1 opacity-75"></i> Gestionar Credenciales
+                        </a>
+                    </li>
+
+                    <li class="nav-item dropdown ms-3">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="usuarioDropdown"
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-regular fa-circle-user me-2"></i>
+                            <span id="usuarioActual">Cargando...</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="usuarioDropdown">
+                            <li><a class="dropdown-item disabled small" id="usuarioRol">Rol: -</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <button class="dropdown-item text-danger" onclick="salir()">
+                                    <i class="fas fa-sign-out-alt me-2"></i> Cerrar sesión
+                                </button>
+                            </li>
+                        </ul>
+                    </li>
 
                 </ul>
             </div>
@@ -120,7 +129,8 @@
         <!-- Filtros -->
         <div class="row mb-3">
             <div class="col-md-3">
-                <input type="text" id="filtroClienteMensajero" class="form-control" placeholder="Filtrar por cliente o mensajero" />
+                <input type="text" id="filtroClienteMensajero" class="form-control"
+                    placeholder="Filtrar por cliente o mensajero" />
             </div>
             <div class="col-md-3">
                 <input type="date" id="filtroFecha" class="form-control" />
@@ -165,7 +175,8 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="cedulaCliente" class="form-label">Cédula del Cliente</label>
-                            <input list="listaCedulas" id="cedulaCliente" class="form-control" placeholder="Ingrese la cédula">
+                            <input list="listaCedulas" id="cedulaCliente" class="form-control"
+                                placeholder="Ingrese la cédula">
                             <datalist id="listaCedulas"></datalist>
                         </div>
                         <div class="mb-3">
@@ -248,7 +259,8 @@
 
                         <div class="mb-3">
                             <label for="editCedulaCliente" class="form-label">Cédula del Cliente</label>
-                            <input list="listaCedulasEditar" id="editCedulaCliente" class="form-control" placeholder="Ingrese la cédula">
+                            <input list="listaCedulasEditar" id="editCedulaCliente" class="form-control"
+                                placeholder="Ingrese la cédula">
                             <datalist id="listaCedulasEditar"></datalist>
                             <input type="hidden" id="editClienteId" name="cliente_id">
                         </div>

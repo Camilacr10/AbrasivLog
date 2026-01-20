@@ -7,6 +7,50 @@ document.addEventListener('DOMContentLoaded', function () {
     let agreOriginalNombre = ''; // Variable para almacenar el nombre original cuando se agrega una nueva categoría
     const API_CATS = '../backend/adminCategorias.php';
     const pagina = location.pathname.split('/').pop().toLowerCase(); // Obtiene el nombre de la página actual para seleccionar la opción del menu
+    // Icono "sin imagen" (SVG inline) -> no depende de archivos ni rutas
+    const NO_IMAGE_SVG = `data:image/svg+xml;utf8,` + encodeURIComponent(`
+    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24">
+        <rect width="24" height="24" fill="#f2f2f2"/>
+        <path d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2ZM5 5h14v10.5l-3.5-3.5-3 3-2-2L5 18V5Zm2.5 3.5A1.5 1.5 0 1 0 9 7a1.5 1.5 0 0 0-1.5 1.5Z" fill="#999"/>
+        <path d="M5 19h14" stroke="#ccc"/>
+        <path d="M7 17l10-10" stroke="#999" stroke-width="1.2"/>
+    </svg>
+    `);
+
+
+
+    // =============================
+    //   SWEETALERT2 HELPERS
+    // =============================
+    function swOk(title, text = '', icon = 'success') {
+        return Swal.fire({
+            icon,
+            title,
+            text,
+            confirmButtonText: 'OK'
+        });
+    }
+
+    function swError(title, text = '') {
+        return swOk(title, text, 'error');
+    }
+
+    function swWarn(title, text = '') {
+        return swOk(title, text, 'warning');
+    }
+
+    // Reemplazo de confirm()
+    function swConfirm(title, text = '', confirmText = 'Sí', cancelText = 'Cancelar') {
+        return Swal.fire({
+            icon: 'warning',
+            title,
+            text,
+            showCancelButton: true,
+            confirmButtonText: confirmText,
+            cancelButtonText: cancelText,
+            reverseButtons: true
+        }).then(r => r.isConfirmed);
+    }
 
 
 
@@ -65,7 +109,12 @@ document.addEventListener('DOMContentLoaded', function () {
             row.innerHTML = `
                 <td>${c.id_categoria ?? ''}</td>
                 <td class="text-center">
-                    ${c.icono_path ? `<img src="${c.icono_path}" class="img-icono"/>` : '<span class="text-muted">—</span>'}
+                    <img
+                    src="${c.icono_path ? c.icono_path : NO_IMAGE_SVG}"
+                    class="img-icono"
+                    alt="${c.nombre ?? ''}"
+                    onerror="this.onerror=null; this.src='${NO_IMAGE_SVG}';"
+                    />
                 </td>
                 <td>${c.nombre ?? ''}</td>
                 <td>${c.slug ?? ''}</td>
@@ -146,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Si no se encuentra la categoría, muestra un mensaje y detiene la función
         if (!c) {
-            alert('Categoría no encontrada');
+            swError('Categoría no encontrada');
             return;
         }
 
@@ -188,7 +237,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Si no la encuentra, muestra mensaje y detiene
         if (!c) {
-            alert('Categoría no encontrada');
+            swError('Categoría no encontrada');
             return;
         }
 
@@ -199,7 +248,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (estaActivo) {
 
             // Confirma antes de inactivar
-            const ok1 = confirm(`¿Está seguro de inactivar la categoría "${c.nombre}"? Esta acción no se puede deshacer.`);
+            const ok1 = await swConfirm('Confirmar inactivación', `¿Está seguro de inactivar la categoría "${c.nombre}"? Esta acción no se puede deshacer.`, 'Sí, inactivar', 'Cancelar');
             if (!ok1) return; // Si cancela, no hace nada
 
             // Llama al backend con método DELETE
@@ -210,7 +259,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Si la respuesta es correcta
             if (response.ok) {
-                alert('Categoría inactivada correctamente.');
+                swOk('Listo', 'Categoría inactivada correctamente.');
                 loadCategorias(); // Recarga la tabla
             } else {
                 console.error("Error al inactivar la categoría");
@@ -220,7 +269,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Si la categoría está inactiva
 
             // Confirma antes de activar
-            const ok2 = confirm(`¿Desea activar nuevamente la categoría "${c.nombre}"?`);
+            const ok2 = await swConfirm('Confirmar activación', `¿Desea activar nuevamente la categoría "${c.nombre}"?`, 'Sí, activar', 'Cancelar');
             if (!ok2) return;
 
             // Cuerpo con los datos de la categoría (mantiene todo igual y cambia estado)
@@ -242,7 +291,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Si la respuesta es correcta
             if (response.ok) {
-                alert('Categoría activada correctamente.');
+                swOk('Listo', 'Categoría activada correctamente.');
                 loadCategorias(); // Recarga la tabla
             } else {
                 console.error('Error al activar la categoría');
@@ -265,7 +314,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const prev = document.getElementById('previewIcono'); // Obtiene la imagen que se muestra en previa
         if (prev) {
             prev.classList.add('d-none'); // Oculta la imagen previa
-            prev.removeAttribute('src');  // Elimina la URL del icono
+            prev.removeAttribute('src'); // Elimina la URL del icono
         }
         const est = document.getElementById('estadoProducto'); // Obtiene el selector de estado
         if (est) est.value = 'Activo'; // Establece el valor por defecto
@@ -357,7 +406,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Espera a que el modal se cierre para mostrar el alert
             modalEl.addEventListener('hidden.bs.modal', () => {
-                alert('Categoría creada exitosamente');
+                swOk('Listo', 'Categoría creada exitosamente');
             }, { once: true });
 
             // Recarga la lista de categorías para mostrar la nueva
@@ -477,7 +526,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Muestra el mensaje cuando el modal ya terminó de cerrarse (igual que en Agregar)
             modalEl.addEventListener('hidden.bs.modal', () => {
-                alert(`Categoría "${nombre}" actualizada correctamente.`);
+                swOk('Listo', `Categoría "${nombre}" actualizada correctamente.`);
             }, { once: true });
 
             // Limpia la variable global de edición
@@ -501,7 +550,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const est = document.getElementById('estadoProducto');
         if (est) est.value = 'Activo';
         const prev = document.getElementById('previewIcono');
-        if (prev) { prev.classList.add('d-none'); prev.removeAttribute('src'); }
+        if (prev) {
+            prev.classList.add('d-none');
+            prev.removeAttribute('src');
+        }
     });
 
 
@@ -546,13 +598,15 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-
     // Hacemos disponible loadCategorias fuera de este bloque
     window.loadCategorias = loadCategorias;
 
     // Carga la lista de categorías al cargar la página
     loadCategorias();
 });
+
+
+
 
 // =============================
 //    VERIFICACIÓN DE SESIÓN
@@ -588,13 +642,13 @@ async function verificarSesionYMostrarUsuario() {
 
 document.addEventListener("DOMContentLoaded", () => {
     verificarSesionYMostrarUsuario();
-    loadCategorias();
+    window.loadCategorias && window.loadCategorias();
 });
 
 window.onpageshow = function (event) {
     if (event.persisted) {
         verificarSesionYMostrarUsuario();
-        loadCategorias();
+        window.loadCategorias && window.loadCategorias();
     }
 };
 

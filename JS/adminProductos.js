@@ -9,6 +9,50 @@ document.addEventListener('DOMContentLoaded', function () {
     const API_CATS = '../backend/adminCategorias.php';
     const categoriaIndex = {}; // Índice id_categoria -> nombre
     const pagina = location.pathname.split('/').pop().toLowerCase(); // Obtiene el nombre de la página actual
+    // Icono "sin imagen" (SVG inline) -> no depende de archivos ni rutas
+    const NO_IMAGE_SVG = `data:image/svg+xml;utf8,` + encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24">
+        <rect width="24" height="24" fill="#f2f2f2"/>
+        <path d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2ZM5 5h14v10.5l-3.5-3.5-3 3-2-2L5 18V5Zm2.5 3.5A1.5 1.5 0 1 0 9 7a1.5 1.5 0 0 0-1.5 1.5Z" fill="#999"/>
+        <path d="M5 19h14" stroke="#ccc"/>
+        <path d="M7 17l10-10" stroke="#999" stroke-width="1.2"/>
+      </svg>
+    `);
+
+
+
+    // =============================
+    //   SWEETALERT2 HELPERS
+    // =============================
+    function swOk(title, text = '', icon = 'success') {
+        return Swal.fire({
+            icon,
+            title,
+            text,
+            confirmButtonText: 'OK'
+        });
+    }
+
+    function swError(title, text = '') {
+        return swOk(title, text, 'error');
+    }
+
+    function swWarn(title, text = '') {
+        return swOk(title, text, 'warning');
+    }
+
+    // Reemplazo de confirm()
+    function swConfirm(title, text = '', confirmText = 'Sí', cancelText = 'Cancelar') {
+        return Swal.fire({
+            icon: 'warning',
+            title,
+            text,
+            showCancelButton: true,
+            confirmButtonText: confirmText,
+            cancelButtonText: cancelText,
+            reverseButtons: true
+        }).then(r => r.isConfirmed);
+    }
 
 
 
@@ -108,7 +152,14 @@ document.addEventListener('DOMContentLoaded', function () {
             const final = precio + ivaColones - descColones;
 
             row.innerHTML = `
-        <td><img src="${p.imagen_path || ''}" class="product-image"/></td>
+             <td>
+            <img
+                src="${p.imagen_path ? p.imagen_path : NO_IMAGE_SVG}"
+                class="product-image"
+                alt="${p.nombre ?? ''}"
+                onerror="this.onerror=null; this.src='${NO_IMAGE_SVG}';"
+            />
+            </td>
         <td>${p.codigo ?? ''}</td>
         <td>${p.nombre ?? ''}</td>
         <td>${nombreCategoria}</td>
@@ -198,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Si no se encuentra el producto, muestra un mensaje y detiene la función
         if (!p) {
-            alert('Producto no encontrado');
+            swError('Producto no encontrado');
             return;
         }
 
@@ -251,7 +302,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Si no lo encuentra, muestra mensaje y detiene
         if (!p) {
-            alert('Producto no encontrado');
+            swError('Producto no encontrado');
             return;
         }
 
@@ -262,7 +313,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (estaActivo) {
 
             // Confirma antes de inactivar
-            const ok1 = confirm(`¿Está seguro de inactivar el producto ${p.nombre}? Esta acción no se puede deshacer.`);
+            const ok1 = await swConfirm('Confirmar inactivación', `¿Está seguro de inactivar el producto ${p.nombre}? Esta acción no se puede deshacer.`, 'Sí, inactivar', 'Cancelar');
             if (!ok1) return; // Si cancela, no hace nada
 
             // Llama al backend con método DELETE
@@ -273,7 +324,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Si la respuesta es correcta
             if (response.ok) {
-                alert('Producto inactivado correctamente.');
+                swOk('Listo', 'Producto inactivado correctamente.');
                 loadProductos(); // Recarga la tabla
             } else {
                 console.error("Error al inactivar el producto");
@@ -283,7 +334,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Si el producto está inactivo
 
             // Confirma antes de activar
-            const ok2 = confirm(`¿Desea activar nuevamente el producto ${p.nombre}?`);
+            const ok2 = await swConfirm('Confirmar activación', `¿Desea activar nuevamente el producto ${p.nombre}?`, 'Sí, activar', 'Cancelar');
             if (!ok2) return;
 
             // Calcula valores antes de enviar al backend
@@ -320,7 +371,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Si la respuesta es correcta
             if (response.ok) {
-                alert('Producto activado correctamente.');
+                swOk('Listo', 'Producto activado correctamente.');
                 loadProductos(); // Recarga la tabla
             } else {
                 console.error('Error al activar el producto');
@@ -439,7 +490,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Espera a que el modal se cierre para mostrar el alert
             modalEl.addEventListener('hidden.bs.modal', () => {
-                alert('Producto creado exitosamente');
+                swOk('Listo', 'Producto creado exitosamente');
             }, { once: true });
 
             // Recarga la lista de productos para mostrar el nuevo
@@ -561,7 +612,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Muestra el mensaje cuando el modal ya terminó de cerrarse (igual que en Agregar)
             modalEl.addEventListener('hidden.bs.modal', () => {
-                alert(`Producto ${nombre} actualizado correctamente.`);
+                swOk('Listo', `Producto ${nombre} actualizado correctamente.`);
             }, { once: true });
 
             // Limpia la variable global de edición
@@ -625,14 +676,14 @@ document.addEventListener('DOMContentLoaded', function () {
         // Recorre la lista y muestra cada alerta
         lista.forEach(p => {
             const nombre = p.nombre || '';
-            const img = p.imagen_path || '';
+            const img = p.imagen_path ? p.imagen_path : NO_IMAGE_SVG;
 
             const div = document.createElement('div');
             div.className = 'd-flex align-items-center gap-2 py-2 border-bottom';
 
             // Mensaje exacto solicitado + imagen
             div.innerHTML = `
-                            <img src="${img}" alt="${nombre}" style="width:28px;height:28px;object-fit:cover;border-radius:6px;">
+                            <img src="${img}" alt="${nombre}" style="width:28px;height:28px;object-fit:cover;border-radius:6px;"onerror="this.onerror=null; this.src='${NO_IMAGE_SVG}';">
                             <div class="small">
                                 <strong>Alerta:</strong> el producto <strong>${nombre}</strong> está por debajo del stock mínimo.
                             </div>

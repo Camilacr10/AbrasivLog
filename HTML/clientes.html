@@ -47,6 +47,13 @@
 
     .table-responsive { overflow: visible !important; }
     @media (min-width: 768px){ .table { overflow: visible; } }
+
+    /* Quitar azul de los items del dropdown cuando se hace click/focus */
+        .dropdown-menu .dropdown-item:focus,
+        .dropdown-menu .dropdown-item:active {
+            background-color: #FEBF00 !important;
+            color: #000 !important;
+        }
   </style>
 </head>
 

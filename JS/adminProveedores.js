@@ -9,6 +9,40 @@ document.addEventListener('DOMContentLoaded', function () {
   const pagina = location.pathname.split('/').pop().toLowerCase(); // Obtiene el nombre de la página actual
 
 
+  // =============================
+  //   SWEETALERT2 HELPERS
+  // =============================
+  function swOk(title, text = '', icon = 'success') {
+    return Swal.fire({
+      icon,
+      title,
+      text,
+      confirmButtonText: 'OK'
+    });
+  }
+
+  function swError(title, text = '') {
+    return swOk(title, text, 'error');
+  }
+
+  function swWarn(title, text = '') {
+    return swOk(title, text, 'warning');
+  }
+
+  // Reemplazo de confirm()
+  function swConfirm(title, text = '', confirmText = 'Sí', cancelText = 'Cancelar') {
+    return Swal.fire({
+      icon: 'warning',
+      title,
+      text,
+      showCancelButton: true,
+      confirmButtonText: confirmText,
+      cancelButtonText: cancelText,
+      reverseButtons: true
+    }).then(r => r.isConfirmed);
+  }
+
+
 
 
   // Función para verificar si la página actual es 'proveedores.html' y dejarlo seleccionado en negro
@@ -39,9 +73,11 @@ document.addEventListener('DOMContentLoaded', function () {
         filtroBusqueda();
       } else {
         console.error("Error al cargar los proveedores");
+        swError('Error', 'Error al cargar los proveedores');
       }
     } catch (err) {
       console.error(err);
+      swError('Error', 'Ocurrió un error al cargar los proveedores');
     }
   }
 
@@ -158,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Si no se encuentra el proveedor, muestra un mensaje y detiene la función
     if (!p) {
-      alert('Proveedor no encontrado');
+      swError('Proveedor no encontrado');
       return;
     }
 
@@ -193,7 +229,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Si no lo encuentra, muestra mensaje y detiene
     if (!p) {
-      alert('Proveedor no encontrado');
+      swError('Proveedor no encontrado');
       return;
     }
 
@@ -204,7 +240,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (estaActivo) {
 
       // Confirma antes de inactivar
-      const ok1 = confirm(`¿Está seguro de inactivar al proveedor ${p.nombre}? Esta acción no se puede deshacer.`);
+      const ok1 = await swConfirm('Confirmar inactivación', `¿Está seguro de inactivar al proveedor ${p.nombre}? Esta acción no se puede deshacer.`, 'Sí, inactivar', 'Cancelar');
       if (!ok1) return; // Si cancela, no hace nada
 
       // Llama al backend con método DELETE
@@ -215,17 +251,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // Si la respuesta es correcta
       if (response.ok) {
-        alert('Proveedor inactivado correctamente.');
+        swOk('Listo', 'Proveedor inactivado correctamente.');
         loadProveedores(); // Recarga la tabla
       } else {
         console.error("Error al inactivar el proveedor");
+        swError('Error', 'Error al inactivar el proveedor');
       }
 
     } else {
       // Si está inactivo → activar (PUT con estado Activo)
 
       // Confirma antes de activar
-      const ok2 = confirm(`¿Desea activar nuevamente al proveedor ${p.nombre}?`);
+      const ok2 = await swConfirm('Confirmar activación', `¿Desea activar nuevamente al proveedor ${p.nombre}?`, 'Sí, activar', 'Cancelar');
       if (!ok2) return; // Si cancela, no hace nada
 
       // Cuerpo con los datos del proveedor
@@ -248,10 +285,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // Si la respuesta es correcta
       if (response.ok) {
-        alert('Proveedor activado correctamente.');
+        swOk('Listo', 'Proveedor activado correctamente.');
         loadProveedores(); // Recarga la tabla
       } else {
         console.error('Error al activar el proveedor');
+        swError('Error', 'Error al activar el proveedor');
       }
     }
   }
@@ -347,7 +385,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // Espera a que el modal se cierre para mostrar el alert
       modalEl.addEventListener('hidden.bs.modal', () => {
-        alert('Proveedor creado exitosamente');
+        swOk('Listo', 'Proveedor creado exitosamente');
       }, { once: true });
 
       // Recarga la lista de proveedores para mostrar el nuevo
@@ -355,6 +393,7 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
       // Si falla, muestra un error en la consola
       console.error('POST proveedor failed');
+      swError('Error', 'Error al crear el proveedor');
     }
   });
 
@@ -461,7 +500,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (modal) modal.hide();
 
       modalEl.addEventListener('hidden.bs.modal', () => {
-        alert(`Proveedor ${nombre} actualizado correctamente.`);
+        swOk('Listo', `Proveedor ${nombre} actualizado correctamente.`);
       }, { once: true });
 
       // Limpia la variable global de edición y recarga la tabla
@@ -469,6 +508,7 @@ document.addEventListener('DOMContentLoaded', function () {
       loadProveedores();
     } else {
       console.error('PUT proveedor failed');
+      swError('Error', 'Error al actualizar el proveedor');
     }
   });
 

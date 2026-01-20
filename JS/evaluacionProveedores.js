@@ -3,7 +3,38 @@ document.addEventListener('DOMContentLoaded', function () {
     let idProveedorActual = null;    // Guardar el proveedor seleccionado
     const API_EVA_URL = '../backend/evaluacionProveedores.php';
 
+    // =============================
+    //   SWEETALERT2 HELPERS
+    // =============================
+    function swOk(title, text = '', icon = 'success') {
+        return Swal.fire({
+            icon,
+            title,
+            text,
+            confirmButtonText: 'OK'
+        });
+    }
 
+    function swError(title, text = '') {
+        return swOk(title, text, 'error');
+    }
+
+    function swWarn(title, text = '') {
+        return swOk(title, text, 'warning');
+    }
+
+    // Reemplazo de confirm()
+    function swConfirm(title, text = '', confirmText = 'Sí', cancelText = 'Cancelar') {
+        return Swal.fire({
+            icon: 'warning',
+            title,
+            text,
+            showCancelButton: true,
+            confirmButtonText: confirmText,
+            cancelButtonText: cancelText,
+            reverseButtons: true
+        }).then(r => r.isConfirmed);
+    }
 
 
     //Función para cargar las evaluaciones de un proveedor
@@ -27,9 +58,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             } else {
                 console.error("Error al cargar las evaluaciones");
+                swError('Error', 'Error al cargar las evaluaciones');
             }
         } catch (err) {
             console.error(err);
+            swError('Error', 'Ocurrió un error al cargar las evaluaciones');
         }
     }
 
@@ -309,8 +342,11 @@ document.addEventListener('DOMContentLoaded', function () {
             if (lblP) lblP.textContent = '3';
             if (lblA) lblA.textContent = '3';
             if (lblD) lblD.textContent = '3';
+
+            swOk('Listo', 'Evaluación agregada correctamente.');
         } else {
             console.error('Error al agregar evaluación');
+            swError('Error', 'Error al agregar evaluación');
         }
     }
 
@@ -515,7 +551,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Si no hay datos, avisa y no genera el archivo
         if (!lista.length) {
-            alert('No hay evaluaciones para exportar.');
+            swWarn('Sin datos', 'No hay evaluaciones para exportar.');
             return;
         }
 
@@ -539,6 +575,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Descarga el archivo Excel con un nombre fijo
         XLSX.writeFile(wb, 'evaluaciones.xlsx');
+        swOk('Listo', 'Excel generado correctamente.');
     };
 
 

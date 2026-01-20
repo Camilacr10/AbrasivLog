@@ -511,3 +511,9 @@ h1 {
     color: #000;
 }
 
+/* Quitar azul de los items del dropdown cuando se hace click/focus */
+        .dropdown-menu .dropdown-item:focus,
+        .dropdown-menu .dropdown-item:active {
+            background-color: #FEBF00 !important;
+            color: #000 !important;
+        }
