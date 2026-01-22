@@ -1,7 +1,42 @@
 const buscar = document.getElementById("buscarEmpleado");
 const tabla = document.getElementById("tablaEmpleados");
 const modalEditarEmpleado = document.getElementById('modalEditarEmpleado');
+const modalAgregarEmpleado = document.getElementById('modalAgregarEmpleado');
+
 let empleadosGlobal = [];
+
+// =============================
+  //   SWEETALERT2 HELPERS
+  // =============================
+  function swOk(title, text = '', icon = 'success') {
+    return Swal.fire({
+      icon,
+      title,
+      text,
+      confirmButtonText: 'OK'
+    });
+  }
+
+  function swError(title, text = '') {
+    return swOk(title, text, 'error');
+  }
+
+  function swWarn(title, text = '') {
+    return swOk(title, text, 'warning');
+  }
+
+  // Reemplazo de confirm()
+  function swConfirm(title, text = '', confirmText = 'Sí', cancelText = 'Cancelar') {
+    return Swal.fire({
+      icon: 'warning',
+      title,
+      text,
+      showCancelButton: true,
+      confirmButtonText: confirmText,
+      cancelButtonText: cancelText,
+      reverseButtons: true
+    }).then(r => r.isConfirmed);
+  }
 
 async function cargarEmpleados() {
     const res = await fetch("../backend/Empleados.php?accion=listar");
@@ -82,12 +117,12 @@ formData.append("archivo", linkArchivo);
     const result = await res.json();
 
     if (result.success) {
-        alert("Empleado agregado con éxito");
+        swOk("Listo", "Empleado agregado correctamente.");
         e.target.reset();
         bootstrap.Modal.getInstance(modalAgregarEmpleado).hide();
         cargarEmpleados();
     } else {
-        alert("Error al guardar empleado");
+        swError("Error", "Error al guardar el empleado");
     }
 });
 
@@ -128,18 +163,24 @@ formData.append("archivo", linkArchivoEdit);
 
     if (result.success) {
         bootstrap.Modal.getInstance(modalEditarEmpleado).hide();
-        alert("Empleado editado con éxito");
+        swOk("Listo", "Empleado actualizado correctamente.");
         cargarEmpleados();
     } else {
-        alert("Error al editar");
+        swError("Error", "Error al actualizar el empleado");
     }
 });
 
 
 async function cambiarEstadoEmpleado(id, nuevoEstado) {
     try {
-        const confirmar = confirm(`¿Seguro que deseas ${nuevoEstado === "Inactivo" ? "inactivar" : "activar"} este empleado?`);
-        if (!confirmar) return;
+       const confirmar = await swConfirm(
+  "Confirmar acción",
+  `¿Seguro que deseas ${nuevoEstado === "Inactivo" ? "inactivar" : "activar"} este empleado?`,
+  "Sí",
+  "Cancelar"
+);
+if (!confirmar) return;
+
 
         const formData = new FormData();
         formData.append("id", id);
@@ -154,7 +195,7 @@ async function cambiarEstadoEmpleado(id, nuevoEstado) {
         if (data.success) {
             cargarEmpleados();
         } else {
-            alert("Error al cambiar el estado del empleado");
+           swError("Error", "Error al cambiar el estado del empleado");
         }
     } catch (error) {
         console.error("Error al cambiar estado:", error);
@@ -164,7 +205,7 @@ async function cambiarEstadoEmpleado(id, nuevoEstado) {
 async function verPerfil(id) {
     const empleado = empleadosGlobal.find(e => e.id_empleado == id);
     if (!empleado) {
-        alert("Empleado no encontrado");
+        swError("Error", "Empleado no encontrado");
         return;
     }
 
@@ -188,54 +229,52 @@ function formatoFecha(fecha) {
 }
 
 
+
 // =============================
-// ✅ VERIFICACIÓN DE SESIÓN
+//    VERIFICACIÓN DE SESIÓN
 // =============================
 async function verificarSesionYMostrarUsuario() {
   try {
     const res = await fetch("../backend/login.php?op=me", {
       credentials: "same-origin"
     });
-
+ 
     const me = await res.json();
-
+ 
     if (!me.authenticated) {
-      // SIN ALERT, igual que en clientes
       window.location.href = "login.html";
       return;
     }
-
+ 
     const spanUser = document.getElementById("usuarioActual");
     const spanRol  = document.getElementById("usuarioRol");
-
+ 
     if (spanUser) spanUser.textContent = (me.empleado_nombre || me.username);
     if (spanRol)  spanRol.textContent  = "Rol: " + (me.rol || "-");
-
     const linkCred = document.getElementById("linkCredenciales");
-    if (linkCred && me.rol !== "Administrador") {
-      linkCred.style.display = "none";
-    }
-
+if (linkCred && me.rol !== "Administrador") {
+  linkCred.style.display = "none";
+}
+ 
+ 
   } catch (err) {
     console.error("Error verificando sesión:", err);
     window.location.href = "login.html";
   }
 }
-
-// 🔹 IGUAL QUE EN adminClientes.js
+ 
 document.addEventListener("DOMContentLoaded", () => {
   verificarSesionYMostrarUsuario();
   cargarEmpleados();
 });
-
-// 🔹 Botón Atrás del navegador (BFCache)
+ 
 window.onpageshow = function(event) {
   if (event.persisted) {
     verificarSesionYMostrarUsuario();
     cargarEmpleados();
   }
 };
-
+ 
 async function salir() {
   try {
     await fetch("../backend/login.php?op=logout", {
@@ -243,6 +282,6 @@ async function salir() {
       credentials: "same-origin"
     });
   } catch (e) { /* ignore */ }
-
+ 
   window.location.href = "login.html";  
 }

@@ -2,6 +2,10 @@
 require_once "db.php";
 require_once "message_log.php";
 require 'auditoria.php';
+
+// ─────────────── BORRA CACHE ───────────────
+
+
 header('Content-Type: application/json; charset=utf-8');
 
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
@@ -33,10 +37,13 @@ function agregarEmpleado($nombre, $fecha, $vacaciones, $puesto, $archivo) {
 function editarEmpleado($id, $nombre, $fecha, $vacaciones, $puesto, $link = null) {
     global $pdo;
 
-    if ($link) {
+    if ($link !== null && $link !== '') {
         $sql = "UPDATE empleados 
-                   SET nombre_completo=:nombre, fecha_ingreso=:fecha, dias_vacaciones=:vacaciones,
-                       puesto=:puesto, estado=:estado, archivo=:archivo
+                   SET nombre_completo=:nombre,
+                       fecha_ingreso=:fecha,
+                       dias_vacaciones=:vacaciones,
+                       puesto=:puesto,
+                       archivo=:archivo
                  WHERE id_empleado=:id";
         $params = [
             ':id' => $id,
@@ -48,7 +55,9 @@ function editarEmpleado($id, $nombre, $fecha, $vacaciones, $puesto, $link = null
         ];
     } else {
         $sql = "UPDATE empleados 
-                   SET nombre_completo=:nombre, fecha_ingreso=:fecha, dias_vacaciones=:vacaciones,
+                   SET nombre_completo=:nombre,
+                       fecha_ingreso=:fecha,
+                       dias_vacaciones=:vacaciones,
                        puesto=:puesto
                  WHERE id_empleado=:id";
         $params = [
@@ -63,6 +72,7 @@ function editarEmpleado($id, $nombre, $fecha, $vacaciones, $puesto, $link = null
     $stmt = $pdo->prepare($sql);
     return $stmt->execute($params);
 }
+
 
 // Obtener todos los empleados
 function obtenerEmpleados() {

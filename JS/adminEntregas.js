@@ -57,6 +57,38 @@ function renderTabla(lista) {
     : `<tr><td colspan="5" class="text-center text-muted">No se encontraron entregas</td></tr>`;
 }
 
+// =============================
+  //   SWEETALERT2 HELPERS
+  // =============================
+  function swOk(title, text = '', icon = 'success') {
+    return Swal.fire({
+      icon,
+      title,
+      text,
+      confirmButtonText: 'OK'
+    });
+  }
+
+  function swError(title, text = '') {
+    return swOk(title, text, 'error');
+  }
+
+  function swWarn(title, text = '') {
+    return swOk(title, text, 'warning');
+  }
+
+  // Reemplazo de confirm()
+  function swConfirm(title, text = '', confirmText = 'Sí', cancelText = 'Cancelar') {
+    return Swal.fire({
+      icon: 'warning',
+      title,
+      text,
+      showCancelButton: true,
+      confirmButtonText: confirmText,
+      cancelButtonText: cancelText,
+      reverseButtons: true
+    }).then(r => r.isConfirmed);
+  }
 
 // 🔍 Filtrar en tiempo real
 function aplicarFiltros() {
@@ -110,7 +142,7 @@ async function cargarMensajeros() {
         `).join("")}
     `;
 
-  // Para el modal de editar
+  // 🔹 Para el modal de editar
   const selectEditar = document.getElementById("editMensajero");
   if (selectEditar) {
     selectEditar.innerHTML = `
@@ -150,7 +182,7 @@ async function cargarProductos() {
 }
 
 
-// Filtrar entregas
+// 🔍 Filtrar entregas
 if (buscar) {
   buscar.addEventListener("keyup", () => {
     const texto = buscar.value.toLowerCase().trim();
@@ -168,7 +200,7 @@ window.onload = () => {
   cargarProductos();
 };
 
-// Agregar nueva entrega
+//Agregar nueva entrega
 document.getElementById("formAgregarEntrega").addEventListener("submit", async e => {
   e.preventDefault();
 
@@ -177,7 +209,7 @@ document.getElementById("formAgregarEntrega").addEventListener("submit", async e
   const fechaEntrega = document.getElementById("fechaEntrega").value;
 
   if (!cedulaCliente || !idEmpleado || !fechaEntrega) {
-    alert("Por favor complete todos los campos.");
+    swWarn("Campos incompletos", "Por favor complete todos los campos.");
     return;
   }
 
@@ -186,7 +218,7 @@ document.getElementById("formAgregarEntrega").addEventListener("submit", async e
   const cliente = await clienteRes.json();
 
   if (!cliente || !cliente.id_cliente) {
-    alert("No se encontró un cliente con esa cédula o está inactivo.");
+    swError("Cliente no válido", "No se encontró un cliente con esa cédula o está inactivo.");
     return;
   }
 
@@ -211,7 +243,7 @@ document.getElementById("formAgregarEntrega").addEventListener("submit", async e
     const modalDetalles = new bootstrap.Modal(modalAgregarDetallesEntrega);
     modalDetalles.show();
   } else {
-    alert(result.msg || "Error al registrar la entrega.");
+    swError("Error", result.msg || "Error al registrar la entrega.");
   }
 });
 
@@ -227,7 +259,7 @@ document.getElementById("formAgregarDetallesEntrega").addEventListener("submit",
   const iva = document.getElementById("ivaEntrega").value;
 
   if (!idProducto || !cantidad || !precio) {
-    alert("Complete todos los campos del detalle.");
+    swWarn("Campos incompletos", "Complete todos los campos del detalle.");
     return;
   }
 
@@ -246,20 +278,47 @@ document.getElementById("formAgregarDetallesEntrega").addEventListener("submit",
 
   const result = await res.json();
 
-  if (result.success) {
-    alert("Entrega agregada correctamente");
-    e.target.reset();
-    bootstrap.Modal.getInstance(modalAgregarDetallesEntrega).hide();
-    cargarEntregas();
-  } else {
-    alert(result.msg || "Error al agregar la entrega.");
-  }
+ const modal = bootstrap.Modal.getInstance(
+  modalAgregarDetallesEntrega
+);
+
+modalAgregarDetallesEntrega.addEventListener(
+  "hidden.bs.modal",
+  async () => {
+
+    if (result.success) {
+      await swOk("Listo", "Entrega agregada correctamente.");
+
+      e.target.reset();
+      cargarEntregas();
+
+    } else {
+      await swError(
+        "Error",
+        result.msg || "Error al agregar la entrega."
+      );
+
+      // SOLO si es stock insuficiente, se vuelve a abrir
+      if (result.msg === "Stock insuficiente") {
+        new bootstrap.Modal(modalAgregarDetallesEntrega).show();
+      }
+    }
+
+  },
+  { once: true }
+);
+
+modal.hide();
 });
 
 // Abrir modal de edición
 async function abrirEditar(id) {
+
   const entrega = entregasGlobal.find(e => e.id_entrega == id);
-  if (!entrega) return alert("Entrega no encontrada.");
+  if (!entrega) {
+  swError("Error", "Entrega no encontrada.");
+  return;
+}
 
   // Cargar mensajeros y productos
   await cargarMensajeros();
@@ -286,7 +345,7 @@ document.getElementById("editCedulaCliente").addEventListener("blur", async () =
   if (cliente && cliente.id_cliente) {
     document.getElementById("editClienteId").value = cliente.id_cliente;
   } else {
-    alert("Cliente no encontrado o inactivo");
+    swError("Cliente no válido", "Cliente no encontrado o inactivo.");
     document.getElementById("editClienteId").value = "";
   }
 });
@@ -315,7 +374,7 @@ document.getElementById("formEditarEntrega").addEventListener("submit", async e 
     const modalDetalles = new bootstrap.Modal(document.getElementById("modalEditarDetalle"));
     modalDetalles.show();
   } else {
-    alert(result.msg || "Error al editar la entrega.");
+    swError("Error", result.msg || "Error al editar la entrega.");
   }
 });
 
@@ -323,7 +382,7 @@ document.getElementById("formEditarEntrega").addEventListener("submit", async e 
 async function cargarDetalleEntrega(idEntrega) {
   try {
     if (!idEntrega || idEntrega === "null") {
-      alert("Error: ID de entrega no válido.");
+      swError("Error", "ID de entrega no válido.");
       return;
     }
 
@@ -331,7 +390,7 @@ async function cargarDetalleEntrega(idEntrega) {
     const detalle = await res.json();
 
     if (!Array.isArray(detalle) || detalle.length === 0) {
-      alert("No se encontraron detalles para esta entrega.");
+      swWarn("Sin detalles", "No se encontraron detalles para esta entrega.");
       return;
     }
 
@@ -348,7 +407,7 @@ async function cargarDetalleEntrega(idEntrega) {
 
   } catch (error) {
     console.error("Error al cargar detalle de entrega:", error);
-    alert("Error al cargar los detalles.");
+    swError("Error", "Error al cargar los detalles.");
   }
 }
 
@@ -363,7 +422,7 @@ document.getElementById("formEditarDetalle").addEventListener("submit", async e 
   const iva = document.getElementById("editIVA").value || 13;
 
   if (!idProducto || !cantidad || !precio) {
-    alert("Por favor complete todos los campos del detalle.");
+    swWarn("Campos incompletos", "Por favor complete todos los campos del detalle.");
     return;
   }
 
@@ -386,15 +445,15 @@ formData.append("porcentaje_iva_aplicado", iva);
     const result = await res.json();
 
     if (result.success) {
-      alert("Entrega actualizada correctamente.");
+      swOk("Actualizado", "Entrega actualizada correctamente.");
       bootstrap.Modal.getInstance(document.getElementById("modalEditarDetalle")).hide();
       cargarEntregas();
     } else {
-      alert(result.msg || "Error al actualizar el detalle.");
+      swError("Error", result.msg || "Error al actualizar el detalle.");
     }
   } catch (error) {
     console.error("Error al editar detalle:", error);
-    alert("Error de conexión al editar detalle.");
+    swError("Error de conexión", "No se pudo editar el detalle.");
   }
 });
 
@@ -413,7 +472,7 @@ async function guardarNuevoEstado() {
   const nuevoEstado = document.getElementById("nuevoEstado").value;
 
   if (!idEntregaSeleccionada || !nuevoEstado) {
-    alert("Seleccione un estado válido.");
+    swWarn("Estado inválido", "Seleccione un estado válido.");
     return;
   }
 
@@ -430,15 +489,15 @@ async function guardarNuevoEstado() {
     const result = await res.json();
 
     if (result.success) {
-      alert("Estado actualizado correctamente.");
+      swOk("Estado actualizado", "La entrega fue actualizada correctamente.");
       bootstrap.Modal.getInstance(document.getElementById("modalCambiarEstado")).hide();
       cargarEntregas(); 
     } else {
-      alert(result.msg || "Error al actualizar el estado.");
+      swError("Error", result.msg || "Error al actualizar el estado.");
     }
   } catch (error) {
     console.error("Error cambiando estado:", error);
-    alert("Error de conexión al cambiar estado.");
+    swError("Error de conexión", "No se pudo cambiar el estado.");
   }
 }
 
@@ -448,7 +507,7 @@ async function verEntrega(idEntrega) {
     const detalles = await res.json();
 
     if (!Array.isArray(detalles) || detalles.length === 0) {
-      alert("No se encontraron detalles para esta entrega.");
+      swWarn("Sin detalles", "No se encontraron detalles para esta entrega.");
       return;
     }
 
@@ -476,7 +535,7 @@ async function verEntrega(idEntrega) {
 
   } catch (error) {
     console.error("Error al cargar detalles de entrega:", error);
-    alert("No se pudo cargar el detalle de la entrega.");
+    swError("Error", "No se pudo cargar el detalle de la entrega.");
   }
 }
 
@@ -503,7 +562,6 @@ function mostrarCedulas(txt, id) {
 cedulaCliente.oninput = e => mostrarCedulas(e.target.value, "listaCedulas");
 editCedulaCliente.oninput = e => mostrarCedulas(e.target.value, "listaCedulasEditar");
 
-
 function formatoFecha(fecha) {
     if (!fecha) return "";
     const [anio, mes, dia] = fecha.split("-");
@@ -527,42 +585,43 @@ async function verificarSesionYMostrarUsuario() {
     const res = await fetch("../backend/login.php?op=me", {
       credentials: "same-origin"
     });
-
+ 
     const me = await res.json();
-
+ 
     if (!me.authenticated) {
       window.location.href = "login.html";
       return;
     }
-
+ 
     const spanUser = document.getElementById("usuarioActual");
     const spanRol  = document.getElementById("usuarioRol");
-
+ 
     if (spanUser) spanUser.textContent = (me.empleado_nombre || me.username);
     if (spanRol)  spanRol.textContent  = "Rol: " + (me.rol || "-");
-  const linkCred = document.getElementById("linkCredenciales");
-    if (linkCred && me.rol !== "Administrador") {
-      linkCred.style.display = "none";
-    }
-
+        const linkCred = document.getElementById("linkCredenciales");
+if (linkCred && me.rol !== "Administrador") {
+  linkCred.style.display = "none";
+}
+ 
+ 
   } catch (err) {
     console.error("Error verificando sesión:", err);
     window.location.href = "login.html";
   }
 }
-
+ 
 document.addEventListener("DOMContentLoaded", () => {
   verificarSesionYMostrarUsuario();
   cargarEntregas();
 });
-
+ 
 window.onpageshow = function(event) {
   if (event.persisted) {
     verificarSesionYMostrarUsuario();
     cargarEntregas();
   }
 };
-
+ 
 async function salir() {
   try {
     await fetch("../backend/login.php?op=logout", {
@@ -570,6 +629,6 @@ async function salir() {
       credentials: "same-origin"
     });
   } catch (e) { /* ignore */ }
-
+ 
   window.location.href = "login.html";  
 }

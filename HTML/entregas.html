@@ -46,17 +46,15 @@
             overflow: visible !important;
         }
 
+        .swal2-container {
+  z-index: 20000 !important;
+}
+
+
         @media (min-width: 768px) {
             .table {
                 overflow: visible;
             }
-        }
-
-        /* Quitar azul de los items del dropdown cuando se hace click/focus */
-        .dropdown-menu .dropdown-item:focus,
-        .dropdown-menu .dropdown-item:active {
-            background-color: #FEBF00 !important;
-            color: #000 !important;
         }
     </style>
 </head>
@@ -65,7 +63,7 @@
     <!-- Header -->
     <nav class="navbar navbar-expand-lg navbar-custom">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="index.html">
+              <a class="navbar-brand d-flex align-items-center" href="index.html">
                 <img src="../IMG/logo.png" alt="Logo" class="logo" />
             </a>
             <div class="collapse navbar-collapse" id="menuPrincipal">
@@ -83,35 +81,34 @@
                             <li><a class="dropdown-item" href="inventarioCategorias.html">Inventario de Categorías</a>
                             </li>
                         </ul>
-                    <li class="nav-item"><a class="nav-link" href="entregas.html">Entregas</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="entregas.html">Entregas</a></li>
                     <li class="nav-item"><a class="nav-link" href="proveedores.html">Proveedores</a></li>
                     <li class="nav-item"><a class="nav-link" href="dashboardReportes.html">Reportes</a></li>
                     <li class="nav-item">
 
-                    <li class="nav-item" id="linkCredenciales">
-                        <a class="nav-link" href="registro.html">
-                            <i class="fas fa-user me-1 opacity-75"></i> Gestionar Credenciales
-                        </a>
-                    </li>
+<li class="nav-item" id="linkCredenciales">
+  <a class="nav-link" href="registro.html">
+    <i class="fas fa-user me-1 opacity-75"></i> Gestionar Credenciales
+  </a>
+</li>
 
-                    <li class="nav-item dropdown ms-3">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="usuarioDropdown"
-                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fa-regular fa-circle-user me-2"></i>
-                            <span id="usuarioActual">Cargando...</span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="usuarioDropdown">
-                            <li><a class="dropdown-item disabled small" id="usuarioRol">Rol: -</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li>
-                                <button class="dropdown-item text-danger" onclick="salir()">
-                                    <i class="fas fa-sign-out-alt me-2"></i> Cerrar sesión
-                                </button>
-                            </li>
-                        </ul>
-                    </li>
+         
+          <li class="nav-item dropdown ms-3">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="usuarioDropdown"
+               role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fa-regular fa-circle-user me-2"></i>
+              <span id="usuarioActual">Cargando...</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="usuarioDropdown">
+              <li><a class="dropdown-item disabled small" id="usuarioRol">Rol: -</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <button class="dropdown-item text-danger" onclick="salir()">
+                  <i class="fas fa-sign-out-alt me-2"></i> Cerrar sesión
+                </button>
+              </li>
+            </ul>
+          </li>
 
                 </ul>
             </div>
@@ -129,8 +126,7 @@
         <!-- Filtros -->
         <div class="row mb-3">
             <div class="col-md-3">
-                <input type="text" id="filtroClienteMensajero" class="form-control"
-                    placeholder="Filtrar por cliente o mensajero" />
+                <input type="text" id="filtroClienteMensajero" class="form-control" placeholder="Filtrar por cliente o mensajero" />
             </div>
             <div class="col-md-3">
                 <input type="date" id="filtroFecha" class="form-control" />
@@ -163,7 +159,7 @@
         </table>
     </div>
 
-    <div class="modal fade" id="modalAgregarEntrega" tabindex="-1">
+    <div class="modal fade" id="modalAgregarEntrega" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog">
             <div class="modal-content">
                 <form id="formAgregarEntrega" enctype="multipart/form-data">
@@ -175,9 +171,8 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="cedulaCliente" class="form-label">Cédula del Cliente</label>
-                            <input list="listaCedulas" id="cedulaCliente" class="form-control"
-                                placeholder="Ingrese la cédula">
-                            <datalist id="listaCedulas"></datalist>
+                            <input list="listaCedulas" id="cedulaCliente" class="form-control" placeholder="Ingrese la cédula">
+                            <datalist id="listaCedulas" ></datalist>
                         </div>
                         <div class="mb-3">
                             <label for="mensajeroEntrega" class="form-label">Mensajero Asignado</label>
@@ -192,20 +187,19 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-warning" data-bs-dismiss="modal">Siguiente</button>
+                        <button type="submit" class="btn btn-warning">Siguiente</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="modalAgregarDetallesEntrega" tabindex="-1">
+    <div class="modal fade" id="modalAgregarDetallesEntrega" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog">
             <div class="modal-content">
                 <form id="formAgregarDetallesEntrega">
                     <div class="modal-header">
-                        <h5 class="modal-title">Detalles Entrega</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        <h5 class="modal-title">Detalles Entrega</h5>            
                     </div>
 
                     <div class="modal-body">
@@ -237,7 +231,7 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-warning" data-bs-dismiss="modal">Guardar</button>
+                        <button type="submit" class="btn btn-warning">Guardar</button>
                     </div>
                 </form>
             </div>
@@ -259,8 +253,7 @@
 
                         <div class="mb-3">
                             <label for="editCedulaCliente" class="form-label">Cédula del Cliente</label>
-                            <input list="listaCedulasEditar" id="editCedulaCliente" class="form-control"
-                                placeholder="Ingrese la cédula">
+                            <input list="listaCedulasEditar" id="editCedulaCliente" class="form-control" placeholder="Ingrese la cédula">
                             <datalist id="listaCedulasEditar"></datalist>
                             <input type="hidden" id="editClienteId" name="cliente_id">
                         </div>
@@ -280,7 +273,7 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-warning" data-bs-dismiss="modal">Siguiente</button>
+                        <button type="submit" class="btn btn-warning">Siguiente</button>
                     </div>
                 </form>
             </div>
@@ -333,7 +326,7 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-warning" data-bs-dismiss="modal">Guardar cambios</button>
+                        <button type="submit" class="btn btn-warning">Guardar cambios</button>
                     </div>
                 </form>
             </div>
@@ -426,6 +419,7 @@
         </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../JS/adminEntregas.js"></script>
 </body>
 

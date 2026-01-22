@@ -61,7 +61,7 @@
             <div class="collapse navbar-collapse" id="menuPrincipal">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
                     <li class="nav-item"><a class="nav-link" href="clientes.html">Clientes</a></li>
-                    <li class="nav-item"><a class="nav-link" href="empleados.html">Empleados</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="empleados.html">Empleados</a></li>
                     <!-- Menú desplegable Inventario -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="inventarioDropdown" role="button"
@@ -77,13 +77,13 @@
                     <li class="nav-item"><a class="nav-link" href="proveedores.html">Proveedores</a></li>
                     <li class="nav-item"><a class="nav-link" href="dashboardReportes.html">Reportes</a></li>
                     <li class="nav-item">
-
 <li class="nav-item" id="linkCredenciales">
   <a class="nav-link" href="registro.html">
     <i class="fas fa-user me-1 opacity-75"></i> Gestionar Credenciales
   </a>
 </li>
 
+          <!-- Dropdown usuario (mismo que en Gestión de Credenciales) -->
           <li class="nav-item dropdown ms-3">
             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="usuarioDropdown"
                role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -175,7 +175,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-warning" data-bs-dismiss="modal">Guardar</button>
+                        <button type="submit" class="btn btn-warning">Guardar</button>
                     </div>
                 </form>
             </div>
@@ -221,7 +221,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-warning" data-bs-dismiss="modal">Actualizar</button>
+                        <button type="submit" class="btn btn-warning">Actualizar</button>
                     </div>
                 </form>
             </div>
@@ -270,6 +270,7 @@
         </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../JS/empleados.js"></script>
 </body>
 
