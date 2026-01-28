@@ -19,15 +19,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-    // =============================
+
     //   SWEETALERT2 HELPERS
-    // =============================
+
     function swOk(title, text = '', icon = 'success') {
         return Swal.fire({
             icon,
             title,
             text,
-            confirmButtonText: 'OK'
+            confirmButtonText: 'Aceptar'
         });
     }
 
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Reemplazo de confirm()
-    function swConfirm(title, text = '', confirmText = 'Sí', cancelText = 'Cancelar') {
+    function swConfirm(title, text = '', confirmText = 'Aceptar', cancelText = 'Cancelar') {
         return Swal.fire({
             icon: 'warning',
             title,
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function () {
             showCancelButton: true,
             confirmButtonText: confirmText,
             cancelButtonText: cancelText,
-            reverseButtons: true
+            reverseButtons: false
         }).then(r => r.isConfirmed);
     }
 
@@ -248,7 +248,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (estaActivo) {
 
             // Confirma antes de inactivar
-            const ok1 = await swConfirm('Confirmar inactivación', `¿Está seguro de inactivar la categoría "${c.nombre}"? Esta acción no se puede deshacer.`, 'Sí, inactivar', 'Cancelar');
+            const ok1 = await swConfirm('Confirmar inactivación', `¿Está seguro de inactivar la categoría "${c.nombre}"? Esta acción no se puede deshacer.`, 'Aceptar', 'Cancelar');
             if (!ok1) return; // Si cancela, no hace nada
 
             // Llama al backend con método DELETE
@@ -269,7 +269,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Si la categoría está inactiva
 
             // Confirma antes de activar
-            const ok2 = await swConfirm('Confirmar activación', `¿Desea activar nuevamente la categoría "${c.nombre}"?`, 'Sí, activar', 'Cancelar');
+            const ok2 = await swConfirm('Confirmar activación', `¿Desea activar nuevamente la categoría "${c.nombre}"?`, 'Aceptar', 'Cancelar');
             if (!ok2) return;
 
             // Cuerpo con los datos de la categoría (mantiene todo igual y cambia estado)

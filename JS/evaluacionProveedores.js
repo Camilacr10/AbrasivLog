@@ -3,15 +3,14 @@ document.addEventListener('DOMContentLoaded', function () {
     let idProveedorActual = null;    // Guardar el proveedor seleccionado
     const API_EVA_URL = '../backend/evaluacionProveedores.php';
 
-    // =============================
     //   SWEETALERT2 HELPERS
-    // =============================
+
     function swOk(title, text = '', icon = 'success') {
         return Swal.fire({
             icon,
             title,
             text,
-            confirmButtonText: 'OK'
+            confirmButtonText: 'Aceptar'
         });
     }
 
@@ -24,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Reemplazo de confirm()
-    function swConfirm(title, text = '', confirmText = 'Sí', cancelText = 'Cancelar') {
+    function swConfirm(title, text = '', confirmText = 'Aceptar', cancelText = 'Cancelar') {
         return Swal.fire({
             icon: 'warning',
             title,
