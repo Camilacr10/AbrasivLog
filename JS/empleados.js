@@ -26,7 +26,7 @@ let empleadosGlobal = [];
   }
 
   // Reemplazo de confirm()
-  function swConfirm(title, text = '', confirmText = 'Sí', cancelText = 'Cancelar') {
+  function swConfirm(title, text = '', cancelText = 'Cancelar', confirmText = 'Aceptar') {
     return Swal.fire({
       icon: 'warning',
       title,
@@ -34,7 +34,6 @@ let empleadosGlobal = [];
       showCancelButton: true,
       confirmButtonText: confirmText,
       cancelButtonText: cancelText,
-      reverseButtons: true
     }).then(r => r.isConfirmed);
   }
 
@@ -171,13 +170,14 @@ formData.append("archivo", linkArchivoEdit);
 });
 
 
+
 async function cambiarEstadoEmpleado(id, nuevoEstado) {
     try {
        const confirmar = await swConfirm(
   "Confirmar acción",
   `¿Seguro que deseas ${nuevoEstado === "Inactivo" ? "inactivar" : "activar"} este empleado?`,
-  "Sí",
-  "Cancelar"
+  "Cancelar",
+  "Aceptar"
 );
 if (!confirmar) return;
 
