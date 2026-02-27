@@ -318,16 +318,47 @@ case 'agregarDetalle':
         echo json_encode(['success' => (bool)$ok]);
         break;
  
-    case 'editarDetalle':
-    $id_entrega = $_POST['id_entrega'];
-    $id_producto_original = $_POST['id_producto_original']; 
-    $id_producto_nuevo = $_POST['id_producto']; 
+   case 'editarDetalle':
+
+    $id_entrega = (int)$_POST['id_entrega'];
+    $id_producto_original = $_POST['id_producto_original'] ?? null;
+
+    if ($id_producto_original === '' || $id_producto_original === 'null') {
+        $id_producto_original = null;
+    } else {
+        $id_producto_original = (int)$id_producto_original;
+    }
+
+    $id_producto_nuevo = (int)$_POST['id_producto'];
     $cantidadNueva = (int)$_POST['cantidad'];
     $precio = $_POST['precio_unitario'];
     $descuento = $_POST['descuento_aplicado'];
     $iva = $_POST['porcentaje_iva_aplicado'];
 
-    // Obtener cantidad anterior
+    // SI NO EXISTE SE INSERTA 
+    if ($id_producto_original === null) {
+
+        $stockActual = obtenerCantidadProducto($id_producto_nuevo);
+        if ($stockActual < $cantidadNueva) {
+            echo json_encode(['success' => false, 'msg' => 'Stock insuficiente']);
+            exit;
+        }
+
+        agregarDetalleEntrega(
+            $id_entrega,
+            $id_producto_nuevo,
+            $cantidadNueva,
+            $precio,
+            $descuento,
+            $iva
+        );
+
+        actualizarStockProducto($id_producto_nuevo, $cantidadNueva, 'restar');
+
+        echo json_encode(['success' => true]);
+        break;
+    }
+
     $stmt = $pdo->prepare("
         SELECT cantidad 
         FROM entregas_detalle
@@ -338,11 +369,12 @@ case 'agregarDetalle':
         ':id_entrega' => $id_entrega,
         ':id_producto' => $id_producto_original
     ]);
+
     $detalleActual = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$detalleActual) {
         echo json_encode(['success' => false, 'msg' => 'Detalle no encontrado']);
-        exit;
+        break;
     }
 
     $cantidadAnterior = (int)$detalleActual['cantidad'];
@@ -364,11 +396,10 @@ case 'agregarDetalle':
             actualizarStockProducto($id_producto_nuevo, abs($diferencia), 'sumar');
         }
 
-    } 
-
-    else {
+    } else {
 
         actualizarStockProducto($id_producto_original, $cantidadAnterior, 'sumar');
+
         $stock = obtenerCantidadProducto($id_producto_nuevo);
         if ($stock < $cantidadNueva) {
             actualizarStockProducto($id_producto_original, $cantidadAnterior, 'restar');

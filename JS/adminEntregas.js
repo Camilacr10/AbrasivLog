@@ -90,7 +90,7 @@ function renderTabla(lista) {
     }).then(r => r.isConfirmed);
   }
 
-// 🔍 Filtrar en tiempo real
+// Filtrar en tiempo real
 function aplicarFiltros() {
     let texto = filtroClienteMensajero.value.toLowerCase().trim();
     let fecha = filtroFecha.value;
@@ -381,7 +381,8 @@ document.getElementById("formEditarEntrega").addEventListener("submit", async e 
 // Cargar detalle de una entrega específica
 async function cargarDetalleEntrega(idEntrega) {
   try {
-    if (!idEntrega || idEntrega === "null") {
+
+    if (!idEntrega) {
       swError("Error", "ID de entrega no válido.");
       return;
     }
@@ -389,16 +390,25 @@ async function cargarDetalleEntrega(idEntrega) {
     const res = await fetch(`../backend/adminEntregas.php?accion=obtenerDetallePorEntrega&id_entrega=${idEntrega}`);
     const detalle = await res.json();
 
+    idEntregaActual = idEntrega;
+
+    await cargarProductos();
+
     if (!Array.isArray(detalle) || detalle.length === 0) {
-      swWarn("Sin detalles", "No se encontraron detalles para esta entrega.");
+
+      document.getElementById("editIdDetalle").value = "null";
+      document.getElementById("editProductoEntrega").value = "";
+      document.getElementById("editCantidad").value = "";
+      document.getElementById("editPrecio").value = "";
+      document.getElementById("editDescuento").value = "0";
+      document.getElementById("editIVA").value = "13.00";
+
       return;
     }
 
     const d = detalle[0];
-    idEntregaActual = idEntrega;
 
-    await cargarProductos();
-    document.getElementById("editIdDetalle").value = d.id_producto; // producto original
+    document.getElementById("editIdDetalle").value = d.id_producto;
     document.getElementById("editProductoEntrega").value = d.id_producto;
     document.getElementById("editCantidad").value = d.cantidad;
     document.getElementById("editPrecio").value = d.precio_unitario;
@@ -406,8 +416,8 @@ async function cargarDetalleEntrega(idEntrega) {
     document.getElementById("editIVA").value = d.porcentaje_iva_aplicado;
 
   } catch (error) {
-    console.error("Error al cargar detalle de entrega:", error);
-    swError("Error", "Error al cargar los detalles.");
+    console.error("Error al cargar detalle:", error);
+    swError("Error", "No se pudo cargar el detalle.");
   }
 }
 
@@ -428,7 +438,13 @@ document.getElementById("formEditarDetalle").addEventListener("submit", async e 
 
   const formData = new FormData();
 formData.append("id_entrega", idEntregaActual);
-formData.append("id_producto_original", document.getElementById("editIdDetalle").value);
+const idOriginal = document.getElementById("editIdDetalle").value;
+
+if (idOriginal && idOriginal !== "null" && idOriginal !== "") {
+  formData.append("id_producto_original", idOriginal);
+} else {
+  formData.append("id_producto_original", "null");
+}
 formData.append("id_producto", idProducto);
 formData.append("cantidad", cantidad);
 formData.append("precio_unitario", precio);
