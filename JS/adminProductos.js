@@ -55,6 +55,95 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+
+    //   VALIDACIONES NO NEGATIVOS
+
+    // Función para no permitir negativos en inputs numéricos (Agregar y Editar)
+    // Esto valida por teclado, pega (paste) y por cualquier cambio (input)
+    function noPermitirNegativos(inputId, labelCampo) {
+        const el = document.getElementById(inputId);
+        if (!el) return;
+
+        // Evita escribir "-" (y también evita "e" en caso de type=number)
+        el.addEventListener('keydown', (e) => {
+            const k = e.key;
+            if (k === '-' || k === 'Minus' || k === 'Subtract' || k.toLowerCase() === 'e') {
+                e.preventDefault();
+            }
+        });
+
+        // Valida cuando pegan con Ctrl+V o click derecho
+        el.addEventListener('paste', (e) => {
+            const pasted = (e.clipboardData || window.clipboardData).getData('text');
+            const v = (pasted || '').trim();
+            // Si detecta un negativo, bloquea el pegado
+            if (/^-/.test(v)) {
+                e.preventDefault();
+                el.setCustomValidity(`${labelCampo} no puede ser negativo.`);
+                el.classList.add('is-invalid');
+                el.reportValidity();
+            }
+        });
+
+        // Valida en tiempo real (si por alguna razón llega un "-")
+        el.addEventListener('input', () => {
+            const raw = (el.value ?? '').toString().trim();
+
+            // Limpia error anterior
+            el.setCustomValidity('');
+            el.classList.remove('is-invalid');
+
+            // Permite que el usuario borre el campo
+            if (raw === '') return;
+
+            const num = Number(raw);
+
+            // Si no es número, no se mete (dejamos que el HTML/validaciones existentes hagan su trabajo)
+            if (Number.isNaN(num)) return;
+
+            // Si es negativo, lo bloquea y lo corrige a 0
+            if (num < 0) {
+                el.value = '0';
+                el.setCustomValidity(`${labelCampo} no puede ser negativo.`);
+                el.classList.add('is-invalid');
+                el.reportValidity();
+            }
+        });
+
+        // Valida al salir del campo (por si quedó algo raro)
+        el.addEventListener('blur', () => {
+            const raw = (el.value ?? '').toString().trim();
+
+            el.setCustomValidity('');
+            el.classList.remove('is-invalid');
+
+            if (raw === '') return;
+
+            const num = Number(raw);
+            if (!Number.isNaN(num) && num < 0) {
+                el.value = '0';
+                el.setCustomValidity(`${labelCampo} no puede ser negativo.`);
+                el.classList.add('is-invalid');
+                el.reportValidity();
+            }
+        });
+    }
+
+    // Aplica la regla de no negativos a los campos requeridos (AGREGAR)
+    noPermitirNegativos('cantidad', 'Cantidad');
+    noPermitirNegativos('precio', 'Precio unitario');
+    noPermitirNegativos('iva', 'IVA');
+    noPermitirNegativos('descuento', 'Descuento');
+
+    // Aplica la regla de no negativos a los campos requeridos (EDITAR)
+    noPermitirNegativos('editCantidad', 'Cantidad');
+    noPermitirNegativos('editPrecio', 'Precio unitario');
+    noPermitirNegativos('editIva', 'IVA');
+    noPermitirNegativos('editDescuento', 'Descuento');
+
+
+
+
     //Función para verificar si la página actual es 'inventario.html' o 'inventarioCategorias.html' y la deja seleccionada en negro las letras
     if (pagina === 'inventario.html') {
         const inventarioLink = document.getElementById('inventarioDropdown');
