@@ -333,9 +333,9 @@ async function abrirEditar(id) {
   const inputFecha = document.getElementById("editFecha");
 
 if (entrega.estado === "Completada") {
-  inputFecha.disabled = true;
+  inputFecha.readOnly = true;
 } else {
-  inputFecha.disabled = false;
+  inputFecha.readOnly = false;
 }
 
   const modalEntrega = new bootstrap.Modal(document.getElementById("modalEditarEntrega"));

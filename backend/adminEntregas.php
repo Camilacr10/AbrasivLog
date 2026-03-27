@@ -86,13 +86,22 @@ function editarEntrega($id_entrega, $id_cliente, $id_empleado, $fecha) {
                 WHERE id_entrega = :id_entrega";
     }
 
-    $stmt = $pdo->prepare($sql);
+   $stmt = $pdo->prepare($sql);
+
+if ($entrega['estado'] === 'Completada') {
+    return $stmt->execute([
+        ':id_cliente' => $id_cliente,
+        ':id_empleado' => $id_empleado,
+        ':id_entrega' => $id_entrega
+    ]);
+} else {
     return $stmt->execute([
         ':id_cliente' => $id_cliente,
         ':id_empleado' => $id_empleado,
         ':fecha' => $fecha,
         ':id_entrega' => $id_entrega
     ]);
+}
 }
  
  
