@@ -228,6 +228,9 @@ function formatoFecha(fecha) {
     return `${dia}/${mes}/${anio}`;
 }
 
+modalAgregarEmpleado.addEventListener('hidden.bs.modal', () => {
+    document.getElementById("formAgregarEmpleado").reset();
+});
 
 
 // =============================

@@ -330,6 +330,13 @@ async function abrirEditar(id) {
   document.getElementById("editClienteId").value = entrega.id_cliente;
   document.getElementById("editMensajero").value = entrega.id_empleado;
   document.getElementById("editFecha").value = entrega.fecha_entrega;
+  const inputFecha = document.getElementById("editFecha");
+
+if (entrega.estado === "Completada") {
+  inputFecha.disabled = true;
+} else {
+  inputFecha.disabled = false;
+}
 
   const modalEntrega = new bootstrap.Modal(document.getElementById("modalEditarEntrega"));
   modalEntrega.show();

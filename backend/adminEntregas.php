@@ -64,11 +64,28 @@ function agregarEntrega($id_cliente, $id_empleado, $fecha) {
  
 function editarEntrega($id_entrega, $id_cliente, $id_empleado, $fecha) {
     global $pdo;
-    $sql = "UPDATE entregas
-            SET id_cliente = :id_cliente,
-                id_empleado = :id_empleado,
-                fecha_entrega = :fecha
-            WHERE id_entrega = :id_entrega";
+
+    // Obtener estado actual
+    $stmt = $pdo->prepare("SELECT estado FROM entregas WHERE id_entrega = :id");
+    $stmt->execute([':id' => $id_entrega]);
+    $entrega = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$entrega) return false;
+
+    if ($entrega['estado'] === 'Completada') {
+        $sql = "UPDATE entregas
+                SET id_cliente = :id_cliente,
+                    id_empleado = :id_empleado
+                WHERE id_entrega = :id_entrega";
+    } else {
+
+        $sql = "UPDATE entregas
+                SET id_cliente = :id_cliente,
+                    id_empleado = :id_empleado,
+                    fecha_entrega = :fecha
+                WHERE id_entrega = :id_entrega";
+    }
+
     $stmt = $pdo->prepare($sql);
     return $stmt->execute([
         ':id_cliente' => $id_cliente,
