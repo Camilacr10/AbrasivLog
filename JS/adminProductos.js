@@ -943,7 +943,9 @@ document.addEventListener('DOMContentLoaded', function () {
             // Reinicia el contenido del select, dejando una opción por defecto
 
             // Recorre el arreglo global "categorias" y crea una opción por cada una
-            categorias.forEach(c => {
+            categorias
+            .filter(c => String(c.estado).trim().toLowerCase() === 'activo')
+            .forEach(c => {
                 const opt = document.createElement('option'); // Crea una nueva opción
                 opt.value = String(c.id_categoria); // Asigna el id de la categoría como valor
                 opt.textContent = c.nombre || ''; // Muestra el nombre de la categoría

@@ -104,7 +104,6 @@ document.addEventListener('DOMContentLoaded', function () {
     lista.forEach(function (proveedor) {
       const row = document.createElement('tr');
       row.innerHTML = `
-                <td>${proveedor.id_proveedor}</td>
                 <td>${proveedor.nombre}</td>
                 <td>${proveedor.cedula_juridica}</td>
                 <td>${proveedor.telefono}</td>

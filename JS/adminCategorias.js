@@ -107,7 +107,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const row = document.createElement('tr');
 
             row.innerHTML = `
-                <td>${c.id_categoria ?? ''}</td>
                 <td class="text-center">
                     <img
                     src="${c.icono_path ? c.icono_path : NO_IMAGE_SVG}"
